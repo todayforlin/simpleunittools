@@ -1,7 +1,7 @@
 ---
-const title = "Celsius to Fahrenheit Converter";
+const title = "°C to °F Converter";
 const description =
-  "Convert Celsius to Fahrenheit instantly with a simple calculator and formula.";
+  "Convert Celsius (°C) to Fahrenheit (°F) instantly using the calculator below.";
 ---
 
 <!doctype html>
@@ -15,23 +15,68 @@ const description =
 
   <body>
     <main style="max-width:800px;margin:2rem auto;font-family:system-ui,sans-serif;">
-      <h1>Celsius to Fahrenheit Converter</h1>
+      <h1>°C to °F Converter</h1>
 
-      <input id="c" type="number" placeholder="°C" oninput="convert()" />
-      <p><strong>°F:</strong> <span id="f">—</span></p>
+      <p>Convert Celsius (°C) to Fahrenheit (°F) instantly using the calculator below.</p>
 
-      <script>
-        function convert() {
-          const c = document.getElementById("c").value;
-          document.getElementById("f").textContent =
-            c ? (c * 9/5 + 32).toFixed(2) : "—";
-        }
-      </script>
+      <h2>Temperature Converter</h2>
+
+      <label for="cInput" style="display:block;font-weight:600;margin-bottom:0.5rem;">
+        Celsius (°C)
+      </label>
+
+      <input
+        id="cInput"
+        type="number"
+        inputmode="decimal"
+        step="any"
+        placeholder="e.g. 25"
+        style="padding:0.5rem;font-size:1rem;width:260px;"
+      />
+
+      <p style="margin-top:1rem;font-size:1.1rem;">
+        <strong>Fahrenheit:</strong> <span id="fOutput">—</span>
+      </p>
 
       <h2>Formula</h2>
       <p><strong>°F = (°C × 9/5) + 32</strong></p>
 
+      <h2>Common Conversions</h2>
+      <ul>
+        <li>0°C = 32°F</li>
+        <li>20°C = 68°F</li>
+        <li>25°C = 77°F</li>
+        <li>30°C = 86°F</li>
+      </ul>
+
       <p><a href="/">← Back to Home</a></p>
     </main>
+
+    <script>
+      const cInput = document.getElementById("cInput");
+      const fOutput = document.getElementById("fOutput");
+
+      function formatNumber(n) {
+        return n.toFixed(4).replace(/\.?0+$/, "");
+      }
+
+      function update() {
+        const raw = cInput.value;
+        if (raw === "" || raw === null) {
+          fOutput.textContent = "—";
+          return;
+        }
+        const c = Number(raw);
+        if (!Number.isFinite(c)) {
+          fOutput.textContent = "—";
+          return;
+        }
+        const f = (c * 9) / 5 + 32;
+        fOutput.textContent = formatNumber(f);
+      }
+
+      cInput.addEventListener("input", update);
+      update();
+    </script>
   </body>
 </html>

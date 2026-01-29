@@ -1,7 +1,7 @@
 ---
 const title = "MPH to KM/H Converter";
 const description =
-  "Convert miles per hour to kilometers per hour instantly. Includes calculator and formula.";
+  "Convert miles per hour (mph) to kilometers per hour (km/h) instantly using the calculator below.";
 ---
 
 <!doctype html>
@@ -17,21 +17,66 @@ const description =
     <main style="max-width:800px;margin:2rem auto;font-family:system-ui,sans-serif;">
       <h1>MPH to KM/H Converter</h1>
 
-      <input id="mph" type="number" placeholder="Miles per hour" oninput="convert()" />
-      <p><strong>KM/H:</strong> <span id="kmh">—</span></p>
+      <p>Convert miles per hour (mph) to kilometers per hour (km/h) instantly using the calculator below.</p>
 
-      <script>
-        function convert() {
-          const mph = document.getElementById("mph").value;
-          document.getElementById("kmh").textContent =
-            mph ? (mph * 1.609344).toFixed(2) : "—";
-        }
-      </script>
+      <h2>Speed Converter</h2>
+
+      <label for="mphInput" style="display:block;font-weight:600;margin-bottom:0.5rem;">
+        Miles per hour (mph)
+      </label>
+
+      <input
+        id="mphInput"
+        type="number"
+        inputmode="decimal"
+        step="any"
+        placeholder="e.g. 60"
+        style="padding:0.5rem;font-size:1rem;width:260px;"
+      />
+
+      <p style="margin-top:1rem;font-size:1.1rem;">
+        <strong>Kilometers per hour:</strong> <span id="kmhOutput">—</span>
+      </p>
 
       <h2>Formula</h2>
-      <p><strong>km/h = mph × 1.60934</strong></p>
+      <p><strong>km/h = mph × 1.609344</strong></p>
+
+      <h2>Common Conversions</h2>
+      <ul>
+        <li>30 mph = 48.28 km/h</li>
+        <li>50 mph = 80.47 km/h</li>
+        <li>60 mph = 96.56 km/h</li>
+        <li>70 mph = 112.65 km/h</li>
+      </ul>
 
       <p><a href="/">← Back to Home</a></p>
     </main>
+
+    <script>
+      const mphInput = document.getElementById("mphInput");
+      const kmhOutput = document.getElementById("kmhOutput");
+
+      function formatNumber(n) {
+        return n.toFixed(4).replace(/\.?0+$/, "");
+      }
+
+      function update() {
+        const raw = mphInput.value;
+        if (raw === "" || raw === null) {
+          kmhOutput.textContent = "—";
+          return;
+        }
+        const mph = Number(raw);
+        if (!Number.isFinite(mph)) {
+          kmhOutput.textContent = "—";
+          return;
+        }
+        const kmh = mph * 1.609344;
+        kmhOutput.textContent = formatNumber(kmh);
+      }
+
+      mphInput.addEventListener("input", update);
+      update();
+    </script>
   </body>
 </html>

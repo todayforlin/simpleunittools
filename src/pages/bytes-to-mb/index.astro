@@ -1,7 +1,7 @@
 ---
 const title = "Bytes to MB Converter";
 const description =
-  "Convert bytes to megabytes (MB). Includes calculator and explanation of data units.";
+  "Convert bytes to megabytes (MB) instantly. Includes both decimal (MB) and binary (MiB) results.";
 ---
 
 <!doctype html>
@@ -17,21 +17,84 @@ const description =
     <main style="max-width:800px;margin:2rem auto;font-family:system-ui,sans-serif;">
       <h1>Bytes to MB Converter</h1>
 
-      <input id="bytes" type="number" placeholder="Bytes" oninput="convert()" />
-      <p><strong>MB:</strong> <span id="mb">—</span></p>
+      <p>
+        Convert bytes to megabytes instantly. This page shows both:
+        <strong>MB (decimal)</strong> and <strong>MiB (binary)</strong>.
+      </p>
 
-      <script>
-        function convert() {
-          const b = document.getElementById("bytes").value;
-          document.getElementById("mb").textContent =
-            b ? (b / 1048576).toFixed(4) : "—";
-        }
-      </script>
+      <h2>Storage Converter</h2>
 
-      <h2>Formula</h2>
-      <p><strong>MB = bytes ÷ 1,048,576</strong></p>
+      <label for="bytesInput" style="display:block;font-weight:600;margin-bottom:0.5rem;">
+        Bytes
+      </label>
+
+      <input
+        id="bytesInput"
+        type="number"
+        inputmode="numeric"
+        step="1"
+        min="0"
+        placeholder="e.g. 1048576"
+        style="padding:0.5rem;font-size:1rem;width:320px;"
+      />
+
+      <p style="margin-top:1rem;font-size:1.1rem;">
+        <strong>MB (decimal, 1 MB = 1,000,000 bytes):</strong> <span id="mbOutput">—</span>
+      </p>
+
+      <p style="margin-top:0.25rem;font-size:1.1rem;">
+        <strong>MiB (binary, 1 MiB = 1,048,576 bytes):</strong> <span id="mibOutput">—</span>
+      </p>
+
+      <h2>Formulas</h2>
+      <ul>
+        <li><strong>MB = bytes ÷ 1,000,000</strong></li>
+        <li><strong>MiB = bytes ÷ 1,048,576</strong></li>
+      </ul>
+
+      <h2>Common Examples</h2>
+      <ul>
+        <li>1,000,000 bytes = 1 MB</li>
+        <li>1,048,576 bytes = 1 MiB</li>
+        <li>10,000,000 bytes = 10 MB</li>
+      </ul>
 
       <p><a href="/">← Back to Home</a></p>
     </main>
+
+    <script>
+      const bytesInput = document.getElementById("bytesInput");
+      const mbOutput = document.getElementById("mbOutput");
+      const mibOutput = document.getElementById("mibOutput");
+
+      function formatNumber(n) {
+        return n.toFixed(6).replace(/\.?0+$/, "");
+      }
+
+      function update() {
+        const raw = bytesInput.value;
+        if (raw === "" || raw === null) {
+          mbOutput.textContent = "—";
+          mibOutput.textContent = "—";
+          return;
+        }
+
+        const bytes = Number(raw);
+        if (!Number.isFinite(bytes) || bytes < 0) {
+          mbOutput.textContent = "—";
+          mibOutput.textContent = "—";
+          return;
+        }
+
+        const mb = bytes / 1000000;
+        const mib = bytes / 1048576;
+
+        mbOutput.textContent = formatNumber(mb);
+        mibOutput.textContent = formatNumber(mib);
+      }
+
+      bytesInput.addEventListener("input", update);
+      update();
+    </script>
   </body>
 </html>

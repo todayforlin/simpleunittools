@@ -1,7 +1,7 @@
 ---
 const title = "Lb to Kg Converter";
 const description =
-  "Convert pounds to kilograms quickly. Includes calculator, formula, and common examples.";
+  "Convert pounds (lb) to kilograms (kg) instantly using the calculator below.";
 ---
 
 <!doctype html>
@@ -17,21 +17,66 @@ const description =
     <main style="max-width:800px;margin:2rem auto;font-family:system-ui,sans-serif;">
       <h1>Lb to Kg Converter</h1>
 
-      <input id="lb" type="number" placeholder="Pounds" oninput="convert()" />
-      <p><strong>Kilograms:</strong> <span id="kg">—</span></p>
+      <p>Convert pounds (lb) to kilograms (kg) instantly using the calculator below.</p>
 
-      <script>
-        function convert() {
-          const lb = document.getElementById("lb").value;
-          document.getElementById("kg").textContent =
-            lb ? (lb / 2.20462262).toFixed(2) : "—";
-        }
-      </script>
+      <h2>Weight Converter</h2>
+
+      <label for="lbInput" style="display:block;font-weight:600;margin-bottom:0.5rem;">
+        Pounds (lb)
+      </label>
+
+      <input
+        id="lbInput"
+        type="number"
+        inputmode="decimal"
+        step="any"
+        placeholder="e.g. 100"
+        style="padding:0.5rem;font-size:1rem;width:260px;"
+      />
+
+      <p style="margin-top:1rem;font-size:1.1rem;">
+        <strong>Kilograms:</strong> <span id="kgOutput">—</span>
+      </p>
 
       <h2>Formula</h2>
       <p><strong>kg = lb ÷ 2.20462</strong></p>
 
+      <h2>Common Conversions</h2>
+      <ul>
+        <li>1 lb = 0.45 kg</li>
+        <li>10 lb = 4.54 kg</li>
+        <li>50 lb = 22.68 kg</li>
+        <li>100 lb = 45.36 kg</li>
+      </ul>
+
       <p><a href="/">← Back to Home</a></p>
     </main>
+
+    <script>
+      const lbInput = document.getElementById("lbInput");
+      const kgOutput = document.getElementById("kgOutput");
+
+      function formatNumber(n) {
+        return n.toFixed(4).replace(/\.?0+$/, "");
+      }
+
+      function update() {
+        const raw = lbInput.value;
+        if (raw === "" || raw === null) {
+          kgOutput.textContent = "—";
+          return;
+        }
+        const lb = Number(raw);
+        if (!Number.isFinite(lb)) {
+          kgOutput.textContent = "—";
+          return;
+        }
+        const kg = lb / 2.20462;
+        kgOutput.textContent = formatNumber(kg);
+      }
+
+      lbInput.addEventListener("input", update);
+      update();
+    </script>
   </body>
 </html>
