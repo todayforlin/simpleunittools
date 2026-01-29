@@ -1,0 +1,158 @@
+---
+const title = "Cm to Inch Converter";
+const description =
+  "Convert centimeters to inches easily. Includes an interactive calculator, simple formula, conversion table, and real-world examples.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+
+  <body>
+    <main style="max-width: 800px; margin: 2rem auto; font-family: system-ui, sans-serif;">
+
+      <h1>Cm to Inch Converter</h1>
+
+      <p>
+        To convert centimeters to inches, divide the length value by <strong>2.54</strong>.
+      </p>
+
+      <!-- 🔧 Interactive Converter -->
+      <section style="margin: 1.5rem 0; padding: 1rem; border: 1px solid #ddd;">
+        <h2 style="margin-top: 0;">Interactive cm ↔ inch Converter</h2>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+          <div>
+            <label for="cmInput"><strong>Centimeters (cm)</strong></label><br />
+            <input
+              id="cmInput"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder="e.g. 10"
+              style="padding: .5rem; width: 220px;"
+            />
+          </div>
+
+          <div>
+            <label for="inchInput"><strong>Inches (in)</strong></label><br />
+            <input
+              id="inchInput"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder="e.g. 3.94"
+              style="padding: .5rem; width: 220px;"
+            />
+          </div>
+
+          <button
+            type="button"
+            id="clearBtn"
+            style="padding: .55rem .9rem;"
+          >
+            Clear
+          </button>
+        </div>
+
+        <p style="margin-top: .75rem; color: #555;">
+          Formula: <strong>in = cm ÷ 2.54</strong> · <strong>cm = in × 2.54</strong>
+        </p>
+      </section>
+
+      <h2>Quick Conversion Formula</h2>
+      <p>
+        <strong>inches = centimeters ÷ 2.54</strong>
+      </p>
+
+      <h2>Common Cm to Inch Conversions</h2>
+      <table border="1" cellpadding="8" cellspacing="0">
+        <tr>
+          <th>Centimeters (cm)</th>
+          <th>Inches (in)</th>
+        </tr>
+        <tr><td>1</td><td>0.39</td></tr>
+        <tr><td>5</td><td>1.97</td></tr>
+        <tr><td>10</td><td>3.94</td></tr>
+        <tr><td>30</td><td>11.81</td></tr>
+        <tr><td>100</td><td>39.37</td></tr>
+      </table>
+
+      <h2>Real-World Examples</h2>
+      <ul>
+        <li>A 30 cm ruler is about 11.8 inches long.</li>
+        <li>10 cm equals roughly the width of a smartphone.</li>
+        <li>100 cm equals 1 meter, or about 39 inches.</li>
+      </ul>
+
+      <h2>Common Mistakes</h2>
+      <p>
+        A common mistake is multiplying by 2.54 instead of dividing when converting cm to inches.
+      </p>
+
+      <h2>FAQ</h2>
+      <p><strong>Is 1 cm equal to 1 inch?</strong> No. 1 inch equals 2.54 cm.</p>
+      <p><strong>Why is 2.54 used?</strong> It is the internationally agreed conversion factor.</p>
+
+      <p>
+        <a href="/">← Back to Home</a>
+      </p>
+
+    </main>
+
+    <!-- ✅ Plain JS (SEO-safe, no framework) -->
+    <script>
+      const CM_PER_INCH = 2.54;
+
+      const cmInput = document.getElementById("cmInput");
+      const inchInput = document.getElementById("inchInput");
+      const clearBtn = document.getElementById("clearBtn");
+
+      let isUpdating = false;
+
+      function round(value, decimals = 4) {
+        const factor = Math.pow(10, decimals);
+        return Math.round(value * factor) / factor;
+      }
+
+      cmInput.addEventListener("input", () => {
+        if (isUpdating) return;
+        const cm = parseFloat(cmInput.value);
+        isUpdating = true;
+
+        if (Number.isFinite(cm)) {
+          inchInput.value = round(cm / CM_PER_INCH);
+        } else {
+          inchInput.value = "";
+        }
+
+        isUpdating = false;
+      });
+
+      inchInput.addEventListener("input", () => {
+        if (isUpdating) return;
+        const inch = parseFloat(inchInput.value);
+        isUpdating = true;
+
+        if (Number.isFinite(inch)) {
+          cmInput.value = round(inch * CM_PER_INCH);
+        } else {
+          cmInput.value = "";
+        }
+
+        isUpdating = false;
+      });
+
+      clearBtn.addEventListener("click", () => {
+        cmInput.value = "";
+        inchInput.value = "";
+        cmInput.focus();
+      });
+    </script>
+  </body>
+</html>
