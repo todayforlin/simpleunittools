@@ -1,7 +1,7 @@
 ---
 const title = "Bytes to MB Converter";
 const description =
-  "Convert bytes to megabytes (MB) instantly. Includes both decimal (MB) and binary (MiB) results.";
+  "Convert bytes to megabytes (MB) easily. Includes an interactive calculator, simple formula, conversion table, and real-world examples.";
 ---
 
 <!doctype html>
@@ -11,90 +11,739 @@ const description =
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+
+    <style>
+      :root{
+        --bg: #f5f7fb;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --line: #e5e7eb;
+        --primary: #2b6cb0;
+        --primary-2: #1e4e8c;
+        --soft: #eef6ff;
+        --soft-2: #d9ecff;
+        --shadow: 0 6px 18px rgba(15, 23, 42, .08);
+        --radius: 12px;
+        --radius-sm: 10px;
+      }
+
+      *{ box-sizing: border-box; }
+      body{
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .wrap{
+        max-width: 980px;
+        margin: 22px auto;
+        padding: 0 16px 32px;
+      }
+
+      /* Header */
+      .page-title{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: 700;
+        margin: 6px 0 14px;
+        color: #111827;
+      }
+      .page-title .icon{
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--primary), #4aa3ff);
+        box-shadow: 0 6px 14px rgba(43,108,176,.25);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color: white;
+        font-weight: 800;
+      }
+      .subtitle{
+        margin: 0 0 14px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      /* Card + Tabs */
+      .card{
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .tabs{
+        display:flex;
+        gap: 0;
+        border-bottom: 1px solid var(--line);
+        background: #fff;
+        padding: 10px 10px 0;
+        overflow-x:auto;
+      }
+      .tab{
+        appearance: none;
+        border: 1px solid var(--line);
+        border-bottom: none;
+        background: #f8fafc;
+        color: #334155;
+        padding: 10px 14px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        font-weight: 650;
+        cursor: pointer;
+        white-space: nowrap;
+        margin-right: 8px;
+      }
+      .tab[aria-selected="true"]{
+        background: #fff;
+        color: var(--primary-2);
+        border-color: var(--line);
+        box-shadow: 0 -1px 0 #fff inset;
+      }
+
+      .panel{
+        padding: 16px;
+      }
+
+      /* Option block */
+      .option-block{
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        padding: 14px;
+        background: #fff;
+      }
+      .option-title{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .option-title h2{
+        font-size: 14px;
+        margin: 0;
+        color: #111827;
+      }
+      .hint{
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .row{
+        display:flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .radio-row{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        padding: 10px 10px;
+        border-radius: 10px;
+      }
+      .radio-row:hover{
+        background: #f8fafc;
+      }
+      .radio-row input[type="radio"]{
+        transform: translateY(1px);
+      }
+
+      .field{
+        display:flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 220px;
+      }
+      .field label{
+        font-size: 12px;
+        color: #111827;
+        font-weight: 650;
+      }
+      .input{
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        outline: none;
+        width: 100%;
+        background: #fff;
+      }
+      .input:focus{
+        border-color: #93c5fd;
+        box-shadow: 0 0 0 3px rgba(147,197,253,.35);
+      }
+
+      .btn{
+        border: 1px solid var(--line);
+        background: #fff;
+        padding: 10px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 650;
+      }
+      .btn:hover{
+        border-color: #cbd5e1;
+        background: #f8fafc;
+      }
+      .btn.primary{
+        border-color: #93c5fd;
+        background: var(--soft);
+        color: #0b3b76;
+      }
+
+      .inline{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .mini{
+        width: 120px;
+      }
+
+      /* Result area */
+      .result{
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        background: #fff;
+      }
+      .result-head{
+        background: var(--soft-2);
+        padding: 10px 12px;
+        font-weight: 800;
+        color: #0b3b76;
+      }
+      .result-body{
+        padding: 14px 12px;
+      }
+
+      .result-grid{
+        display:grid;
+        grid-template-columns: 120px 1fr;
+        gap: 10px 12px;
+        align-items:center;
+      }
+      .result-grid .k{
+        font-size: 13px;
+        color: #111827;
+        font-weight: 700;
+      }
+      .result-grid .v{
+        display:flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items:center;
+      }
+
+      .pill{
+        display:inline-flex;
+        align-items:center;
+        gap: 8px;
+        padding: 8px 10px;
+        border: 1px dashed #bfdbfe;
+        background: #f0f7ff;
+        border-radius: 10px;
+        font-size: 13px;
+        color: #0b3b76;
+        font-weight: 650;
+      }
+
+      .table{
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      .table th, .table td{
+        border: 1px solid var(--line);
+        padding: 10px 10px;
+        text-align: left;
+      }
+      .table th{
+        background: #f8fafc;
+        font-weight: 800;
+      }
+
+      .muted{
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .foot{
+        margin-top: 16px;
+        display:flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      a{ color: var(--primary-2); text-decoration: none; }
+      a:hover{ text-decoration: underline; }
+
+      /* Hidden panels */
+      [data-panel]{ display:none; }
+      [data-panel].active{ display:block; }
+    </style>
   </head>
 
   <body>
-    <main style="max-width:800px;margin:2rem auto;font-family:system-ui,sans-serif;">
-      <h1>Bytes to MB Converter</h1>
-
-      <p>
-        Convert bytes to megabytes instantly. This page shows both:
-        <strong>MB (decimal)</strong> and <strong>MiB (binary)</strong>.
+    <main class="wrap">
+      <div class="page-title">
+        <div class="icon">≡</div>
+        <div>Bytes ↔ MB Converter</div>
+      </div>
+      <p class="subtitle">
+        Convert <strong>bytes</strong> to <strong>MB</strong> using either decimal (SI) or binary (MiB-style) units.
+        Choose a standard below.
       </p>
 
-      <h2>Storage Converter</h2>
+      <section class="card" aria-label="converter">
+        <div class="tabs" role="tablist" aria-label="Sections">
+          <button class="tab" role="tab" aria-selected="true" data-tab="converter">Converter</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="formula">Formula</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="table">Table</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="examples">Examples</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="faq">FAQ</button>
+        </div>
 
-      <label for="bytesInput" style="display:block;font-weight:600;margin-bottom:0.5rem;">
-        Bytes
-      </label>
+        <div class="panel">
+          <!-- Panel: Converter -->
+          <div data-panel="converter" class="active">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Interactive Converter (Cron-style options layout)</h2>
+                <div class="hint">Pick a unit standard + mode, then enter a value</div>
+              </div>
 
-      <input
-        id="bytesInput"
-        type="number"
-        inputmode="numeric"
-        step="1"
-        min="0"
-        placeholder="e.g. 1048576"
-        style="padding:0.5rem;font-size:1rem;width:320px;"
-      />
+              <div class="row" style="margin-bottom: 10px;">
+                <div class="inline">
+                  <span class="muted">Unit standard</span>
+                  <select id="standardSelect" class="input mini" aria-label="unit standard">
+                    <option value="decimal" selected>Decimal (1 MB = 1,000,000 bytes)</option>
+                    <option value="binary">Binary (1 MiB = 1,048,576 bytes)</option>
+                  </select>
+                </div>
 
-      <p style="margin-top:1rem;font-size:1.1rem;">
-        <strong>MB (decimal, 1 MB = 1,000,000 bytes):</strong> <span id="mbOutput">—</span>
-      </p>
+                <div class="muted">
+                  Note: Many OS tools show “MB” but calculate in MiB.
+                </div>
+              </div>
 
-      <p style="margin-top:0.25rem;font-size:1.1rem;">
-        <strong>MiB (binary, 1 MiB = 1,048,576 bytes):</strong> <span id="mibOutput">—</span>
-      </p>
+              <div>
+                <label class="radio-row">
+                  <input type="radio" name="mode" value="b2mb" checked />
+                  <span><strong>bytes → MB</strong> (convert bytes to megabytes)</span>
+                </label>
 
-      <h2>Formulas</h2>
-      <ul>
-        <li><strong>MB = bytes ÷ 1,000,000</strong></li>
-        <li><strong>MiB = bytes ÷ 1,048,576</strong></li>
-      </ul>
+                <label class="radio-row">
+                  <input type="radio" name="mode" value="mb2b" />
+                  <span><strong>MB → bytes</strong> (convert megabytes to bytes)</span>
+                </label>
 
-      <h2>Common Examples</h2>
-      <ul>
-        <li>1,000,000 bytes = 1 MB</li>
-        <li>1,048,576 bytes = 1 MiB</li>
-        <li>10,000,000 bytes = 10 MB</li>
-      </ul>
+                <label class="radio-row">
+                  <input type="radio" name="mode" value="both" />
+                  <span><strong>Two-way</strong> (typing either field updates the other)</span>
+                </label>
+              </div>
 
-      <p><a href="/">← Back to Home</a></p>
+              <div style="height: 10px;"></div>
+
+              <div class="row">
+                <div class="field">
+                  <label for="bytesInput">Bytes (B)</label>
+                  <input
+                    id="bytesInput"
+                    class="input"
+                    type="number"
+                    inputmode="decimal"
+                    step="any"
+                    placeholder="e.g. 1048576"
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="mbInput">Megabytes (MB)</label>
+                  <input
+                    id="mbInput"
+                    class="input"
+                    type="number"
+                    inputmode="decimal"
+                    step="any"
+                    placeholder="e.g. 1"
+                  />
+                </div>
+
+                <button type="button" id="clearBtn" class="btn">Clear</button>
+
+                <div class="inline">
+                  <span class="muted">Rounding</span>
+                  <select id="roundSelect" class="input mini" aria-label="rounding decimals">
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4" selected>4</option>
+                    <option value="6">6</option>
+                  </select>
+                  <span class="muted">decimals</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Result area -->
+            <div class="result" aria-live="polite">
+              <div class="result-head">Result</div>
+              <div class="result-body">
+                <div class="result-grid">
+                  <div class="k">Standard</div>
+                  <div class="v">
+                    <span id="standardLabel" class="pill">Decimal (MB)</span>
+                  </div>
+
+                  <div class="k">Mode</div>
+                  <div class="v">
+                    <span id="modeLabel" class="pill">bytes → MB</span>
+                  </div>
+
+                  <div class="k">Expression</div>
+                  <div class="v">
+                    <input id="exprOutput" class="input" readonly value="MB = bytes ÷ 1,000,000" />
+                    <button type="button" id="copyBtn" class="btn primary">Copy</button>
+                  </div>
+
+                  <div class="k">Recent</div>
+                  <div class="v">
+                    <div class="muted" id="recentList">No conversions yet.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel: Formula -->
+          <div data-panel="formula">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Quick Conversion Formula</h2>
+                <div class="hint">Decimal vs Binary</div>
+              </div>
+
+              <div class="pill"><strong>Decimal:</strong> MB = bytes ÷ 1,000,000</div>
+              <div style="height:10px"></div>
+              <div class="pill"><strong>Decimal:</strong> bytes = MB × 1,000,000</div>
+
+              <div style="height:12px"></div>
+
+              <div class="pill"><strong>Binary:</strong> MiB = bytes ÷ 1,048,576</div>
+              <div style="height:10px"></div>
+              <div class="pill"><strong>Binary:</strong> bytes = MiB × 1,048,576</div>
+
+              <p class="muted" style="margin: 10px 0 0;">
+                If you want “MB” to match storage device marketing (SSD/USB), use <strong>Decimal</strong>.
+                If you want to match many OS displays, use <strong>Binary</strong>.
+              </p>
+            </div>
+          </div>
+
+          <!-- Panel: Table -->
+          <div data-panel="table">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Common Bytes to MB Conversions</h2>
+                <div class="hint">Shows both standards</div>
+              </div>
+
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Bytes (B)</th>
+                    <th>Decimal MB</th>
+                    <th>Binary MiB</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>1,000,000</td><td>1</td><td>0.9537</td></tr>
+                  <tr><td>5,000,000</td><td>5</td><td>4.7684</td></tr>
+                  <tr><td>10,000,000</td><td>10</td><td>9.5367</td></tr>
+                  <tr><td>100,000,000</td><td>100</td><td>95.3674</td></tr>
+                  <tr><td>1,048,576</td><td>1.0486</td><td>1</td></tr>
+                </tbody>
+              </table>
+
+              <p class="muted" style="margin: 10px 0 0;">
+                Tip: 1,048,576 bytes is exactly 1 MiB (binary).
+              </p>
+            </div>
+          </div>
+
+          <!-- Panel: Examples -->
+          <div data-panel="examples">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Real-World Examples</h2>
+                <div class="hint">Practical understanding</div>
+              </div>
+              <ul style="margin: 8px 0 0; padding-left: 18px;">
+                <li>A 5 MB photo is about <strong>5,000,000 bytes</strong> (decimal).</li>
+                <li>Many “10 MB” email limits mean roughly <strong>10,000,000 bytes</strong> (decimal), but services vary.</li>
+                <li>A file shown as “1 MB” in some OS tools may be <strong>1 MiB = 1,048,576 bytes</strong> (binary).</li>
+              </ul>
+
+              <div style="height: 10px;"></div>
+              <div class="option-title">
+                <h2>Common Mistakes</h2>
+                <div class="hint">Avoid confusion</div>
+              </div>
+              <p class="muted" style="margin: 8px 0 0;">
+                Most common mistake: assuming MB is always 1,048,576 bytes. Storage marketing uses 1,000,000 bytes per MB.
+              </p>
+            </div>
+          </div>
+
+          <!-- Panel: FAQ -->
+          <div data-panel="faq">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>FAQ</h2>
+                <div class="hint">Quick answers</div>
+              </div>
+              <p style="margin: 8px 0 0;"><strong>Is MB the same as MiB?</strong> No. MB is usually decimal; MiB is binary.</p>
+              <p style="margin: 8px 0 0;"><strong>Which should I use?</strong> For SSD/USB specs use decimal; for OS-like displays use binary.</p>
+              <p style="margin: 8px 0 0;"><strong>How many bytes are in 1 MB?</strong> 1,000,000 (decimal). 1 MiB is 1,048,576 (binary).</p>
+            </div>
+          </div>
+
+          <div class="foot">
+            <a href="/">← Back to Home</a>
+            <span class="muted">SEO-safe, no framework</span>
+          </div>
+        </div>
+      </section>
     </main>
 
     <script>
+      // Standards
+      const BYTES_PER_MB_DECIMAL = 1_000_000;
+      const BYTES_PER_MIB_BINARY = 1_048_576;
+
+      // Tabs
+      const tabs = Array.from(document.querySelectorAll(".tab"));
+      const panels = Array.from(document.querySelectorAll("[data-panel]"));
+
+      function setTab(name){
+        tabs.forEach(t => {
+          const active = t.dataset.tab === name;
+          t.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        panels.forEach(p => {
+          p.classList.toggle("active", p.dataset.panel === name);
+        });
+      }
+      tabs.forEach(t => t.addEventListener("click", () => setTab(t.dataset.tab)));
+
+      // Converter UI
       const bytesInput = document.getElementById("bytesInput");
-      const mbOutput = document.getElementById("mbOutput");
-      const mibOutput = document.getElementById("mibOutput");
+      const mbInput = document.getElementById("mbInput");
+      const clearBtn = document.getElementById("clearBtn");
+      const roundSelect = document.getElementById("roundSelect");
+      const standardSelect = document.getElementById("standardSelect");
 
-      function formatNumber(n) {
-        return n.toFixed(6).replace(/\.?0+$/, "");
+      const modeRadios = Array.from(document.querySelectorAll('input[name="mode"]'));
+      const modeLabel = document.getElementById("modeLabel");
+      const standardLabel = document.getElementById("standardLabel");
+      const exprOutput = document.getElementById("exprOutput");
+      const copyBtn = document.getElementById("copyBtn");
+      const recentList = document.getElementById("recentList");
+
+      let isUpdating = false;
+      const recent = [];
+
+      function getBytesPerUnit(){
+        return standardSelect.value === "binary" ? BYTES_PER_MIB_BINARY : BYTES_PER_MB_DECIMAL;
       }
 
-      function update() {
-        const raw = bytesInput.value;
-        if (raw === "" || raw === null) {
-          mbOutput.textContent = "—";
-          mibOutput.textContent = "—";
-          return;
-        }
-
-        const bytes = Number(raw);
-        if (!Number.isFinite(bytes) || bytes < 0) {
-          mbOutput.textContent = "—";
-          mibOutput.textContent = "—";
-          return;
-        }
-
-        const mb = bytes / 1000000;
-        const mib = bytes / 1048576;
-
-        mbOutput.textContent = formatNumber(mb);
-        mibOutput.textContent = formatNumber(mib);
+      function formatInt(n){
+        // safe-ish integer formatting for display in expression (not used in calculations)
+        try { return Number(n).toLocaleString("en-US"); } catch { return String(n); }
       }
 
-      bytesInput.addEventListener("input", update);
-      update();
+      function round(value, decimals){
+        const d = Number(decimals);
+        if (!Number.isFinite(d)) return value;
+        const factor = Math.pow(10, d);
+        return Math.round(value * factor) / factor;
+      }
+
+      function getMode(){
+        const checked = modeRadios.find(r => r.checked);
+        return checked ? checked.value : "b2mb";
+      }
+
+      function updateLabelsAndExpression(){
+        const bytesPer = getBytesPerUnit();
+        const std = standardSelect.value;
+
+        if (std === "binary"){
+          standardLabel.textContent = "Binary (MiB)";
+        } else {
+          standardLabel.textContent = "Decimal (MB)";
+        }
+
+        const mode = getMode();
+        if (mode === "b2mb"){
+          modeLabel.textContent = "bytes → MB";
+          exprOutput.value = `${std === "binary" ? "MiB" : "MB"} = bytes ÷ ${formatInt(bytesPer)}`;
+          bytesInput.disabled = false;
+          mbInput.disabled = true;
+          mbInput.value = "";
+          bytesInput.focus();
+        } else if (mode === "mb2b"){
+          modeLabel.textContent = "MB → bytes";
+          exprOutput.value = `bytes = ${std === "binary" ? "MiB" : "MB"} × ${formatInt(bytesPer)}`;
+          mbInput.disabled = false;
+          bytesInput.disabled = true;
+          bytesInput.value = "";
+          mbInput.focus();
+        } else {
+          modeLabel.textContent = "Two-way";
+          exprOutput.value = `${std === "binary" ? "MiB" : "MB"} = bytes ÷ ${formatInt(bytesPer)} · bytes = ${std === "binary" ? "MiB" : "MB"} × ${formatInt(bytesPer)}`;
+          bytesInput.disabled = false;
+          mbInput.disabled = false;
+        }
+        renderRecent();
+      }
+
+      function pushRecent(text){
+        if (!text) return;
+        recent.unshift(text);
+        if (recent.length > 10) recent.pop();
+        renderRecent();
+      }
+
+      function renderRecent(){
+        if (recent.length === 0){
+          recentList.textContent = "No conversions yet.";
+          return;
+        }
+        recentList.innerHTML = recent.map(s => `<div>• ${s}</div>`).join("");
+      }
+
+      function convertFromBytes(){
+        const bytes = parseFloat(bytesInput.value);
+        const decimals = roundSelect.value;
+        const bytesPer = getBytesPerUnit();
+
+        if (!Number.isFinite(bytes)){
+          mbInput.value = "";
+          return;
+        }
+        const mb = bytes / bytesPer;
+        mbInput.value = round(mb, decimals);
+        pushRecent(`${bytes} bytes = ${mbInput.value} ${standardSelect.value === "binary" ? "MiB" : "MB"}`);
+      }
+
+      function convertFromMB(){
+        const mb = parseFloat(mbInput.value);
+        const decimals = roundSelect.value;
+        const bytesPer = getBytesPerUnit();
+
+        if (!Number.isFinite(mb)){
+          bytesInput.value = "";
+          return;
+        }
+        const bytes = mb * bytesPer;
+        // bytes usually integer-ish, but allow decimals if user enters decimals
+        bytesInput.value = round(bytes, 0);
+        pushRecent(`${mb} ${standardSelect.value === "binary" ? "MiB" : "MB"} = ${bytesInput.value} bytes`);
+      }
+
+      bytesInput.addEventListener("input", () => {
+        if (isUpdating) return;
+        const mode = getMode();
+        if (mode === "mb2b") return;
+
+        isUpdating = true;
+        convertFromBytes();
+        isUpdating = false;
+      });
+
+      mbInput.addEventListener("input", () => {
+        if (isUpdating) return;
+        const mode = getMode();
+        if (mode === "b2mb") return;
+
+        isUpdating = true;
+        convertFromMB();
+        isUpdating = false;
+      });
+
+      roundSelect.addEventListener("change", () => {
+        const mode = getMode();
+        isUpdating = true;
+        if (mode === "b2mb") convertFromBytes();
+        else if (mode === "mb2b") convertFromMB();
+        else {
+          const bytes = parseFloat(bytesInput.value);
+          const mb = parseFloat(mbInput.value);
+          if (Number.isFinite(bytes)) convertFromBytes();
+          else if (Number.isFinite(mb)) convertFromMB();
+        }
+        isUpdating = false;
+      });
+
+      standardSelect.addEventListener("change", () => {
+        // recompute with current values
+        const mode = getMode();
+        isUpdating = true;
+        updateLabelsAndExpression();
+        if (mode === "b2mb") convertFromBytes();
+        else if (mode === "mb2b") convertFromMB();
+        else {
+          const bytes = parseFloat(bytesInput.value);
+          const mb = parseFloat(mbInput.value);
+          if (Number.isFinite(bytes)) convertFromBytes();
+          else if (Number.isFinite(mb)) convertFromMB();
+        }
+        isUpdating = false;
+      });
+
+      modeRadios.forEach(r => r.addEventListener("change", () => {
+        isUpdating = true;
+        updateLabelsAndExpression();
+        isUpdating = false;
+      }));
+
+      clearBtn.addEventListener("click", () => {
+        bytesInput.value = "";
+        mbInput.value = "";
+        recent.length = 0;
+        renderRecent();
+        updateLabelsAndExpression();
+      });
+
+      copyBtn.addEventListener("click", async () => {
+        const text = exprOutput.value || "";
+        try{
+          await navigator.clipboard.writeText(text);
+          copyBtn.textContent = "Copied";
+          setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+        }catch(e){
+          exprOutput.select();
+          document.execCommand("copy");
+          copyBtn.textContent = "Copied";
+          setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+        }
+      });
+
+      // init
+      updateLabelsAndExpression();
     </script>
   </body>
 </html>

@@ -1,7 +1,7 @@
 ---
 const title = "Kg to Lb Converter";
 const description =
-  "Convert kilograms (kg) to pounds (lb) instantly using the calculator below.";
+  "Convert kilograms to pounds easily. Includes an interactive calculator, simple formula, conversion table, and real-world examples.";
 ---
 
 <!doctype html>
@@ -11,75 +11,637 @@ const description =
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+
+    <style>
+      :root{
+        --bg: #f5f7fb;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --line: #e5e7eb;
+        --primary: #2b6cb0;
+        --primary-2: #1e4e8c;
+        --soft: #eef6ff;
+        --soft-2: #d9ecff;
+        --shadow: 0 6px 18px rgba(15, 23, 42, .08);
+        --radius: 12px;
+        --radius-sm: 10px;
+      }
+
+      *{ box-sizing: border-box; }
+      body{
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .wrap{
+        max-width: 980px;
+        margin: 22px auto;
+        padding: 0 16px 32px;
+      }
+
+      .page-title{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: 700;
+        margin: 6px 0 14px;
+        color: #111827;
+      }
+      .page-title .icon{
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--primary), #4aa3ff);
+        box-shadow: 0 6px 14px rgba(43,108,176,.25);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color: white;
+        font-weight: 800;
+      }
+      .subtitle{
+        margin: 0 0 14px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .card{
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .tabs{
+        display:flex;
+        gap: 0;
+        border-bottom: 1px solid var(--line);
+        background: #fff;
+        padding: 10px 10px 0;
+        overflow-x:auto;
+      }
+      .tab{
+        appearance: none;
+        border: 1px solid var(--line);
+        border-bottom: none;
+        background: #f8fafc;
+        color: #334155;
+        padding: 10px 14px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        font-weight: 650;
+        cursor: pointer;
+        white-space: nowrap;
+        margin-right: 8px;
+      }
+      .tab[aria-selected="true"]{
+        background: #fff;
+        color: var(--primary-2);
+        border-color: var(--line);
+        box-shadow: 0 -1px 0 #fff inset;
+      }
+
+      .panel{ padding: 16px; }
+
+      .option-block{
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        padding: 14px;
+        background: #fff;
+      }
+      .option-title{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .option-title h2{
+        font-size: 14px;
+        margin: 0;
+        color: #111827;
+      }
+      .hint{
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .row{
+        display:flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .radio-row{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        padding: 10px 10px;
+        border-radius: 10px;
+      }
+      .radio-row:hover{ background: #f8fafc; }
+      .radio-row input[type="radio"]{ transform: translateY(1px); }
+
+      .field{
+        display:flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 220px;
+      }
+      .field label{
+        font-size: 12px;
+        color: #111827;
+        font-weight: 650;
+      }
+      .input{
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        outline: none;
+        width: 100%;
+        background: #fff;
+      }
+      .input:focus{
+        border-color: #93c5fd;
+        box-shadow: 0 0 0 3px rgba(147,197,253,.35);
+      }
+
+      .btn{
+        border: 1px solid var(--line);
+        background: #fff;
+        padding: 10px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 650;
+      }
+      .btn:hover{
+        border-color: #cbd5e1;
+        background: #f8fafc;
+      }
+      .btn.primary{
+        border-color: #93c5fd;
+        background: var(--soft);
+        color: #0b3b76;
+      }
+
+      .inline{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .mini{ width: 96px; }
+
+      .result{
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        background: #fff;
+      }
+      .result-head{
+        background: var(--soft-2);
+        padding: 10px 12px;
+        font-weight: 800;
+        color: #0b3b76;
+      }
+      .result-body{ padding: 14px 12px; }
+
+      .result-grid{
+        display:grid;
+        grid-template-columns: 120px 1fr;
+        gap: 10px 12px;
+        align-items:center;
+      }
+      .result-grid .k{
+        font-size: 13px;
+        color: #111827;
+        font-weight: 700;
+      }
+      .result-grid .v{
+        display:flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items:center;
+      }
+
+      .pill{
+        display:inline-flex;
+        align-items:center;
+        gap: 8px;
+        padding: 8px 10px;
+        border: 1px dashed #bfdbfe;
+        background: #f0f7ff;
+        border-radius: 10px;
+        font-size: 13px;
+        color: #0b3b76;
+        font-weight: 650;
+      }
+
+      .table{
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      .table th, .table td{
+        border: 1px solid var(--line);
+        padding: 10px 10px;
+        text-align: left;
+      }
+      .table th{
+        background: #f8fafc;
+        font-weight: 800;
+      }
+
+      .muted{ color: var(--muted); font-size: 13px; }
+
+      .foot{
+        margin-top: 16px;
+        display:flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      a{ color: var(--primary-2); text-decoration: none; }
+      a:hover{ text-decoration: underline; }
+
+      [data-panel]{ display:none; }
+      [data-panel].active{ display:block; }
+    </style>
   </head>
 
   <body>
-    <main style="max-width:800px;margin:2rem auto;font-family:system-ui,sans-serif;">
-      <h1>Kg to Lb Converter</h1>
+    <main class="wrap">
+      <div class="page-title">
+        <div class="icon">≡</div>
+        <div>Kg ↔ Lb Converter</div>
+      </div>
 
-      <p>Convert kilograms (kg) to pounds (lb) instantly using the calculator below.</p>
-
-      <h2>Weight Converter</h2>
-
-      <label for="kgInput" style="display:block;font-weight:600;margin-bottom:0.5rem;">
-        Kilograms (kg)
-      </label>
-
-      <input
-        id="kgInput"
-        type="number"
-        inputmode="decimal"
-        step="any"
-        placeholder="e.g. 10"
-        style="padding:0.5rem;font-size:1rem;width:260px;"
-      />
-
-      <p style="margin-top:1rem;font-size:1.1rem;">
-        <strong>Pounds:</strong> <span id="lbOutput">—</span>
+      <p class="subtitle">
+        To convert kilograms to pounds, multiply by <strong>2.2046226218</strong>. To convert pounds to kilograms, divide by <strong>2.2046226218</strong>.
       </p>
 
-      <h2>Formula</h2>
-      <p><strong>lb = kg × 2.20462</strong></p>
+      <section class="card" aria-label="converter">
+        <div class="tabs" role="tablist" aria-label="Sections">
+          <button class="tab" role="tab" aria-selected="true" data-tab="converter">Converter</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="formula">Formula</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="table">Table</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="examples">Examples</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="faq">FAQ</button>
+        </div>
 
-      <h2>Common Conversions</h2>
-      <ul>
-        <li>1 kg = 2.20 lb</li>
-        <li>5 kg = 11.02 lb</li>
-        <li>10 kg = 22.05 lb</li>
-        <li>50 kg = 110.23 lb</li>
-      </ul>
+        <div class="panel">
+          <div data-panel="converter" class="active">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Interactive Converter (Cron-style options layout)</h2>
+                <div class="hint">Pick a mode, then enter a value</div>
+              </div>
 
-      <p><a href="/">← Back to Home</a></p>
+              <div>
+                <label class="radio-row">
+                  <input type="radio" name="mode" value="kg2lb" checked />
+                  <span><strong>kg → lb</strong> (convert kilograms to pounds)</span>
+                </label>
+
+                <label class="radio-row">
+                  <input type="radio" name="mode" value="lb2kg" />
+                  <span><strong>lb → kg</strong> (convert pounds to kilograms)</span>
+                </label>
+
+                <label class="radio-row">
+                  <input type="radio" name="mode" value="both" />
+                  <span><strong>Two-way</strong> (typing either field updates the other)</span>
+                </label>
+              </div>
+
+              <div style="height: 10px;"></div>
+
+              <div class="row">
+                <div class="field">
+                  <label for="kgInput">Kilograms (kg)</label>
+                  <input
+                    id="kgInput"
+                    class="input"
+                    type="number"
+                    inputmode="decimal"
+                    step="any"
+                    placeholder="e.g. 10"
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="lbInput">Pounds (lb)</label>
+                  <input
+                    id="lbInput"
+                    class="input"
+                    type="number"
+                    inputmode="decimal"
+                    step="any"
+                    placeholder="e.g. 22.0462"
+                  />
+                </div>
+
+                <button type="button" id="clearBtn" class="btn">Clear</button>
+
+                <div class="inline">
+                  <span class="muted">Rounding</span>
+                  <select id="roundSelect" class="input mini" aria-label="rounding decimals">
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4" selected>4</option>
+                    <option value="6">6</option>
+                  </select>
+                  <span class="muted">decimals</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="result" aria-live="polite">
+              <div class="result-head">Result</div>
+              <div class="result-body">
+                <div class="result-grid">
+                  <div class="k">Mode</div>
+                  <div class="v">
+                    <span id="modeLabel" class="pill">kg → lb</span>
+                  </div>
+
+                  <div class="k">Expression</div>
+                  <div class="v">
+                    <input id="exprOutput" class="input" readonly value="lb = kg × 2.2046226218 · kg = lb ÷ 2.2046226218" />
+                    <button type="button" id="copyBtn" class="btn primary">Copy</button>
+                  </div>
+
+                  <div class="k">Recent</div>
+                  <div class="v">
+                    <div class="muted" id="recentList">No conversions yet.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div data-panel="formula">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Quick Conversion Formula</h2>
+                <div class="hint">Same content, Cron-like box</div>
+              </div>
+              <div class="pill">pounds = kilograms × 2.2046226218</div>
+              <div style="height:10px"></div>
+              <div class="pill">kilograms = pounds ÷ 2.2046226218</div>
+              <p class="muted" style="margin: 10px 0 0;">
+                1 kilogram = 2.2046226218 pounds (exact, based on international definitions).
+              </p>
+            </div>
+          </div>
+
+          <div data-panel="table">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Common Kg to Lb Conversions</h2>
+                <div class="hint">Reference table</div>
+              </div>
+
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Kilograms (kg)</th>
+                    <th>Pounds (lb)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>2.2046</td></tr>
+                  <tr><td>5</td><td>11.0231</td></tr>
+                  <tr><td>10</td><td>22.0462</td></tr>
+                  <tr><td>20</td><td>44.0925</td></tr>
+                  <tr><td>50</td><td>110.2311</td></tr>
+                  <tr><td>100</td><td>220.4623</td></tr>
+                </tbody>
+              </table>
+
+              <p class="muted" style="margin: 10px 0 0;">
+                Tip: for quick estimates, 1 kg ≈ 2.2 lb is a handy shortcut.
+              </p>
+            </div>
+          </div>
+
+          <div data-panel="examples">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Real-World Examples</h2>
+                <div class="hint">Practical understanding</div>
+              </div>
+              <ul style="margin: 8px 0 0; padding-left: 18px;">
+                <li>10 kg is about 22 lb (a medium suitcase).</li>
+                <li>20 kg is about 44 lb (some airline checked-bag limits).</li>
+                <li>1 kg is about 2.2 lb (a common mental reference).</li>
+              </ul>
+
+              <div style="height: 10px;"></div>
+              <div class="option-title">
+                <h2>Common Mistakes</h2>
+                <div class="hint">Avoid errors</div>
+              </div>
+              <p class="muted" style="margin: 8px 0 0;">
+                Most common mistake: dividing by 2.2046 when converting kg → lb (you should multiply).
+              </p>
+            </div>
+          </div>
+
+          <div data-panel="faq">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>FAQ</h2>
+                <div class="hint">Quick answers</div>
+              </div>
+              <p style="margin: 8px 0 0;"><strong>Is 1 kg equal to 1 lb?</strong> No. 1 kg equals about 2.2046 lb.</p>
+              <p style="margin: 8px 0 0;"><strong>Why is 2.2046226218 used?</strong> It comes from the international definitions of kilogram and pound.</p>
+              <p style="margin: 8px 0 0;"><strong>How many pounds is 10 kg?</strong> About 22.0462 lb.</p>
+            </div>
+          </div>
+
+          <div class="foot">
+            <a href="/">← Back to Home</a>
+            <span class="muted">SEO-safe, no framework</span>
+          </div>
+        </div>
+      </section>
     </main>
 
     <script>
+      const LB_PER_KG = 2.2046226218;
+
+      // Tabs
+      const tabs = Array.from(document.querySelectorAll(".tab"));
+      const panels = Array.from(document.querySelectorAll("[data-panel]"));
+
+      function setTab(name){
+        tabs.forEach(t => {
+          const active = t.dataset.tab === name;
+          t.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        panels.forEach(p => {
+          p.classList.toggle("active", p.dataset.panel === name);
+        });
+      }
+      tabs.forEach(t => t.addEventListener("click", () => setTab(t.dataset.tab)));
+
+      // Converter UI
       const kgInput = document.getElementById("kgInput");
-      const lbOutput = document.getElementById("lbOutput");
+      const lbInput = document.getElementById("lbInput");
+      const clearBtn = document.getElementById("clearBtn");
+      const roundSelect = document.getElementById("roundSelect");
 
-      function formatNumber(n) {
-        // Up to 4 decimals, remove trailing zeros
-        return n.toFixed(4).replace(/\.?0+$/, "");
+      const modeRadios = Array.from(document.querySelectorAll('input[name="mode"]'));
+      const modeLabel = document.getElementById("modeLabel");
+      const exprOutput = document.getElementById("exprOutput");
+      const copyBtn = document.getElementById("copyBtn");
+      const recentList = document.getElementById("recentList");
+
+      let isUpdating = false;
+      const recent = [];
+
+      function round(value, decimals){
+        const d = Number(decimals);
+        if (!Number.isFinite(d)) return value;
+        const factor = Math.pow(10, d);
+        return Math.round(value * factor) / factor;
       }
 
-      function update() {
-        const raw = kgInput.value;
-        if (raw === "" || raw === null) {
-          lbOutput.textContent = "—";
-          return;
-        }
-
-        const kg = Number(raw);
-        if (!Number.isFinite(kg)) {
-          lbOutput.textContent = "—";
-          return;
-        }
-
-        const lb = kg * 2.20462;
-        lbOutput.textContent = formatNumber(lb);
+      function getMode(){
+        const checked = modeRadios.find(r => r.checked);
+        return checked ? checked.value : "kg2lb";
       }
 
-      kgInput.addEventListener("input", update);
-      update();
+      function updateModeUI(){
+        const mode = getMode();
+        if (mode === "kg2lb") {
+          modeLabel.textContent = "kg → lb";
+          exprOutput.value = "lb = kg × 2.2046226218";
+          kgInput.disabled = false;
+          lbInput.disabled = true;
+          lbInput.value = "";
+          kgInput.focus();
+        } else if (mode === "lb2kg") {
+          modeLabel.textContent = "lb → kg";
+          exprOutput.value = "kg = lb ÷ 2.2046226218";
+          lbInput.disabled = false;
+          kgInput.disabled = true;
+          kgInput.value = "";
+          lbInput.focus();
+        } else {
+          modeLabel.textContent = "Two-way";
+          exprOutput.value = "lb = kg × 2.2046226218 · kg = lb ÷ 2.2046226218";
+          kgInput.disabled = false;
+          lbInput.disabled = false;
+        }
+        renderRecent();
+      }
+
+      function pushRecent(text){
+        if (!text) return;
+        recent.unshift(text);
+        if (recent.length > 10) recent.pop();
+        renderRecent();
+      }
+
+      function renderRecent(){
+        if (recent.length === 0){
+          recentList.textContent = "No conversions yet.";
+          return;
+        }
+        recentList.innerHTML = recent.map(s => `<div>• ${s}</div>`).join("");
+      }
+
+      function convertFromKg(){
+        const kg = parseFloat(kgInput.value);
+        const decimals = roundSelect.value;
+        if (!Number.isFinite(kg)){
+          lbInput.value = "";
+          return;
+        }
+        lbInput.value = round(kg * LB_PER_KG, decimals);
+        pushRecent(`${kg} kg = ${lbInput.value} lb`);
+      }
+
+      function convertFromLb(){
+        const lb = parseFloat(lbInput.value);
+        const decimals = roundSelect.value;
+        if (!Number.isFinite(lb)){
+          kgInput.value = "";
+          return;
+        }
+        kgInput.value = round(lb / LB_PER_KG, decimals);
+        pushRecent(`${lb} lb = ${kgInput.value} kg`);
+      }
+
+      kgInput.addEventListener("input", () => {
+        if (isUpdating) return;
+        const mode = getMode();
+        if (mode === "lb2kg") return;
+
+        isUpdating = true;
+        convertFromKg();
+        isUpdating = false;
+      });
+
+      lbInput.addEventListener("input", () => {
+        if (isUpdating) return;
+        const mode = getMode();
+        if (mode === "kg2lb") return;
+
+        isUpdating = true;
+        convertFromLb();
+        isUpdating = false;
+      });
+
+      roundSelect.addEventListener("change", () => {
+        const mode = getMode();
+        isUpdating = true;
+        if (mode === "kg2lb") convertFromKg();
+        else if (mode === "lb2kg") convertFromLb();
+        else {
+          const kg = parseFloat(kgInput.value);
+          const lb = parseFloat(lbInput.value);
+          if (Number.isFinite(kg)) convertFromKg();
+          else if (Number.isFinite(lb)) convertFromLb();
+        }
+        isUpdating = false;
+      });
+
+      modeRadios.forEach(r => r.addEventListener("change", updateModeUI));
+
+      clearBtn.addEventListener("click", () => {
+        kgInput.value = "";
+        lbInput.value = "";
+        recent.length = 0;
+        renderRecent();
+        updateModeUI();
+      });
+
+      copyBtn.addEventListener("click", async () => {
+        const text = exprOutput.value || "";
+        try{
+          await navigator.clipboard.writeText(text);
+          copyBtn.textContent = "Copied";
+          setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+        }catch(e){
+          exprOutput.select();
+          document.execCommand("copy");
+          copyBtn.textContent = "Copied";
+          setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+        }
+      });
+
+      updateModeUI();
     </script>
   </body>
 </html>

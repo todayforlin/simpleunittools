@@ -1,7 +1,7 @@
 ---
 const title = "MPH to KM/H Converter";
 const description =
-  "Convert miles per hour (mph) to kilometers per hour (km/h) instantly using the calculator below.";
+  "Convert miles per hour (mph) to kilometers per hour (km/h) easily. Includes an interactive calculator, formula, conversion table, and real-world examples.";
 ---
 
 <!doctype html>
@@ -11,72 +11,332 @@ const description =
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+
+    <style>
+      :root{
+        --bg: #f5f7fb;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --line: #e5e7eb;
+        --primary: #2b6cb0;
+        --primary-2: #1e4e8c;
+        --soft: #eef6ff;
+        --soft-2: #d9ecff;
+        --shadow: 0 6px 18px rgba(15, 23, 42, .08);
+        --radius: 12px;
+        --radius-sm: 10px;
+      }
+
+      *{ box-sizing: border-box; }
+      body{
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .wrap{
+        max-width: 980px;
+        margin: 22px auto;
+        padding: 0 16px 32px;
+      }
+
+      .page-title{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: 700;
+        margin: 6px 0 14px;
+      }
+      .page-title .icon{
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--primary), #4aa3ff);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color: white;
+        font-weight: 800;
+      }
+      .subtitle{
+        margin: 0 0 14px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .card{
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .tabs{
+        display:flex;
+        border-bottom: 1px solid var(--line);
+        padding: 10px 10px 0;
+        overflow-x:auto;
+      }
+      .tab{
+        border: 1px solid var(--line);
+        border-bottom: none;
+        background: #f8fafc;
+        padding: 10px 14px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        font-weight: 650;
+        cursor: pointer;
+        margin-right: 8px;
+      }
+      .tab[aria-selected="true"]{
+        background: #fff;
+        color: var(--primary-2);
+      }
+
+      .panel{ padding: 16px; }
+
+      .option-block{
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        padding: 14px;
+      }
+
+      .radio-row{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        padding: 10px;
+        border-radius: 10px;
+      }
+      .radio-row:hover{ background:#f8fafc; }
+
+      .row{
+        display:flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items:center;
+      }
+
+      .field{
+        display:flex;
+        flex-direction:column;
+        gap:6px;
+        min-width:220px;
+      }
+      .field label{
+        font-size:12px;
+        font-weight:650;
+      }
+      .input{
+        border:1px solid var(--line);
+        border-radius:10px;
+        padding:10px 12px;
+        font-size:14px;
+      }
+
+      .btn{
+        border:1px solid var(--line);
+        background:#fff;
+        padding:10px 14px;
+        border-radius:10px;
+        cursor:pointer;
+        font-weight:650;
+      }
+
+      .result{
+        margin-top:14px;
+        border:1px solid var(--line);
+        border-radius:var(--radius-sm);
+      }
+      .result-head{
+        background:var(--soft-2);
+        padding:10px 12px;
+        font-weight:800;
+      }
+      .result-body{ padding:14px 12px; }
+
+      .result-grid{
+        display:grid;
+        grid-template-columns:120px 1fr;
+        gap:10px 12px;
+      }
+
+      .pill{
+        padding:8px 10px;
+        border:1px dashed #bfdbfe;
+        border-radius:10px;
+        background:#f0f7ff;
+        font-size:13px;
+        font-weight:650;
+      }
+
+      .table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:10px;
+      }
+      .table th,.table td{
+        border:1px solid var(--line);
+        padding:10px;
+      }
+      .table th{ background:#f8fafc; }
+
+      .muted{ color:var(--muted); font-size:13px; }
+
+      [data-panel]{ display:none; }
+      [data-panel].active{ display:block; }
+    </style>
   </head>
 
   <body>
-    <main style="max-width:800px;margin:2rem auto;font-family:system-ui,sans-serif;">
-      <h1>MPH to KM/H Converter</h1>
-
-      <p>Convert miles per hour (mph) to kilometers per hour (km/h) instantly using the calculator below.</p>
-
-      <h2>Speed Converter</h2>
-
-      <label for="mphInput" style="display:block;font-weight:600;margin-bottom:0.5rem;">
-        Miles per hour (mph)
-      </label>
-
-      <input
-        id="mphInput"
-        type="number"
-        inputmode="decimal"
-        step="any"
-        placeholder="e.g. 60"
-        style="padding:0.5rem;font-size:1rem;width:260px;"
-      />
-
-      <p style="margin-top:1rem;font-size:1.1rem;">
-        <strong>Kilometers per hour:</strong> <span id="kmhOutput">—</span>
+    <main class="wrap">
+      <div class="page-title">
+        <div class="icon">≡</div>
+        <div>MPH ↔ KM/H Converter</div>
+      </div>
+      <p class="subtitle">
+        To convert mph to km/h, multiply by <strong>1.60934</strong>.  
+        To convert km/h to mph, divide by <strong>1.60934</strong>.
       </p>
 
-      <h2>Formula</h2>
-      <p><strong>km/h = mph × 1.609344</strong></p>
+      <section class="card">
+        <div class="tabs">
+          <button class="tab" aria-selected="true" data-tab="converter">Converter</button>
+          <button class="tab" data-tab="formula">Formula</button>
+          <button class="tab" data-tab="table">Table</button>
+          <button class="tab" data-tab="examples">Examples</button>
+          <button class="tab" data-tab="faq">FAQ</button>
+        </div>
 
-      <h2>Common Conversions</h2>
-      <ul>
-        <li>30 mph = 48.28 km/h</li>
-        <li>50 mph = 80.47 km/h</li>
-        <li>60 mph = 96.56 km/h</li>
-        <li>70 mph = 112.65 km/h</li>
-      </ul>
+        <div class="panel">
+          <div data-panel="converter" class="active">
+            <div class="option-block">
+              <label class="radio-row">
+                <input type="radio" name="mode" value="mph2kmh" checked />
+                <strong>mph → km/h</strong>
+              </label>
+              <label class="radio-row">
+                <input type="radio" name="mode" value="kmh2mph" />
+                <strong>km/h → mph</strong>
+              </label>
 
-      <p><a href="/">← Back to Home</a></p>
+              <div class="row">
+                <div class="field">
+                  <label>MPH</label>
+                  <input id="mphInput" class="input" type="number" />
+                </div>
+                <div class="field">
+                  <label>KM/H</label>
+                  <input id="kmhInput" class="input" type="number" />
+                </div>
+                <button id="clearBtn" class="btn">Clear</button>
+              </div>
+            </div>
+
+            <div class="result">
+              <div class="result-head">Result</div>
+              <div class="result-body">
+                <div class="result-grid">
+                  <div>Mode</div>
+                  <div><span id="modeLabel" class="pill">mph → km/h</span></div>
+                  <div>Formula</div>
+                  <div>
+                    <input id="exprOutput" class="input" readonly value="km/h = mph × 1.60934" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div data-panel="formula">
+            <div class="option-block">
+              <div class="pill">km/h = mph × 1.60934</div><br/>
+              <div class="pill">mph = km/h ÷ 1.60934</div>
+            </div>
+          </div>
+
+          <div data-panel="table">
+            <div class="option-block">
+              <table class="table">
+                <tr><th>MPH</th><th>KM/H</th></tr>
+                <tr><td>30</td><td>48.28</td></tr>
+                <tr><td>60</td><td>96.56</td></tr>
+                <tr><td>100</td><td>160.93</td></tr>
+              </table>
+            </div>
+          </div>
+
+          <div data-panel="examples">
+            <div class="option-block">
+              <ul>
+                <li>60 mph ≈ highway speed in the US</li>
+                <li>100 km/h ≈ 62 mph</li>
+              </ul>
+            </div>
+          </div>
+
+          <div data-panel="faq">
+            <div class="option-block">
+              <p><strong>Is mph faster than km/h?</strong> Yes, 1 mph equals 1.609 km/h.</p>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <script>
+      const RATE = 1.60934;
       const mphInput = document.getElementById("mphInput");
-      const kmhOutput = document.getElementById("kmhOutput");
+      const kmhInput = document.getElementById("kmhInput");
+      const modeLabel = document.getElementById("modeLabel");
+      const exprOutput = document.getElementById("exprOutput");
+      const clearBtn = document.getElementById("clearBtn");
+      const radios = document.querySelectorAll("input[name='mode']");
+      const tabs = document.querySelectorAll(".tab");
+      const panels = document.querySelectorAll("[data-panel]");
 
-      function formatNumber(n) {
-        return n.toFixed(4).replace(/\.?0+$/, "");
+      tabs.forEach(t => {
+        t.onclick = () => {
+          tabs.forEach(x => x.setAttribute("aria-selected","false"));
+          t.setAttribute("aria-selected","true");
+          panels.forEach(p => p.classList.toggle("active", p.dataset.panel === t.dataset.tab));
+        };
+      });
+
+      function getMode(){
+        return [...radios].find(r => r.checked).value;
       }
 
-      function update() {
-        const raw = mphInput.value;
-        if (raw === "" || raw === null) {
-          kmhOutput.textContent = "—";
-          return;
-        }
-        const mph = Number(raw);
-        if (!Number.isFinite(mph)) {
-          kmhOutput.textContent = "—";
-          return;
-        }
-        const kmh = mph * 1.609344;
-        kmhOutput.textContent = formatNumber(kmh);
-      }
+      mphInput.oninput = () => {
+        if(getMode() !== "mph2kmh") return;
+        kmhInput.value = (mphInput.value * RATE).toFixed(2);
+      };
 
-      mphInput.addEventListener("input", update);
-      update();
+      kmhInput.oninput = () => {
+        if(getMode() !== "kmh2mph") return;
+        mphInput.value = (kmhInput.value / RATE).toFixed(2);
+      };
+
+      radios.forEach(r => r.onchange = () => {
+        mphInput.value = "";
+        kmhInput.value = "";
+        if(r.value === "mph2kmh"){
+          modeLabel.textContent = "mph → km/h";
+          exprOutput.value = "km/h = mph × 1.60934";
+        }else{
+          modeLabel.textContent = "km/h → mph";
+          exprOutput.value = "mph = km/h ÷ 1.60934";
+        }
+      });
+
+      clearBtn.onclick = () => {
+        mphInput.value = "";
+        kmhInput.value = "";
+      };
     </script>
   </body>
 </html>

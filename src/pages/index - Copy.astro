@@ -1,6 +1,6 @@
 ---
-const siteTitle = "SimpleUnitTools";
-const siteDescription =
+const title = "SimpleUnitTools";
+const description =
   "Simple unit conversions, calculators, and practical explanations for everyday and technical use.";
 ---
 
@@ -9,22 +9,19 @@ const siteDescription =
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{siteTitle}</title>
-    <meta name="description" content={siteDescription} />
-	    <!-- Google AdSense verification -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7922456936036877"
-      crossorigin="anonymous"></script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
   </head>
 
   <body>
-    <main style="max-width: 900px; margin: 2rem auto; font-family: system-ui, sans-serif;">
-      
+    <main style="max-width: 900px; margin: 2rem auto; font-family: system-ui, sans-serif; line-height: 1.6;">
       <header>
-        <h1>{siteTitle}</h1>
-        <p>{siteDescription}</p>
+        <h1 style="font-size: 3rem; margin-bottom: 0.5rem;">SimpleUnitTools</h1>
+        <p style="font-size: 1.1rem; margin-top: 0;">
+          Simple unit conversions, calculators, and practical explanations for everyday and technical use.
+        </p>
+        <hr />
       </header>
-
-      <hr />
 
       <section>
         <h2>Popular Tools</h2>
@@ -32,6 +29,18 @@ const siteDescription =
           <li><a href="/cm-to-inch/">cm to inch converter</a></li>
           <li><a href="/inch-to-mm/">inch to mm converter</a></li>
           <li><a href="/liter-to-gallon/">liter to gallon converter</a></li>
+
+          <li><a href="/kg-to-lb/">kg to lb converter</a></li>
+          <li><a href="/lb-to-kg/">lb to kg converter</a></li>
+          <li><a href="/mph-to-kmh/">mph to km/h converter</a></li>
+          <li><a href="/c-to-f/">°C to °F converter</a></li>
+          <li><a href="/bytes-to-mb/">bytes to MB converter</a></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Tech & Networking Explained</h2>
+        <ul>
           <li><a href="/mbps-vs-mbs/">Mbps vs MB/s explained</a></li>
         </ul>
       </section>
@@ -45,16 +54,14 @@ const siteDescription =
         </ul>
       </section>
 
-      <footer style="margin-top: 3rem; font-size: 0.9rem; color: #555;">
-        <hr />
-        <p>
-          © {new Date().getFullYear()} SimpleUnitTools ·
-          <a href="/about/">About</a> ·
-          <a href="/privacy-policy/">Privacy Policy</a> ·
-          <a href="/disclaimer/">Disclaimer</a>
-        </p>
-      </footer>
+      <hr />
 
+      <footer style="font-size: 0.95rem;">
+        © 2026 SimpleUnitTools ·
+        <a href="/about/">About</a> ·
+        <a href="/privacy-policy/">Privacy Policy</a> ·
+        <a href="/disclaimer/">Disclaimer</a>
+      </footer>
     </main>
   </body>
 </html>

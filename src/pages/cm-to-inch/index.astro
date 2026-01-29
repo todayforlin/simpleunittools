@@ -1,7 +1,7 @@
 ---
-const title = "Cm to Inch Converter";
+const title = "°C to °F Converter";
 const description =
-  "Convert centimeters to inches easily. Includes an interactive calculator, simple formula, conversion table, and real-world examples.";
+  "Convert Celsius to Fahrenheit easily. Includes an interactive calculator, simple formulas, conversion table, and real-world examples.";
 ---
 
 <!doctype html>
@@ -107,11 +107,9 @@ const description =
         box-shadow: 0 -1px 0 #fff inset;
       }
 
-      .panel{
-        padding: 16px;
-      }
+      .panel{ padding: 16px; }
 
-      /* Option block like Cron generator */
+      /* Option block */
       .option-block{
         border: 1px solid var(--line);
         border-radius: var(--radius-sm);
@@ -149,12 +147,8 @@ const description =
         padding: 10px 10px;
         border-radius: 10px;
       }
-      .radio-row:hover{
-        background: #f8fafc;
-      }
-      .radio-row input[type="radio"]{
-        transform: translateY(1px);
-      }
+      .radio-row:hover{ background: #f8fafc; }
+      .radio-row input[type="radio"]{ transform: translateY(1px); }
 
       .field{
         display:flex;
@@ -205,11 +199,9 @@ const description =
         gap: 10px;
         flex-wrap: wrap;
       }
-      .mini{
-        width: 96px;
-      }
+      .mini{ width: 96px; }
 
-      /* Result area like Cron "结果" */
+      /* Result */
       .result{
         margin-top: 14px;
         border: 1px solid var(--line);
@@ -223,9 +215,7 @@ const description =
         font-weight: 800;
         color: #0b3b76;
       }
-      .result-body{
-        padding: 14px 12px;
-      }
+      .result-body{ padding: 14px 12px; }
 
       .result-grid{
         display:grid;
@@ -274,10 +264,7 @@ const description =
         font-weight: 800;
       }
 
-      .muted{
-        color: var(--muted);
-        font-size: 13px;
-      }
+      .muted{ color: var(--muted); font-size: 13px; }
 
       .foot{
         margin-top: 16px;
@@ -298,15 +285,15 @@ const description =
   <body>
     <main class="wrap">
       <div class="page-title">
-        <div class="icon">≡</div>
-        <div>Cm ↔ Inch Converter</div>
+        <div class="icon">°</div>
+        <div>°C ↔ °F Converter</div>
       </div>
       <p class="subtitle">
-        To convert centimeters to inches, divide by <strong>2.54</strong>. To convert inches to centimeters, multiply by <strong>2.54</strong>.
+        To convert <strong>°C to °F</strong>, use <strong>°F = (°C × 9/5) + 32</strong>. To convert <strong>°F to °C</strong>, use <strong>°C = (°F − 32) × 5/9</strong>.
       </p>
 
       <section class="card" aria-label="converter">
-        <!-- Tabs (Cron-like) -->
+        <!-- Tabs -->
         <div class="tabs" role="tablist" aria-label="Sections">
           <button class="tab" role="tab" aria-selected="true" data-tab="converter">Converter</button>
           <button class="tab" role="tab" aria-selected="false" data-tab="formula">Formula</button>
@@ -326,13 +313,13 @@ const description =
 
               <div>
                 <label class="radio-row">
-                  <input type="radio" name="mode" value="cm2in" checked />
-                  <span><strong>cm → inch</strong> (convert centimeters to inches)</span>
+                  <input type="radio" name="mode" value="c2f" checked />
+                  <span><strong>°C → °F</strong> (convert Celsius to Fahrenheit)</span>
                 </label>
 
                 <label class="radio-row">
-                  <input type="radio" name="mode" value="in2cm" />
-                  <span><strong>inch → cm</strong> (convert inches to centimeters)</span>
+                  <input type="radio" name="mode" value="f2c" />
+                  <span><strong>°F → °C</strong> (convert Fahrenheit to Celsius)</span>
                 </label>
 
                 <label class="radio-row">
@@ -345,26 +332,26 @@ const description =
 
               <div class="row">
                 <div class="field">
-                  <label for="cmInput">Centimeters (cm)</label>
+                  <label for="cInput">Celsius (°C)</label>
                   <input
-                    id="cmInput"
+                    id="cInput"
                     class="input"
                     type="number"
                     inputmode="decimal"
                     step="any"
-                    placeholder="e.g. 10"
+                    placeholder="e.g. 25"
                   />
                 </div>
 
                 <div class="field">
-                  <label for="inchInput">Inches (in)</label>
+                  <label for="fInput">Fahrenheit (°F)</label>
                   <input
-                    id="inchInput"
+                    id="fInput"
                     class="input"
                     type="number"
                     inputmode="decimal"
                     step="any"
-                    placeholder="e.g. 3.94"
+                    placeholder="e.g. 77"
                   />
                 </div>
 
@@ -373,29 +360,35 @@ const description =
                 <div class="inline">
                   <span class="muted">Rounding</span>
                   <select id="roundSelect" class="input mini" aria-label="rounding decimals">
-                    <option value="2">2</option>
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2" selected>2</option>
                     <option value="3">3</option>
-                    <option value="4" selected>4</option>
-                    <option value="6">6</option>
+                    <option value="4">4</option>
                   </select>
                   <span class="muted">decimals</span>
                 </div>
               </div>
             </div>
 
-            <!-- Result area (Cron-like "结果") -->
+            <!-- Result -->
             <div class="result" aria-live="polite">
               <div class="result-head">Result</div>
               <div class="result-body">
                 <div class="result-grid">
                   <div class="k">Mode</div>
                   <div class="v">
-                    <span id="modeLabel" class="pill">cm → inch</span>
+                    <span id="modeLabel" class="pill">°C → °F</span>
                   </div>
 
                   <div class="k">Expression</div>
                   <div class="v">
-                    <input id="exprOutput" class="input" readonly value="in = cm ÷ 2.54 · cm = in × 2.54" />
+                    <input
+                      id="exprOutput"
+                      class="input"
+                      readonly
+                      value="°F = (°C × 9/5) + 32 · °C = (°F − 32) × 5/9"
+                    />
                     <button type="button" id="copyBtn" class="btn primary">Copy</button>
                   </div>
 
@@ -415,11 +408,11 @@ const description =
                 <h2>Quick Conversion Formula</h2>
                 <div class="hint">Same content, Cron-like box</div>
               </div>
-              <div class="pill">inches = centimeters ÷ 2.54</div>
+              <div class="pill">°F = (°C × 9/5) + 32</div>
               <div style="height:10px"></div>
-              <div class="pill">centimeters = inches × 2.54</div>
+              <div class="pill">°C = (°F − 32) × 5/9</div>
               <p class="muted" style="margin: 10px 0 0;">
-                1 inch = 2.54 cm (internationally agreed conversion factor).
+                Note: -40°C equals -40°F (the two scales intersect there).
               </p>
             </div>
           </div>
@@ -428,28 +421,31 @@ const description =
           <div data-panel="table">
             <div class="option-block">
               <div class="option-title">
-                <h2>Common Cm to Inch Conversions</h2>
+                <h2>Common Celsius to Fahrenheit Conversions</h2>
                 <div class="hint">Reference table</div>
               </div>
 
               <table class="table">
                 <thead>
                   <tr>
-                    <th>Centimeters (cm)</th>
-                    <th>Inches (in)</th>
+                    <th>Celsius (°C)</th>
+                    <th>Fahrenheit (°F)</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td>1</td><td>0.3937</td></tr>
-                  <tr><td>5</td><td>1.9685</td></tr>
-                  <tr><td>10</td><td>3.9370</td></tr>
-                  <tr><td>30</td><td>11.8110</td></tr>
-                  <tr><td>100</td><td>39.3701</td></tr>
+                  <tr><td>-40</td><td>-40</td></tr>
+                  <tr><td>0</td><td>32</td></tr>
+                  <tr><td>10</td><td>50</td></tr>
+                  <tr><td>20</td><td>68</td></tr>
+                  <tr><td>25</td><td>77</td></tr>
+                  <tr><td>30</td><td>86</td></tr>
+                  <tr><td>37</td><td>98.6</td></tr>
+                  <tr><td>100</td><td>212</td></tr>
                 </tbody>
               </table>
 
               <p class="muted" style="margin: 10px 0 0;">
-                Tip: if you need fast estimates, 10 cm ≈ 4 in is a handy mental shortcut.
+                Tip: 0°C is freezing (32°F), and ~20–25°C (68–77°F) often feels like “room temperature”.
               </p>
             </div>
           </div>
@@ -462,9 +458,10 @@ const description =
                 <div class="hint">Practical understanding</div>
               </div>
               <ul style="margin: 8px 0 0; padding-left: 18px;">
-                <li>A 30 cm ruler is about 11.8 inches long.</li>
-                <li>10 cm is roughly the width of many smartphones.</li>
-                <li>100 cm equals 1 meter, about 39.37 inches.</li>
+                <li><strong>0°C</strong> is the freezing point of water (32°F).</li>
+                <li><strong>20–25°C</strong> is comfortable indoor “room temperature” (68–77°F).</li>
+                <li><strong>37°C</strong> is normal human body temperature (98.6°F).</li>
+                <li><strong>100°C</strong> is boiling point of water at sea level (212°F).</li>
               </ul>
 
               <div style="height: 10px;"></div>
@@ -473,7 +470,7 @@ const description =
                 <div class="hint">Avoid errors</div>
               </div>
               <p class="muted" style="margin: 8px 0 0;">
-                Most common mistake: multiplying by 2.54 when converting cm → inches (you should divide).
+                Most common mistake: using only × 1.8 without adding 32 when converting °C → °F.
               </p>
             </div>
           </div>
@@ -485,9 +482,9 @@ const description =
                 <h2>FAQ</h2>
                 <div class="hint">Quick answers</div>
               </div>
-              <p style="margin: 8px 0 0;"><strong>Is 1 cm equal to 1 inch?</strong> No. 1 inch equals 2.54 cm.</p>
-              <p style="margin: 8px 0 0;"><strong>Why is 2.54 used?</strong> It is the internationally agreed conversion factor.</p>
-              <p style="margin: 8px 0 0;"><strong>How many inches is 10 cm?</strong> About 3.937 inches.</p>
+              <p style="margin: 8px 0 0;"><strong>Is 0°C the same as 0°F?</strong> No. 0°C = 32°F.</p>
+              <p style="margin: 8px 0 0;"><strong>What is the easiest shortcut?</strong> °F ≈ (°C × 2) + 30 (rough estimate).</p>
+              <p style="margin: 8px 0 0;"><strong>Why does the formula include 32?</strong> Because the scales have different zero points.</p>
             </div>
           </div>
 
@@ -500,8 +497,6 @@ const description =
     </main>
 
     <script>
-      const CM_PER_INCH = 2.54;
-
       // Tabs
       const tabs = Array.from(document.querySelectorAll(".tab"));
       const panels = Array.from(document.querySelectorAll("[data-panel]"));
@@ -515,14 +510,11 @@ const description =
           p.classList.toggle("active", p.dataset.panel === name);
         });
       }
-
-      tabs.forEach(t => {
-        t.addEventListener("click", () => setTab(t.dataset.tab));
-      });
+      tabs.forEach(t => t.addEventListener("click", () => setTab(t.dataset.tab)));
 
       // Converter UI
-      const cmInput = document.getElementById("cmInput");
-      const inchInput = document.getElementById("inchInput");
+      const cInput = document.getElementById("cInput");
+      const fInput = document.getElementById("fInput");
       const clearBtn = document.getElementById("clearBtn");
       const roundSelect = document.getElementById("roundSelect");
 
@@ -544,30 +536,30 @@ const description =
 
       function getMode(){
         const checked = modeRadios.find(r => r.checked);
-        return checked ? checked.value : "cm2in";
+        return checked ? checked.value : "c2f";
       }
 
       function updateModeUI(){
         const mode = getMode();
-        if (mode === "cm2in") {
-          modeLabel.textContent = "cm → inch";
-          exprOutput.value = "in = cm ÷ 2.54";
-          cmInput.disabled = false;
-          inchInput.disabled = true;
-          inchInput.value = "";
-          cmInput.focus();
-        } else if (mode === "in2cm") {
-          modeLabel.textContent = "inch → cm";
-          exprOutput.value = "cm = in × 2.54";
-          inchInput.disabled = false;
-          cmInput.disabled = true;
-          cmInput.value = "";
-          inchInput.focus();
+        if (mode === "c2f") {
+          modeLabel.textContent = "°C → °F";
+          exprOutput.value = "°F = (°C × 9/5) + 32";
+          cInput.disabled = false;
+          fInput.disabled = true;
+          fInput.value = "";
+          cInput.focus();
+        } else if (mode === "f2c") {
+          modeLabel.textContent = "°F → °C";
+          exprOutput.value = "°C = (°F − 32) × 5/9";
+          fInput.disabled = false;
+          cInput.disabled = true;
+          cInput.value = "";
+          fInput.focus();
         } else {
           modeLabel.textContent = "Two-way";
-          exprOutput.value = "in = cm ÷ 2.54 · cm = in × 2.54";
-          cmInput.disabled = false;
-          inchInput.disabled = false;
+          exprOutput.value = "°F = (°C × 9/5) + 32 · °C = (°F − 32) × 5/9";
+          cInput.disabled = false;
+          fInput.disabled = false;
         }
         renderRecent();
       }
@@ -587,60 +579,60 @@ const description =
         recentList.innerHTML = recent.map(s => `<div>• ${s}</div>`).join("");
       }
 
-      function convertFromCm(){
-        const cm = parseFloat(cmInput.value);
+      function convertFromC(){
+        const c = parseFloat(cInput.value);
         const decimals = roundSelect.value;
-        if (!Number.isFinite(cm)){
-          inchInput.value = "";
+        if (!Number.isFinite(c)){
+          fInput.value = "";
           return;
         }
-        inchInput.value = round(cm / CM_PER_INCH, decimals);
-        pushRecent(`${cm} cm = ${inchInput.value} in`);
+        const f = (c * 9/5) + 32;
+        fInput.value = round(f, decimals);
+        pushRecent(`${c} °C = ${fInput.value} °F`);
       }
 
-      function convertFromIn(){
-        const inch = parseFloat(inchInput.value);
+      function convertFromF(){
+        const f = parseFloat(fInput.value);
         const decimals = roundSelect.value;
-        if (!Number.isFinite(inch)){
-          cmInput.value = "";
+        if (!Number.isFinite(f)){
+          cInput.value = "";
           return;
         }
-        cmInput.value = round(inch * CM_PER_INCH, decimals);
-        pushRecent(`${inch} in = ${cmInput.value} cm`);
+        const c = (f - 32) * 5/9;
+        cInput.value = round(c, decimals);
+        pushRecent(`${f} °F = ${cInput.value} °C`);
       }
 
-      cmInput.addEventListener("input", () => {
+      cInput.addEventListener("input", () => {
         if (isUpdating) return;
         const mode = getMode();
-        if (mode === "in2cm") return;
+        if (mode === "f2c") return;
 
         isUpdating = true;
-        convertFromCm();
+        convertFromC();
         isUpdating = false;
       });
 
-      inchInput.addEventListener("input", () => {
+      fInput.addEventListener("input", () => {
         if (isUpdating) return;
         const mode = getMode();
-        if (mode === "cm2in") return;
+        if (mode === "c2f") return;
 
         isUpdating = true;
-        convertFromIn();
+        convertFromF();
         isUpdating = false;
       });
 
       roundSelect.addEventListener("change", () => {
-        // recompute current value based on mode
         const mode = getMode();
         isUpdating = true;
-        if (mode === "cm2in") convertFromCm();
-        else if (mode === "in2cm") convertFromIn();
+        if (mode === "c2f") convertFromC();
+        else if (mode === "f2c") convertFromF();
         else {
-          // two-way: if cm has value -> update inch; else if inch has value -> update cm
-          const cm = parseFloat(cmInput.value);
-          const inch = parseFloat(inchInput.value);
-          if (Number.isFinite(cm)) convertFromCm();
-          else if (Number.isFinite(inch)) convertFromIn();
+          const c = parseFloat(cInput.value);
+          const f = parseFloat(fInput.value);
+          if (Number.isFinite(c)) convertFromC();
+          else if (Number.isFinite(f)) convertFromF();
         }
         isUpdating = false;
       });
@@ -648,8 +640,8 @@ const description =
       modeRadios.forEach(r => r.addEventListener("change", updateModeUI));
 
       clearBtn.addEventListener("click", () => {
-        cmInput.value = "";
-        inchInput.value = "";
+        cInput.value = "";
+        fInput.value = "";
         recent.length = 0;
         renderRecent();
         updateModeUI();
@@ -662,7 +654,6 @@ const description =
           copyBtn.textContent = "Copied";
           setTimeout(() => (copyBtn.textContent = "Copy"), 900);
         }catch(e){
-          // fallback
           exprOutput.select();
           document.execCommand("copy");
           copyBtn.textContent = "Copied";

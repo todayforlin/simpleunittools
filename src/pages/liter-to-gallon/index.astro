@@ -1,7 +1,7 @@
 ---
 const title = "Liter to Gallon Converter";
 const description =
-  "Convert liters to gallons easily. Includes an interactive calculator, simple formula, conversion table, and real-world examples (US gallons).";
+  "Convert liters to gallons easily. Includes an interactive calculator, simple formula, conversion table, and real-world examples.";
 ---
 
 <!doctype html>
@@ -11,158 +11,756 @@ const description =
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+
+    <style>
+      :root{
+        --bg: #f5f7fb;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --line: #e5e7eb;
+        --primary: #2b6cb0;
+        --primary-2: #1e4e8c;
+        --soft: #eef6ff;
+        --soft-2: #d9ecff;
+        --shadow: 0 6px 18px rgba(15, 23, 42, .08);
+        --radius: 12px;
+        --radius-sm: 10px;
+      }
+
+      *{ box-sizing: border-box; }
+      body{
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .wrap{
+        max-width: 980px;
+        margin: 22px auto;
+        padding: 0 16px 32px;
+      }
+
+      /* Header */
+      .page-title{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: 700;
+        margin: 6px 0 14px;
+        color: #111827;
+      }
+      .page-title .icon{
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--primary), #4aa3ff);
+        box-shadow: 0 6px 14px rgba(43,108,176,.25);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color: white;
+        font-weight: 800;
+      }
+      .subtitle{
+        margin: 0 0 14px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      /* Card + Tabs */
+      .card{
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .tabs{
+        display:flex;
+        gap: 0;
+        border-bottom: 1px solid var(--line);
+        background: #fff;
+        padding: 10px 10px 0;
+        overflow-x:auto;
+      }
+      .tab{
+        appearance: none;
+        border: 1px solid var(--line);
+        border-bottom: none;
+        background: #f8fafc;
+        color: #334155;
+        padding: 10px 14px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        font-weight: 650;
+        cursor: pointer;
+        white-space: nowrap;
+        margin-right: 8px;
+      }
+      .tab[aria-selected="true"]{
+        background: #fff;
+        color: var(--primary-2);
+        border-color: var(--line);
+        box-shadow: 0 -1px 0 #fff inset;
+      }
+
+      .panel{
+        padding: 16px;
+      }
+
+      /* Option block like Cron generator */
+      .option-block{
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        padding: 14px;
+        background: #fff;
+      }
+      .option-title{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .option-title h2{
+        font-size: 14px;
+        margin: 0;
+        color: #111827;
+      }
+      .hint{
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .row{
+        display:flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .radio-row{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        padding: 10px 10px;
+        border-radius: 10px;
+      }
+      .radio-row:hover{
+        background: #f8fafc;
+      }
+      .radio-row input[type="radio"]{
+        transform: translateY(1px);
+      }
+
+      .field{
+        display:flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 220px;
+      }
+      .field label{
+        font-size: 12px;
+        color: #111827;
+        font-weight: 650;
+      }
+      .input{
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        outline: none;
+        width: 100%;
+        background: #fff;
+      }
+      .input:focus{
+        border-color: #93c5fd;
+        box-shadow: 0 0 0 3px rgba(147,197,253,.35);
+      }
+
+      .btn{
+        border: 1px solid var(--line);
+        background: #fff;
+        padding: 10px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 650;
+      }
+      .btn:hover{
+        border-color: #cbd5e1;
+        background: #f8fafc;
+      }
+      .btn.primary{
+        border-color: #93c5fd;
+        background: var(--soft);
+        color: #0b3b76;
+      }
+
+      .inline{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .mini{
+        width: 120px;
+      }
+
+      /* Result area like Cron "结果" */
+      .result{
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        background: #fff;
+      }
+      .result-head{
+        background: var(--soft-2);
+        padding: 10px 12px;
+        font-weight: 800;
+        color: #0b3b76;
+      }
+      .result-body{
+        padding: 14px 12px;
+      }
+
+      .result-grid{
+        display:grid;
+        grid-template-columns: 120px 1fr;
+        gap: 10px 12px;
+        align-items:center;
+      }
+      .result-grid .k{
+        font-size: 13px;
+        color: #111827;
+        font-weight: 700;
+      }
+      .result-grid .v{
+        display:flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items:center;
+      }
+
+      .pill{
+        display:inline-flex;
+        align-items:center;
+        gap: 8px;
+        padding: 8px 10px;
+        border: 1px dashed #bfdbfe;
+        background: #f0f7ff;
+        border-radius: 10px;
+        font-size: 13px;
+        color: #0b3b76;
+        font-weight: 650;
+      }
+
+      .table{
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      .table th, .table td{
+        border: 1px solid var(--line);
+        padding: 10px 10px;
+        text-align: left;
+      }
+      .table th{
+        background: #f8fafc;
+        font-weight: 800;
+      }
+
+      .muted{
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .foot{
+        margin-top: 16px;
+        display:flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      a{ color: var(--primary-2); text-decoration: none; }
+      a:hover{ text-decoration: underline; }
+
+      /* Hidden panels */
+      [data-panel]{ display:none; }
+      [data-panel].active{ display:block; }
+    </style>
   </head>
 
   <body>
-    <main style="max-width: 800px; margin: 2rem auto; font-family: system-ui, sans-serif;">
-
-      <h1>Liter to Gallon Converter</h1>
-
-      <p>
-        To convert liters to <strong>US gallons</strong>, divide the volume value by <strong>3.78541</strong>.
+    <main class="wrap">
+      <div class="page-title">
+        <div class="icon">≡</div>
+        <div>Liter ↔ Gallon Converter</div>
+      </div>
+      <p class="subtitle">
+        Choose <strong>US</strong> or <strong>Imperial</strong> gallons. Then convert liters and gallons instantly.
       </p>
 
-      <!-- 🔧 Interactive Converter -->
-      <section style="margin: 1.5rem 0; padding: 1rem; border: 1px solid #ddd;">
-        <h2 style="margin-top: 0;">Interactive liter ↔ gallon Converter (US)</h2>
-
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
-          <div>
-            <label for="literInput"><strong>Liters (L)</strong></label><br />
-            <input
-              id="literInput"
-              type="number"
-              inputmode="decimal"
-              step="any"
-              placeholder="e.g. 10"
-              style="padding: .5rem; width: 220px;"
-            />
-          </div>
-
-          <div>
-            <label for="gallonInput"><strong>Gallons (US)</strong></label><br />
-            <input
-              id="gallonInput"
-              type="number"
-              inputmode="decimal"
-              step="any"
-              placeholder="e.g. 2.64"
-              style="padding: .5rem; width: 220px;"
-            />
-          </div>
-
-          <button
-            type="button"
-            id="clearBtn"
-            style="padding: .55rem .9rem;"
-          >
-            Clear
-          </button>
+      <section class="card" aria-label="converter">
+        <!-- Tabs -->
+        <div class="tabs" role="tablist" aria-label="Sections">
+          <button class="tab" role="tab" aria-selected="true" data-tab="converter">Converter</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="formula">Formula</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="table">Table</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="examples">Examples</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="faq">FAQ</button>
         </div>
 
-        <p style="margin-top: .75rem; color: #555;">
-          Formula: <strong>gal (US) = L ÷ 3.78541</strong> · <strong>L = gal × 3.78541</strong>
-        </p>
+        <div class="panel">
+          <!-- Panel: Converter -->
+          <div data-panel="converter" class="active">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Interactive Converter (Cron-style options layout)</h2>
+                <div class="hint">Pick gallon type + mode, then enter a value</div>
+              </div>
+
+              <!-- Gallon type -->
+              <div class="row" style="margin-bottom: 6px;">
+                <div class="inline" aria-label="gallon type">
+                  <span class="muted">Gallon type</span>
+                  <select id="gallonType" class="input mini" aria-label="gallon type">
+                    <option value="us" selected>US gallon (liquid)</option>
+                    <option value="imp">Imperial gallon</option>
+                  </select>
+                </div>
+
+                <div class="pill" id="factorPill">1 US gal = 3.785411784 L</div>
+              </div>
+
+              <!-- Mode -->
+              <div>
+                <label class="radio-row">
+                  <input type="radio" name="mode" value="l2g" checked />
+                  <span><strong>L → gal</strong> (convert liters to gallons)</span>
+                </label>
+
+                <label class="radio-row">
+                  <input type="radio" name="mode" value="g2l" />
+                  <span><strong>gal → L</strong> (convert gallons to liters)</span>
+                </label>
+
+                <label class="radio-row">
+                  <input type="radio" name="mode" value="both" />
+                  <span><strong>Two-way</strong> (typing either field updates the other)</span>
+                </label>
+              </div>
+
+              <div style="height: 10px;"></div>
+
+              <div class="row">
+                <div class="field">
+                  <label for="literInput">Liters (L)</label>
+                  <input
+                    id="literInput"
+                    class="input"
+                    type="number"
+                    inputmode="decimal"
+                    step="any"
+                    placeholder="e.g. 10"
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="gallonInput">Gallons (gal)</label>
+                  <input
+                    id="gallonInput"
+                    class="input"
+                    type="number"
+                    inputmode="decimal"
+                    step="any"
+                    placeholder="e.g. 2.6417"
+                  />
+                </div>
+
+                <button type="button" id="clearBtn" class="btn">Clear</button>
+
+                <div class="inline">
+                  <span class="muted">Rounding</span>
+                  <select id="roundSelect" class="input mini" aria-label="rounding decimals">
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4" selected>4</option>
+                    <option value="6">6</option>
+                  </select>
+                  <span class="muted">decimals</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Result -->
+            <div class="result" aria-live="polite">
+              <div class="result-head">Result</div>
+              <div class="result-body">
+                <div class="result-grid">
+                  <div class="k">Type</div>
+                  <div class="v">
+                    <span id="typeLabel" class="pill">US gallon</span>
+                  </div>
+
+                  <div class="k">Mode</div>
+                  <div class="v">
+                    <span id="modeLabel" class="pill">L → gal</span>
+                  </div>
+
+                  <div class="k">Expression</div>
+                  <div class="v">
+                    <input id="exprOutput" class="input" readonly value="gal = L ÷ 3.785411784" />
+                    <button type="button" id="copyBtn" class="btn primary">Copy</button>
+                  </div>
+
+                  <div class="k">Recent</div>
+                  <div class="v">
+                    <div class="muted" id="recentList">No conversions yet.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel: Formula -->
+          <div data-panel="formula">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Quick Conversion Formula</h2>
+                <div class="hint">US vs Imperial supported</div>
+              </div>
+              <div class="pill" id="formula1">US: gal = L ÷ 3.785411784</div>
+              <div style="height:10px"></div>
+              <div class="pill" id="formula2">US: L = gal × 3.785411784</div>
+
+              <p class="muted" style="margin: 10px 0 0;">
+                Notes: US gallon (liquid) is used in the United States. Imperial gallon is used in some other regions.
+              </p>
+            </div>
+          </div>
+
+          <!-- Panel: Table -->
+          <div data-panel="table">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Common Liter to Gallon Conversions</h2>
+                <div class="hint">Select gallon type above in Converter</div>
+              </div>
+
+              <table class="table" aria-label="conversion table">
+                <thead>
+                  <tr>
+                    <th>Liters (L)</th>
+                    <th>Gallons (gal)</th>
+                  </tr>
+                </thead>
+                <tbody id="tableBody">
+                  <!-- Filled by JS -->
+                </tbody>
+              </table>
+
+              <p class="muted" style="margin: 10px 0 0;">
+                Tip: 1 US gal ≈ 3.785 L (handy for quick estimates).
+              </p>
+            </div>
+          </div>
+
+          <!-- Panel: Examples -->
+          <div data-panel="examples">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Real-World Examples</h2>
+                <div class="hint">Practical understanding</div>
+              </div>
+              <ul style="margin: 8px 0 0; padding-left: 18px;">
+                <li>A 2-liter soda bottle is about 0.528 US gallons.</li>
+                <li>10 liters is about 2.642 US gallons.</li>
+                <li>1 US gallon of water weighs about 8.34 lb (approx).</li>
+              </ul>
+
+              <div style="height: 10px;"></div>
+              <div class="option-title">
+                <h2>Common Mistakes</h2>
+                <div class="hint">Avoid errors</div>
+              </div>
+              <p class="muted" style="margin: 8px 0 0;">
+                Most common mistake: mixing up US gallons and Imperial gallons (they are not the same size).
+              </p>
+            </div>
+          </div>
+
+          <!-- Panel: FAQ -->
+          <div data-panel="faq">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>FAQ</h2>
+                <div class="hint">Quick answers</div>
+              </div>
+              <p style="margin: 8px 0 0;"><strong>Are US gallons and Imperial gallons the same?</strong> No. Imperial gallons are larger.</p>
+              <p style="margin: 8px 0 0;"><strong>Which gallon should I use in the US?</strong> Use US liquid gallons.</p>
+              <p style="margin: 8px 0 0;"><strong>How many US gallons is 10 liters?</strong> About 2.6417 US gallons.</p>
+            </div>
+          </div>
+
+          <div class="foot">
+            <a href="/">← Back to Home</a>
+            <span class="muted">SEO-safe, no framework</span>
+          </div>
+        </div>
       </section>
-
-      <h2>Quick Conversion Formula</h2>
-      <p>
-        <strong>US gallons = liters ÷ 3.78541</strong>
-      </p>
-
-      <h2>Common Liter to Gallon Conversions (US)</h2>
-      <table border="1" cellpadding="8" cellspacing="0">
-        <tr>
-          <th>Liters (L)</th>
-          <th>Gallons (US)</th>
-        </tr>
-        <tr><td>1</td><td>0.264</td></tr>
-        <tr><td>5</td><td>1.321</td></tr>
-        <tr><td>10</td><td>2.642</td></tr>
-        <tr><td>20</td><td>5.283</td></tr>
-        <tr><td>50</td><td>13.209</td></tr>
-        <tr><td>100</td><td>26.417</td></tr>
-      </table>
-
-      <h2>Real-World Examples</h2>
-      <ul>
-        <li>A 10-liter bucket holds about 2.64 US gallons.</li>
-        <li>A typical car fuel tank (50 L) is about 13.2 US gallons.</li>
-        <li>A 1-liter bottle equals about 0.26 US gallons.</li>
-      </ul>
-
-      <h2>US Gallon vs Imperial Gallon</h2>
-      <p>
-        This page uses <strong>US gallons</strong>. One US gallon equals <strong>3.78541 liters</strong>.
-        An <strong>Imperial gallon</strong> (used in the UK) equals <strong>4.54609 liters</strong>,
-        which is larger than a US gallon.
-      </p>
-
-      <h2>Common Mistakes</h2>
-      <p>
-        A common mistake is mixing up <strong>US gallons</strong> and <strong>Imperial gallons</strong>.
-        Always check which gallon unit is being used.
-      </p>
-
-      <h2>FAQ</h2>
-      <p><strong>How many liters are in 1 US gallon?</strong> 1 US gallon equals 3.78541 liters.</p>
-      <p><strong>Is a US gallon the same as a UK gallon?</strong> No. A UK (Imperial) gallon is larger.</p>
-      <p><strong>Which gallon is used in the United States?</strong> The US gallon.</p>
-
-      <p>
-        <a href="/">← Back to Home</a>
-      </p>
-
     </main>
 
-    <!-- ✅ Plain JS (SEO-safe, no framework) -->
     <script>
-      const LITERS_PER_US_GALLON = 3.78541;
+      // Factors
+      const L_PER_US_GAL = 3.785411784;
+      const L_PER_IMP_GAL = 4.54609;
+
+      function getLPerGallon(type){
+        return type === "imp" ? L_PER_IMP_GAL : L_PER_US_GAL;
+      }
+
+      // Tabs
+      const tabs = Array.from(document.querySelectorAll(".tab"));
+      const panels = Array.from(document.querySelectorAll("[data-panel]"));
+
+      function setTab(name){
+        tabs.forEach(t => {
+          const active = t.dataset.tab === name;
+          t.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        panels.forEach(p => {
+          p.classList.toggle("active", p.dataset.panel === name);
+        });
+      }
+
+      tabs.forEach(t => {
+        t.addEventListener("click", () => setTab(t.dataset.tab));
+      });
+
+      // Converter UI
+      const gallonType = document.getElementById("gallonType");
+      const factorPill = document.getElementById("factorPill");
+      const typeLabel = document.getElementById("typeLabel");
 
       const literInput = document.getElementById("literInput");
       const gallonInput = document.getElementById("gallonInput");
       const clearBtn = document.getElementById("clearBtn");
+      const roundSelect = document.getElementById("roundSelect");
+
+      const modeRadios = Array.from(document.querySelectorAll('input[name="mode"]'));
+      const modeLabel = document.getElementById("modeLabel");
+      const exprOutput = document.getElementById("exprOutput");
+      const copyBtn = document.getElementById("copyBtn");
+      const recentList = document.getElementById("recentList");
+
+      const formula1 = document.getElementById("formula1");
+      const formula2 = document.getElementById("formula2");
+
+      const tableBody = document.getElementById("tableBody");
 
       let isUpdating = false;
+      const recent = []; // store strings
 
-      function round(value, decimals = 4) {
-        const factor = Math.pow(10, decimals);
+      function round(value, decimals){
+        const d = Number(decimals);
+        if (!Number.isFinite(d)) return value;
+        const factor = Math.pow(10, d);
         return Math.round(value * factor) / factor;
+      }
+
+      function getMode(){
+        const checked = modeRadios.find(r => r.checked);
+        return checked ? checked.value : "l2g";
+      }
+
+      function getTypeLabel(){
+        return gallonType.value === "imp" ? "Imperial gallon" : "US gallon";
+      }
+
+      function updateFactorUI(){
+        const type = gallonType.value;
+        const lPerGal = getLPerGallon(type);
+        const label = getTypeLabel();
+
+        typeLabel.textContent = label;
+        factorPill.textContent = type === "imp"
+          ? `1 Imperial gal = ${L_PER_IMP_GAL} L`
+          : `1 US gal = ${L_PER_US_GAL} L`;
+
+        // Formula panel
+        if (type === "imp"){
+          formula1.textContent = `Imperial: gal = L ÷ ${L_PER_IMP_GAL}`;
+          formula2.textContent = `Imperial: L = gal × ${L_PER_IMP_GAL}`;
+        }else{
+          formula1.textContent = `US: gal = L ÷ ${L_PER_US_GAL}`;
+          formula2.textContent = `US: L = gal × ${L_PER_US_GAL}`;
+        }
+
+        // Table panel (common liters)
+        renderTable();
+
+        // Recompute current values (if any)
+        isUpdating = true;
+        const mode = getMode();
+        if (mode === "l2g") convertFromL();
+        else if (mode === "g2l") convertFromG();
+        else {
+          const l = parseFloat(literInput.value);
+          const g = parseFloat(gallonInput.value);
+          if (Number.isFinite(l)) convertFromL();
+          else if (Number.isFinite(g)) convertFromG();
+        }
+        isUpdating = false;
+
+        updateModeUI(); // refresh expr + enabled inputs
+      }
+
+      function updateModeUI(){
+        const mode = getMode();
+        const lPerGal = getLPerGallon(gallonType.value);
+        const type = gallonType.value;
+        const short = type === "imp" ? `${L_PER_IMP_GAL}` : `${L_PER_US_GAL}`;
+
+        if (mode === "l2g") {
+          modeLabel.textContent = "L → gal";
+          exprOutput.value = `gal = L ÷ ${short}`;
+          literInput.disabled = false;
+          gallonInput.disabled = true;
+          gallonInput.value = "";
+          literInput.focus();
+        } else if (mode === "g2l") {
+          modeLabel.textContent = "gal → L";
+          exprOutput.value = `L = gal × ${short}`;
+          gallonInput.disabled = false;
+          literInput.disabled = true;
+          literInput.value = "";
+          gallonInput.focus();
+        } else {
+          modeLabel.textContent = "Two-way";
+          exprOutput.value = `gal = L ÷ ${short} · L = gal × ${short}`;
+          literInput.disabled = false;
+          gallonInput.disabled = false;
+        }
+        renderRecent();
+      }
+
+      function pushRecent(text){
+        if (!text) return;
+        recent.unshift(text);
+        if (recent.length > 10) recent.pop();
+        renderRecent();
+      }
+
+      function renderRecent(){
+        if (recent.length === 0){
+          recentList.textContent = "No conversions yet.";
+          return;
+        }
+        recentList.innerHTML = recent.map(s => `<div>• ${s}</div>`).join("");
+      }
+
+      function renderTable(){
+        const lPerGal = getLPerGallon(gallonType.value);
+        const decimals = 4; // table fixed
+        const liters = [1,2,5,10,20,50,100];
+
+        tableBody.innerHTML = liters.map(L => {
+          const gal = round(L / lPerGal, decimals);
+          return `<tr><td>${L}</td><td>${gal}</td></tr>`;
+        }).join("");
+      }
+
+      function convertFromL(){
+        const L = parseFloat(literInput.value);
+        const decimals = roundSelect.value;
+        const lPerGal = getLPerGallon(gallonType.value);
+        if (!Number.isFinite(L)){
+          gallonInput.value = "";
+          return;
+        }
+        gallonInput.value = round(L / lPerGal, decimals);
+        pushRecent(`${L} L = ${gallonInput.value} gal (${getTypeLabel()})`);
+      }
+
+      function convertFromG(){
+        const gal = parseFloat(gallonInput.value);
+        const decimals = roundSelect.value;
+        const lPerGal = getLPerGallon(gallonType.value);
+        if (!Number.isFinite(gal)){
+          literInput.value = "";
+          return;
+        }
+        literInput.value = round(gal * lPerGal, decimals);
+        pushRecent(`${gal} gal = ${literInput.value} L (${getTypeLabel()})`);
       }
 
       literInput.addEventListener("input", () => {
         if (isUpdating) return;
-        const liters = parseFloat(literInput.value);
+        const mode = getMode();
+        if (mode === "g2l") return;
+
         isUpdating = true;
-
-        if (Number.isFinite(liters)) {
-          gallonInput.value = round(liters / LITERS_PER_US_GALLON);
-        } else {
-          gallonInput.value = "";
-        }
-
+        convertFromL();
         isUpdating = false;
       });
 
       gallonInput.addEventListener("input", () => {
         if (isUpdating) return;
-        const gallons = parseFloat(gallonInput.value);
+        const mode = getMode();
+        if (mode === "l2g") return;
+
         isUpdating = true;
-
-        if (Number.isFinite(gallons)) {
-          literInput.value = round(gallons * LITERS_PER_US_GALLON);
-        } else {
-          literInput.value = "";
-        }
-
+        convertFromG();
         isUpdating = false;
       });
+
+      roundSelect.addEventListener("change", () => {
+        const mode = getMode();
+        isUpdating = true;
+        if (mode === "l2g") convertFromL();
+        else if (mode === "g2l") convertFromG();
+        else {
+          const L = parseFloat(literInput.value);
+          const g = parseFloat(gallonInput.value);
+          if (Number.isFinite(L)) convertFromL();
+          else if (Number.isFinite(g)) convertFromG();
+        }
+        isUpdating = false;
+      });
+
+      modeRadios.forEach(r => r.addEventListener("change", updateModeUI));
+      gallonType.addEventListener("change", updateFactorUI);
 
       clearBtn.addEventListener("click", () => {
         literInput.value = "";
         gallonInput.value = "";
-        literInput.focus();
+        recent.length = 0;
+        renderRecent();
+        updateModeUI();
       });
+
+      copyBtn.addEventListener("click", async () => {
+        const text = exprOutput.value || "";
+        try{
+          await navigator.clipboard.writeText(text);
+          copyBtn.textContent = "Copied";
+          setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+        }catch(e){
+          exprOutput.select();
+          document.execCommand("copy");
+          copyBtn.textContent = "Copied";
+          setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+        }
+      });
+
+      // init
+      renderTable();
+      updateFactorUI();
     </script>
   </body>
 </html>

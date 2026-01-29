@@ -1,210 +1,692 @@
----
-const title = "Amps vs Volts vs Watts Explained";
-const description =
-  "Understand amps, volts, and watts with simple explanations, real-world examples, and an interactive calculator (P = V × I).";
----
-
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
+
+    <title>Amps ↔ Volts ↔ Watts Calculator</title>
+    <meta
+      name="description"
+      content="Calculate amps, volts, and watts instantly. Includes an interactive calculator, formulas, a quick reference table, and real-world examples."
+    />
+
+    <style>
+      :root{
+        --bg: #f5f7fb;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --line: #e5e7eb;
+        --primary: #2b6cb0;
+        --primary-2: #1e4e8c;
+        --soft: #eef6ff;
+        --soft-2: #d9ecff;
+        --shadow: 0 6px 18px rgba(15, 23, 42, .08);
+        --radius: 12px;
+        --radius-sm: 10px;
+      }
+
+      *{ box-sizing: border-box; }
+      body{
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .wrap{
+        max-width: 980px;
+        margin: 22px auto;
+        padding: 0 16px 32px;
+      }
+
+      /* Header */
+      .page-title{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: 700;
+        margin: 6px 0 14px;
+        color: #111827;
+      }
+      .page-title .icon{
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--primary), #4aa3ff);
+        box-shadow: 0 6px 14px rgba(43,108,176,.25);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color: white;
+        font-weight: 800;
+      }
+      .subtitle{
+        margin: 0 0 14px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      /* Card + Tabs */
+      .card{
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .tabs{
+        display:flex;
+        gap: 0;
+        border-bottom: 1px solid var(--line);
+        background: #fff;
+        padding: 10px 10px 0;
+        overflow-x:auto;
+      }
+      .tab{
+        appearance: none;
+        border: 1px solid var(--line);
+        border-bottom: none;
+        background: #f8fafc;
+        color: #334155;
+        padding: 10px 14px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        font-weight: 650;
+        cursor: pointer;
+        white-space: nowrap;
+        margin-right: 8px;
+      }
+      .tab[aria-selected="true"]{
+        background: #fff;
+        color: var(--primary-2);
+        border-color: var(--line);
+        box-shadow: 0 -1px 0 #fff inset;
+      }
+
+      .panel{ padding: 16px; }
+
+      .option-block{
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        padding: 14px;
+        background: #fff;
+      }
+      .option-title{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .option-title h2{
+        font-size: 14px;
+        margin: 0;
+        color: #111827;
+      }
+      .hint{
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .row{
+        display:flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .radio-row{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        padding: 10px 10px;
+        border-radius: 10px;
+      }
+      .radio-row:hover{ background: #f8fafc; }
+      .radio-row input[type="radio"]{ transform: translateY(1px); }
+
+      .field{
+        display:flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 220px;
+      }
+      .field label{
+        font-size: 12px;
+        color: #111827;
+        font-weight: 650;
+      }
+      .input{
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        outline: none;
+        width: 100%;
+        background: #fff;
+      }
+      .input:focus{
+        border-color: #93c5fd;
+        box-shadow: 0 0 0 3px rgba(147,197,253,.35);
+      }
+
+      .btn{
+        border: 1px solid var(--line);
+        background: #fff;
+        padding: 10px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 650;
+      }
+      .btn:hover{
+        border-color: #cbd5e1;
+        background: #f8fafc;
+      }
+      .btn.primary{
+        border-color: #93c5fd;
+        background: var(--soft);
+        color: #0b3b76;
+      }
+
+      .inline{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .mini{ width: 96px; }
+
+      .result{
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        background: #fff;
+      }
+      .result-head{
+        background: var(--soft-2);
+        padding: 10px 12px;
+        font-weight: 800;
+        color: #0b3b76;
+      }
+      .result-body{ padding: 14px 12px; }
+
+      .result-grid{
+        display:grid;
+        grid-template-columns: 120px 1fr;
+        gap: 10px 12px;
+        align-items:center;
+      }
+      .result-grid .k{
+        font-size: 13px;
+        color: #111827;
+        font-weight: 700;
+      }
+      .result-grid .v{
+        display:flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items:center;
+      }
+
+      .pill{
+        display:inline-flex;
+        align-items:center;
+        gap: 8px;
+        padding: 8px 10px;
+        border: 1px dashed #bfdbfe;
+        background: #f0f7ff;
+        border-radius: 10px;
+        font-size: 13px;
+        color: #0b3b76;
+        font-weight: 650;
+      }
+
+      .table{
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      .table th, .table td{
+        border: 1px solid var(--line);
+        padding: 10px 10px;
+        text-align: left;
+      }
+      .table th{
+        background: #f8fafc;
+        font-weight: 800;
+      }
+
+      .muted{ color: var(--muted); font-size: 13px; }
+
+      .foot{
+        margin-top: 16px;
+        display:flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      a{ color: var(--primary-2); text-decoration: none; }
+      a:hover{ text-decoration: underline; }
+
+      [data-panel]{ display:none; }
+      [data-panel].active{ display:block; }
+    </style>
   </head>
 
   <body>
-    <main style="max-width: 800px; margin: 2rem auto; font-family: system-ui, sans-serif;">
+    <main class="wrap">
+      <div class="page-title">
+        <div class="icon">≡</div>
+        <div>Amps ↔ Volts ↔ Watts</div>
+      </div>
 
-      <h1>Amps vs Volts vs Watts Explained</h1>
-
-      <p>
-        <strong>Volts (V)</strong>, <strong>amps (A)</strong>, and <strong>watts (W)</strong> are related electrical units.
-        The simplest way to connect them is:
-        <strong>Watts = Volts × Amps</strong>.
+      <p class="subtitle">
+        Based on <strong>W = V × A</strong>. Enter any <strong>two</strong> values to calculate the third — or choose a mode below to treat one value as the primary input.
+        <span class="muted">For AC loads with power factor (PF), this simple version may be inaccurate.</span>
       </p>
 
-      <!-- 🔧 Interactive Calculator -->
-      <section style="margin: 1.5rem 0; padding: 1rem; border: 1px solid #ddd;">
-        <h2 style="margin-top: 0;">Electric Power Calculator</h2>
-        <p style="margin-top: 0; color: #555;">
-          Enter any <strong>two</strong> values and the calculator will compute the third.
-        </p>
-
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
-          <div>
-            <label for="voltsInput"><strong>Volts (V)</strong></label><br />
-            <input
-              id="voltsInput"
-              type="number"
-              inputmode="decimal"
-              step="any"
-              placeholder="e.g. 120"
-              style="padding: .5rem; width: 200px;"
-            />
-          </div>
-
-          <div>
-            <label for="ampsInput"><strong>Amps (A)</strong></label><br />
-            <input
-              id="ampsInput"
-              type="number"
-              inputmode="decimal"
-              step="any"
-              placeholder="e.g. 10"
-              style="padding: .5rem; width: 200px;"
-            />
-          </div>
-
-          <div>
-            <label for="wattsInput"><strong>Watts (W)</strong></label><br />
-            <input
-              id="wattsInput"
-              type="number"
-              inputmode="decimal"
-              step="any"
-              placeholder="e.g. 1200"
-              style="padding: .5rem; width: 200px;"
-            />
-          </div>
-
-          <button type="button" id="clearBtn" style="padding: .55rem .9rem;">
-            Clear
-          </button>
+      <section class="card" aria-label="calculator">
+        <div class="tabs" role="tablist" aria-label="Sections">
+          <button class="tab" role="tab" aria-selected="true" data-tab="converter">Calculator</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="formula">Formula</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="table">Table</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="examples">Examples</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="faq">FAQ</button>
         </div>
 
-        <p style="margin-top: .75rem; color: #555;">
-          Formulas:
-          <strong>W = V × A</strong> ·
-          <strong>A = W ÷ V</strong> ·
-          <strong>V = W ÷ A</strong>
-        </p>
+        <div class="panel">
+          <!-- Panel: Converter -->
+          <div data-panel="converter" class="active">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Interactive Calculator (Cron-style options layout)</h2>
+                <div class="hint">Choose what you want to solve for</div>
+              </div>
+
+              <div>
+                <label class="radio-row">
+                  <input type="radio" name="mode" value="solveW" checked />
+                  <span><strong>Solve for Watts (W)</strong> using Volts + Amps</span>
+                </label>
+
+                <label class="radio-row">
+                  <input type="radio" name="mode" value="solveA" />
+                  <span><strong>Solve for Amps (A)</strong> using Watts + Volts</span>
+                </label>
+
+                <label class="radio-row">
+                  <input type="radio" name="mode" value="solveV" />
+                  <span><strong>Solve for Volts (V)</strong> using Watts + Amps</span>
+                </label>
+
+                <label class="radio-row">
+                  <input type="radio" name="mode" value="any2" />
+                  <span><strong>Any Two</strong> (fill any two fields → auto-calc the third)</span>
+                </label>
+              </div>
+
+              <div style="height: 10px;"></div>
+
+              <div class="row">
+                <div class="field">
+                  <label for="voltsInput">Volts (V)</label>
+                  <input id="voltsInput" class="input" type="number" inputmode="decimal" step="any" placeholder="e.g. 120" />
+                </div>
+
+                <div class="field">
+                  <label for="ampsInput">Amps (A)</label>
+                  <input id="ampsInput" class="input" type="number" inputmode="decimal" step="any" placeholder="e.g. 10" />
+                </div>
+
+                <div class="field">
+                  <label for="wattsInput">Watts (W)</label>
+                  <input id="wattsInput" class="input" type="number" inputmode="decimal" step="any" placeholder="e.g. 1200" />
+                </div>
+
+                <button type="button" id="clearBtn" class="btn">Clear</button>
+
+                <div class="inline">
+                  <span class="muted">Rounding</span>
+                  <select id="roundSelect" class="input mini" aria-label="rounding decimals">
+                    <option value="0">0</option>
+                    <option value="2" selected>2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                  </select>
+                  <span class="muted">decimals</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Result -->
+            <div class="result" aria-live="polite">
+              <div class="result-head">Result</div>
+              <div class="result-body">
+                <div class="result-grid">
+                  <div class="k">Mode</div>
+                  <div class="v"><span id="modeLabel" class="pill">Solve for Watts</span></div>
+
+                  <div class="k">Expression</div>
+                  <div class="v">
+                    <input id="exprOutput" class="input" readonly value="W = V × A" />
+                    <button type="button" id="copyBtn" class="btn primary">Copy</button>
+                  </div>
+
+                  <div class="k">Recent</div>
+                  <div class="v">
+                    <div class="muted" id="recentList">No calculations yet.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel: Formula -->
+          <div data-panel="formula">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Quick Formulas</h2>
+                <div class="hint">Power triangle</div>
+              </div>
+
+              <div class="pill">Watts (W) = Volts (V) × Amps (A)</div>
+              <div style="height:10px"></div>
+              <div class="pill">Amps (A) = Watts (W) ÷ Volts (V)</div>
+              <div style="height:10px"></div>
+              <div class="pill">Volts (V) = Watts (W) ÷ Amps (A)</div>
+
+              <p class="muted" style="margin: 10px 0 0;">
+                Note: for AC systems, real power is often <strong>P = V × A × PF</strong> (power factor).
+              </p>
+            </div>
+          </div>
+
+          <!-- Panel: Table -->
+          <div data-panel="table">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Quick Reference (Common US Voltages)</h2>
+                <div class="hint">Assumes PF ≈ 1</div>
+              </div>
+
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Volts (V)</th>
+                    <th>Amps (A)</th>
+                    <th>Watts (W)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>120</td><td>5</td><td>600</td></tr>
+                  <tr><td>120</td><td>10</td><td>1200</td></tr>
+                  <tr><td>120</td><td>15</td><td>1800</td></tr>
+                  <tr><td>240</td><td>10</td><td>2400</td></tr>
+                  <tr><td>240</td><td>30</td><td>7200</td></tr>
+                </tbody>
+              </table>
+
+              <p class="muted" style="margin: 10px 0 0;">
+                Tip: 120V × 15A ≈ 1800W is a common “standard outlet” mental shortcut in the US.
+              </p>
+            </div>
+          </div>
+
+          <!-- Panel: Examples -->
+          <div data-panel="examples">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Real-World Examples</h2>
+                <div class="hint">Practical understanding</div>
+              </div>
+
+              <ul style="margin: 8px 0 0; padding-left: 18px;">
+                <li>A 120V, 10A device uses about <strong>1200W</strong>.</li>
+                <li>A 1500W space heater on 120V draws about <strong>12.5A</strong> (1500 ÷ 120).</li>
+                <li>A 3000W load at 240V draws about <strong>12.5A</strong> (3000 ÷ 240).</li>
+              </ul>
+
+              <div style="height: 10px;"></div>
+              <div class="option-title">
+                <h2>Common Mistakes</h2>
+                <div class="hint">Avoid errors</div>
+              </div>
+              <p class="muted" style="margin: 8px 0 0;">
+                Watch out for AC power factor: many motors and some electronics don’t have PF = 1, so “V × A” can overestimate real watts.
+              </p>
+            </div>
+          </div>
+
+          <!-- Panel: FAQ -->
+          <div data-panel="faq">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>FAQ</h2>
+                <div class="hint">Quick answers</div>
+              </div>
+
+              <p style="margin: 8px 0 0;"><strong>Can I find watts if I know volts and amps?</strong> Yes: W = V × A.</p>
+              <p style="margin: 8px 0 0;"><strong>What if I only know one value?</strong> You need at least two (unless you assume something like resistance or PF).</p>
+              <p style="margin: 8px 0 0;"><strong>Does this work for AC?</strong> It’s a good estimate for resistive loads; for many AC loads you need power factor (PF).</p>
+            </div>
+          </div>
+
+          <div class="foot">
+            <a href="/">← Back to Home</a>
+            <span class="muted">SEO-safe, no framework</span>
+          </div>
+        </div>
       </section>
-
-      <h2>What Do Volts, Amps, and Watts Mean?</h2>
-      <ul>
-        <li><strong>Volts (V)</strong> = electrical “pressure” pushing electricity through a circuit.</li>
-        <li><strong>Amps (A)</strong> = how much electrical current is flowing.</li>
-        <li><strong>Watts (W)</strong> = power: how fast electrical energy is being used.</li>
-      </ul>
-
-      <h2>Quick Relationship (Most Important)</h2>
-      <p>
-        <strong>Watts = Volts × Amps</strong>
-      </p>
-
-      <h2>Common Examples</h2>
-      <table border="1" cellpadding="8" cellspacing="0">
-        <tr>
-          <th>Device / Scenario</th>
-          <th>Volts (V)</th>
-          <th>Amps (A)</th>
-          <th>Watts (W)</th>
-        </tr>
-        <tr>
-          <td>Phone charger (typical)</td>
-          <td>5</td>
-          <td>2</td>
-          <td>10</td>
-        </tr>
-        <tr>
-          <td>Laptop charger (example)</td>
-          <td>20</td>
-          <td>3.25</td>
-          <td>65</td>
-        </tr>
-        <tr>
-          <td>Home outlet load (US example)</td>
-          <td>120</td>
-          <td>10</td>
-          <td>1200</td>
-        </tr>
-        <tr>
-          <td>Space heater (common)</td>
-          <td>120</td>
-          <td>12.5</td>
-          <td>1500</td>
-        </tr>
-      </table>
-
-      <h2>Real-World Notes</h2>
-      <ul>
-        <li>If voltage stays the same (like a 120V outlet), higher watts means higher amps.</li>
-        <li>Circuit breakers are rated in <strong>amps</strong> (e.g., 15A, 20A).</li>
-        <li>Appliance labels often show <strong>watts</strong> or <strong>amps</strong>.</li>
-      </ul>
-
-      <h2>Common Mistakes</h2>
-      <p>
-        A common mistake is thinking higher voltage automatically means more power.
-        Power depends on both voltage and current:
-        <strong>W = V × A</strong>.
-      </p>
-
-      <h2>FAQ</h2>
-      <p><strong>How do I convert watts to amps?</strong> Use <strong>A = W ÷ V</strong>.</p>
-      <p><strong>How do I convert amps to watts?</strong> Use <strong>W = V × A</strong>.</p>
-      <p><strong>What is more important for a breaker rating?</strong> Breakers are rated by <strong>amps</strong>.</p>
-
-      <p>
-        <a href="/">← Back to Home</a>
-      </p>
-
     </main>
 
-    <!-- ✅ Plain JS (SEO-safe, no framework) -->
     <script>
+      // Tabs
+      const tabs = Array.from(document.querySelectorAll(".tab"));
+      const panels = Array.from(document.querySelectorAll("[data-panel]"));
+
+      function setTab(name){
+        tabs.forEach(t => {
+          const active = t.dataset.tab === name;
+          t.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        panels.forEach(p => {
+          p.classList.toggle("active", p.dataset.panel === name);
+        });
+      }
+      tabs.forEach(t => t.addEventListener("click", () => setTab(t.dataset.tab)));
+
+      // Calculator
       const voltsInput = document.getElementById("voltsInput");
-      const ampsInput = document.getElementById("ampsInput");
+      const ampsInput  = document.getElementById("ampsInput");
       const wattsInput = document.getElementById("wattsInput");
       const clearBtn = document.getElementById("clearBtn");
+      const roundSelect = document.getElementById("roundSelect");
+
+      const modeRadios = Array.from(document.querySelectorAll('input[name="mode"]'));
+      const modeLabel = document.getElementById("modeLabel");
+      const exprOutput = document.getElementById("exprOutput");
+      const copyBtn = document.getElementById("copyBtn");
+      const recentList = document.getElementById("recentList");
 
       let isUpdating = false;
+      const recent = [];
 
-      function round(value, decimals = 4) {
-        const factor = Math.pow(10, decimals);
+      function round(value, decimals){
+        const d = Number(decimals);
+        if (!Number.isFinite(d)) return value;
+        const factor = Math.pow(10, d);
         return Math.round(value * factor) / factor;
       }
 
-      function parseNum(el) {
-        const n = parseFloat(el.value);
-        return Number.isFinite(n) ? n : null;
+      function getMode(){
+        const checked = modeRadios.find(r => r.checked);
+        return checked ? checked.value : "solveW";
       }
 
-      function compute() {
-        if (isUpdating) return;
+      function setDisabled(vDisabled, aDisabled, wDisabled){
+        voltsInput.disabled = vDisabled;
+        ampsInput.disabled = aDisabled;
+        wattsInput.disabled = wDisabled;
+      }
 
-        const V = parseNum(voltsInput);
-        const A = parseNum(ampsInput);
-        const W = parseNum(wattsInput);
+      function updateModeUI(){
+        const mode = getMode();
+        if (mode === "solveW"){
+          modeLabel.textContent = "Solve for Watts";
+          exprOutput.value = "W = V × A";
+          setDisabled(false, false, true);
+          wattsInput.value = "";
+          voltsInput.focus();
+        } else if (mode === "solveA"){
+          modeLabel.textContent = "Solve for Amps";
+          exprOutput.value = "A = W ÷ V";
+          setDisabled(false, true, false);
+          ampsInput.value = "";
+          wattsInput.focus();
+        } else if (mode === "solveV"){
+          modeLabel.textContent = "Solve for Volts";
+          exprOutput.value = "V = W ÷ A";
+          setDisabled(true, false, false);
+          voltsInput.value = "";
+          wattsInput.focus();
+        } else {
+          modeLabel.textContent = "Any Two";
+          exprOutput.value = "W = V × A · A = W ÷ V · V = W ÷ A";
+          setDisabled(false, false, false);
+        }
+        renderRecent();
+      }
 
-        // We compute only when exactly two values are present
-        const count = [V, A, W].filter((x) => x !== null).length;
-        if (count !== 2) return;
+      function pushRecent(text){
+        if (!text) return;
+        recent.unshift(text);
+        if (recent.length > 10) recent.pop();
+        renderRecent();
+      }
 
-        isUpdating = true;
+      function renderRecent(){
+        if (recent.length === 0){
+          recentList.textContent = "No calculations yet.";
+          return;
+        }
+        recentList.innerHTML = recent.map(s => `<div>• ${s}</div>`).join("");
+      }
 
-        if (V !== null && A !== null && W === null) {
-          wattsInput.value = String(round(V * A, 4));
-        } else if (V !== null && W !== null && A === null) {
-          if (V !== 0) ampsInput.value = String(round(W / V, 4));
-        } else if (A !== null && W !== null && V === null) {
-          if (A !== 0) voltsInput.value = String(round(W / A, 4));
+      function parseVal(el){
+        const x = parseFloat(el.value);
+        return Number.isFinite(x) ? x : null;
+      }
+
+      function compute(){
+        const mode = getMode();
+        const d = roundSelect.value;
+
+        const V = parseVal(voltsInput);
+        const A = parseVal(ampsInput);
+        const W = parseVal(wattsInput);
+
+        // Guard against divide by zero
+        const safeDiv = (num, den) => (den === 0 ? null : num / den);
+
+        if (mode === "solveW"){
+          if (V == null || A == null){ wattsInput.value = ""; return; }
+          const out = V * A;
+          wattsInput.value = round(out, d);
+          pushRecent(`${V} V × ${A} A = ${wattsInput.value} W`);
+          return;
         }
 
-        isUpdating = false;
+        if (mode === "solveA"){
+          if (W == null || V == null){ ampsInput.value = ""; return; }
+          const out = safeDiv(W, V);
+          ampsInput.value = out == null ? "" : round(out, d);
+          if (ampsInput.value !== "") pushRecent(`${W} W ÷ ${V} V = ${ampsInput.value} A`);
+          return;
+        }
+
+        if (mode === "solveV"){
+          if (W == null || A == null){ voltsInput.value = ""; return; }
+          const out = safeDiv(W, A);
+          voltsInput.value = out == null ? "" : round(out, d);
+          if (voltsInput.value !== "") pushRecent(`${W} W ÷ ${A} A = ${voltsInput.value} V`);
+          return;
+        }
+
+        // any2: if two fields exist, compute the third (priority: compute missing one)
+        const haveV = V != null;
+        const haveA = A != null;
+        const haveW = W != null;
+
+        if (haveV && haveA && !haveW){
+          const out = V * A;
+          wattsInput.value = round(out, d);
+          pushRecent(`${V} V × ${A} A = ${wattsInput.value} W`);
+        } else if (haveV && haveW && !haveA){
+          const out = safeDiv(W, V);
+          ampsInput.value = out == null ? "" : round(out, d);
+          if (ampsInput.value !== "") pushRecent(`${W} W ÷ ${V} V = ${ampsInput.value} A`);
+        } else if (haveA && haveW && !haveV){
+          const out = safeDiv(W, A);
+          voltsInput.value = out == null ? "" : round(out, d);
+          if (voltsInput.value !== "") pushRecent(`${W} W ÷ ${A} A = ${voltsInput.value} V`);
+        } else {
+          // either not enough values, or all three filled: do nothing
+          // (you could optionally auto-correct here, but this keeps it predictable)
+        }
       }
 
-      voltsInput.addEventListener("input", compute);
-      ampsInput.addEventListener("input", compute);
-      wattsInput.addEventListener("input", compute);
+      // input listeners
+      [voltsInput, ampsInput, wattsInput].forEach(el => {
+        el.addEventListener("input", () => {
+          if (isUpdating) return;
+          isUpdating = true;
+          compute();
+          isUpdating = false;
+        });
+      });
+
+      roundSelect.addEventListener("change", () => {
+        isUpdating = true;
+        compute();
+        isUpdating = false;
+      });
+
+      modeRadios.forEach(r => r.addEventListener("change", () => {
+        isUpdating = true;
+        updateModeUI();
+        compute();
+        isUpdating = false;
+      }));
 
       clearBtn.addEventListener("click", () => {
         voltsInput.value = "";
         ampsInput.value = "";
         wattsInput.value = "";
-        voltsInput.focus();
+        recent.length = 0;
+        renderRecent();
+        updateModeUI();
       });
+
+      copyBtn.addEventListener("click", async () => {
+        const text = exprOutput.value || "";
+        try{
+          await navigator.clipboard.writeText(text);
+          copyBtn.textContent = "Copied";
+          setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+        }catch(e){
+          exprOutput.select();
+          document.execCommand("copy");
+          copyBtn.textContent = "Copied";
+          setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+        }
+      });
+
+      // init
+      updateModeUI();
     </script>
   </body>
 </html>
