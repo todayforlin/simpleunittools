@@ -1,0 +1,37 @@
+---
+const title = "Bytes to MB Converter";
+const description =
+  "Convert bytes to megabytes (MB). Includes calculator and explanation of data units.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+
+  <body>
+    <main style="max-width:800px;margin:2rem auto;font-family:system-ui,sans-serif;">
+      <h1>Bytes to MB Converter</h1>
+
+      <input id="bytes" type="number" placeholder="Bytes" oninput="convert()" />
+      <p><strong>MB:</strong> <span id="mb">—</span></p>
+
+      <script>
+        function convert() {
+          const b = document.getElementById("bytes").value;
+          document.getElementById("mb").textContent =
+            b ? (b / 1048576).toFixed(4) : "—";
+        }
+      </script>
+
+      <h2>Formula</h2>
+      <p><strong>MB = bytes ÷ 1,048,576</strong></p>
+
+      <p><a href="/">← Back to Home</a></p>
+    </main>
+  </body>
+</html>

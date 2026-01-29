@@ -1,0 +1,37 @@
+---
+const title = "Lb to Kg Converter";
+const description =
+  "Convert pounds to kilograms quickly. Includes calculator, formula, and common examples.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+
+  <body>
+    <main style="max-width:800px;margin:2rem auto;font-family:system-ui,sans-serif;">
+      <h1>Lb to Kg Converter</h1>
+
+      <input id="lb" type="number" placeholder="Pounds" oninput="convert()" />
+      <p><strong>Kilograms:</strong> <span id="kg">—</span></p>
+
+      <script>
+        function convert() {
+          const lb = document.getElementById("lb").value;
+          document.getElementById("kg").textContent =
+            lb ? (lb / 2.20462262).toFixed(2) : "—";
+        }
+      </script>
+
+      <h2>Formula</h2>
+      <p><strong>kg = lb ÷ 2.20462</strong></p>
+
+      <p><a href="/">← Back to Home</a></p>
+    </main>
+  </body>
+</html>

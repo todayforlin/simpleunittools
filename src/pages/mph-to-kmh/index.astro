@@ -1,0 +1,37 @@
+---
+const title = "MPH to KM/H Converter";
+const description =
+  "Convert miles per hour to kilometers per hour instantly. Includes calculator and formula.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+
+  <body>
+    <main style="max-width:800px;margin:2rem auto;font-family:system-ui,sans-serif;">
+      <h1>MPH to KM/H Converter</h1>
+
+      <input id="mph" type="number" placeholder="Miles per hour" oninput="convert()" />
+      <p><strong>KM/H:</strong> <span id="kmh">—</span></p>
+
+      <script>
+        function convert() {
+          const mph = document.getElementById("mph").value;
+          document.getElementById("kmh").textContent =
+            mph ? (mph * 1.609344).toFixed(2) : "—";
+        }
+      </script>
+
+      <h2>Formula</h2>
+      <p><strong>km/h = mph × 1.60934</strong></p>
+
+      <p><a href="/">← Back to Home</a></p>
+    </main>
+  </body>
+</html>
