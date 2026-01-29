@@ -1,0 +1,80 @@
+---
+const title = "AWG Wire Size Explained";
+const description =
+  "Understand AWG wire sizes, what the numbers mean, and how to choose the right wire gauge with a simple chart and examples.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+
+  <body>
+    <main style="max-width: 800px; margin: 2rem auto; font-family: system-ui, sans-serif;">
+
+      <h1>AWG Wire Size Explained</h1>
+
+      <p>
+        <strong>AWG</strong> stands for <strong>American Wire Gauge</strong>.
+        It is a standard system used in North America to describe the diameter of electrical wires.
+      </p>
+
+      <h2>How AWG Numbers Work</h2>
+      <p>
+        AWG numbers work in reverse:
+      </p>
+      <ul>
+        <li><strong>Smaller AWG number = thicker wire</strong></li>
+        <li><strong>Larger AWG number = thinner wire</strong></li>
+      </ul>
+
+      <h2>Common AWG Wire Sizes</h2>
+      <table border="1" cellpadding="8" cellspacing="0">
+        <tr>
+          <th>AWG Size</th>
+          <th>Diameter (mm)</th>
+          <th>Typical Max Current (Amps)</th>
+          <th>Common Use</th>
+        </tr>
+        <tr><td>14</td><td>1.63</td><td>15A</td><td>Household outlets (US)</td></tr>
+        <tr><td>12</td><td>2.05</td><td>20A</td><td>Kitchen / bathroom circuits</td></tr>
+        <tr><td>10</td><td>2.59</td><td>30A</td><td>Dryers, water heaters</td></tr>
+        <tr><td>8</td><td>3.26</td><td>40–50A</td><td>Ranges, EV chargers</td></tr>
+        <tr><td>6</td><td>4.11</td><td>55–65A</td><td>Subpanels</td></tr>
+      </table>
+
+      <h2>Why Wire Size Matters</h2>
+      <ul>
+        <li>Thicker wires carry more current safely.</li>
+        <li>Using the wrong gauge can cause overheating.</li>
+        <li>Circuit breakers protect against overcurrent, not undersized wires.</li>
+      </ul>
+
+      <h2>Real-World Example</h2>
+      <p>
+        A standard US household outlet uses <strong>14 AWG</strong> wire on a 15A breaker.
+        A kitchen circuit often uses <strong>12 AWG</strong> wire with a 20A breaker.
+      </p>
+
+      <h2>Common Mistakes</h2>
+      <p>
+        A common mistake is thinking a higher AWG number means a thicker wire.
+        In fact, the opposite is true.
+      </p>
+
+      <h2>FAQ</h2>
+      <p><strong>Is 12 AWG thicker than 14 AWG?</strong> Yes. 12 AWG is thicker and can carry more current.</p>
+      <p><strong>Does AWG apply worldwide?</strong> No. AWG is mainly used in North America.</p>
+      <p><strong>What gauge wire should I use?</strong> Follow electrical code and breaker ratings.</p>
+
+      <p>
+        <a href="/">← Back to Home</a>
+      </p>
+
+    </main>
+  </body>
+</html>

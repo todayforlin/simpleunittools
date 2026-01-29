@@ -1,0 +1,57 @@
+---
+const siteTitle = "SimpleUnitTools";
+const siteDescription =
+  "Simple unit conversions, calculators, and practical explanations for everyday and technical use.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{siteTitle}</title>
+    <meta name="description" content={siteDescription} />
+  </head>
+
+  <body>
+    <main style="max-width: 900px; margin: 2rem auto; font-family: system-ui, sans-serif;">
+      
+      <header>
+        <h1>{siteTitle}</h1>
+        <p>{siteDescription}</p>
+      </header>
+
+      <hr />
+
+      <section>
+        <h2>Popular Tools</h2>
+        <ul>
+          <li><a href="/cm-to-inch/">cm to inch converter</a></li>
+          <li><a href="/inch-to-mm/">inch to mm converter</a></li>
+          <li><a href="/liter-to-gallon/">liter to gallon converter</a></li>
+          <li><a href="/mbps-vs-mbs/">Mbps vs MB/s explained</a></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Size & Specs Explained</h2>
+        <ul>
+          <li><a href="/amps-volts-watts/">Amps vs Volts vs Watts</a></li>
+          <li><a href="/awg-wire-size/">AWG wire size explained</a></li>
+          <li><a href="/noise-decibel/">What does dB mean?</a></li>
+        </ul>
+      </section>
+
+      <footer style="margin-top: 3rem; font-size: 0.9rem; color: #555;">
+        <hr />
+        <p>
+          © {new Date().getFullYear()} SimpleUnitTools ·
+          <a href="/about/">About</a> ·
+          <a href="/privacy-policy/">Privacy Policy</a> ·
+          <a href="/disclaimer/">Disclaimer</a>
+        </p>
+      </footer>
+
+    </main>
+  </body>
+</html>

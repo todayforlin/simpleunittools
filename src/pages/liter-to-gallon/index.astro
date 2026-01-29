@@ -1,0 +1,168 @@
+---
+const title = "Liter to Gallon Converter";
+const description =
+  "Convert liters to gallons easily. Includes an interactive calculator, simple formula, conversion table, and real-world examples (US gallons).";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+
+  <body>
+    <main style="max-width: 800px; margin: 2rem auto; font-family: system-ui, sans-serif;">
+
+      <h1>Liter to Gallon Converter</h1>
+
+      <p>
+        To convert liters to <strong>US gallons</strong>, divide the volume value by <strong>3.78541</strong>.
+      </p>
+
+      <!-- 🔧 Interactive Converter -->
+      <section style="margin: 1.5rem 0; padding: 1rem; border: 1px solid #ddd;">
+        <h2 style="margin-top: 0;">Interactive liter ↔ gallon Converter (US)</h2>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+          <div>
+            <label for="literInput"><strong>Liters (L)</strong></label><br />
+            <input
+              id="literInput"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder="e.g. 10"
+              style="padding: .5rem; width: 220px;"
+            />
+          </div>
+
+          <div>
+            <label for="gallonInput"><strong>Gallons (US)</strong></label><br />
+            <input
+              id="gallonInput"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder="e.g. 2.64"
+              style="padding: .5rem; width: 220px;"
+            />
+          </div>
+
+          <button
+            type="button"
+            id="clearBtn"
+            style="padding: .55rem .9rem;"
+          >
+            Clear
+          </button>
+        </div>
+
+        <p style="margin-top: .75rem; color: #555;">
+          Formula: <strong>gal (US) = L ÷ 3.78541</strong> · <strong>L = gal × 3.78541</strong>
+        </p>
+      </section>
+
+      <h2>Quick Conversion Formula</h2>
+      <p>
+        <strong>US gallons = liters ÷ 3.78541</strong>
+      </p>
+
+      <h2>Common Liter to Gallon Conversions (US)</h2>
+      <table border="1" cellpadding="8" cellspacing="0">
+        <tr>
+          <th>Liters (L)</th>
+          <th>Gallons (US)</th>
+        </tr>
+        <tr><td>1</td><td>0.264</td></tr>
+        <tr><td>5</td><td>1.321</td></tr>
+        <tr><td>10</td><td>2.642</td></tr>
+        <tr><td>20</td><td>5.283</td></tr>
+        <tr><td>50</td><td>13.209</td></tr>
+        <tr><td>100</td><td>26.417</td></tr>
+      </table>
+
+      <h2>Real-World Examples</h2>
+      <ul>
+        <li>A 10-liter bucket holds about 2.64 US gallons.</li>
+        <li>A typical car fuel tank (50 L) is about 13.2 US gallons.</li>
+        <li>A 1-liter bottle equals about 0.26 US gallons.</li>
+      </ul>
+
+      <h2>US Gallon vs Imperial Gallon</h2>
+      <p>
+        This page uses <strong>US gallons</strong>. One US gallon equals <strong>3.78541 liters</strong>.
+        An <strong>Imperial gallon</strong> (used in the UK) equals <strong>4.54609 liters</strong>,
+        which is larger than a US gallon.
+      </p>
+
+      <h2>Common Mistakes</h2>
+      <p>
+        A common mistake is mixing up <strong>US gallons</strong> and <strong>Imperial gallons</strong>.
+        Always check which gallon unit is being used.
+      </p>
+
+      <h2>FAQ</h2>
+      <p><strong>How many liters are in 1 US gallon?</strong> 1 US gallon equals 3.78541 liters.</p>
+      <p><strong>Is a US gallon the same as a UK gallon?</strong> No. A UK (Imperial) gallon is larger.</p>
+      <p><strong>Which gallon is used in the United States?</strong> The US gallon.</p>
+
+      <p>
+        <a href="/">← Back to Home</a>
+      </p>
+
+    </main>
+
+    <!-- ✅ Plain JS (SEO-safe, no framework) -->
+    <script>
+      const LITERS_PER_US_GALLON = 3.78541;
+
+      const literInput = document.getElementById("literInput");
+      const gallonInput = document.getElementById("gallonInput");
+      const clearBtn = document.getElementById("clearBtn");
+
+      let isUpdating = false;
+
+      function round(value, decimals = 4) {
+        const factor = Math.pow(10, decimals);
+        return Math.round(value * factor) / factor;
+      }
+
+      literInput.addEventListener("input", () => {
+        if (isUpdating) return;
+        const liters = parseFloat(literInput.value);
+        isUpdating = true;
+
+        if (Number.isFinite(liters)) {
+          gallonInput.value = round(liters / LITERS_PER_US_GALLON);
+        } else {
+          gallonInput.value = "";
+        }
+
+        isUpdating = false;
+      });
+
+      gallonInput.addEventListener("input", () => {
+        if (isUpdating) return;
+        const gallons = parseFloat(gallonInput.value);
+        isUpdating = true;
+
+        if (Number.isFinite(gallons)) {
+          literInput.value = round(gallons * LITERS_PER_US_GALLON);
+        } else {
+          literInput.value = "";
+        }
+
+        isUpdating = false;
+      });
+
+      clearBtn.addEventListener("click", () => {
+        literInput.value = "";
+        gallonInput.value = "";
+        literInput.focus();
+      });
+    </script>
+  </body>
+</html>

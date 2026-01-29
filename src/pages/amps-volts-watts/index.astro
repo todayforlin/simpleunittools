@@ -1,0 +1,210 @@
+---
+const title = "Amps vs Volts vs Watts Explained";
+const description =
+  "Understand amps, volts, and watts with simple explanations, real-world examples, and an interactive calculator (P = V × I).";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+
+  <body>
+    <main style="max-width: 800px; margin: 2rem auto; font-family: system-ui, sans-serif;">
+
+      <h1>Amps vs Volts vs Watts Explained</h1>
+
+      <p>
+        <strong>Volts (V)</strong>, <strong>amps (A)</strong>, and <strong>watts (W)</strong> are related electrical units.
+        The simplest way to connect them is:
+        <strong>Watts = Volts × Amps</strong>.
+      </p>
+
+      <!-- 🔧 Interactive Calculator -->
+      <section style="margin: 1.5rem 0; padding: 1rem; border: 1px solid #ddd;">
+        <h2 style="margin-top: 0;">Electric Power Calculator</h2>
+        <p style="margin-top: 0; color: #555;">
+          Enter any <strong>two</strong> values and the calculator will compute the third.
+        </p>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+          <div>
+            <label for="voltsInput"><strong>Volts (V)</strong></label><br />
+            <input
+              id="voltsInput"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder="e.g. 120"
+              style="padding: .5rem; width: 200px;"
+            />
+          </div>
+
+          <div>
+            <label for="ampsInput"><strong>Amps (A)</strong></label><br />
+            <input
+              id="ampsInput"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder="e.g. 10"
+              style="padding: .5rem; width: 200px;"
+            />
+          </div>
+
+          <div>
+            <label for="wattsInput"><strong>Watts (W)</strong></label><br />
+            <input
+              id="wattsInput"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder="e.g. 1200"
+              style="padding: .5rem; width: 200px;"
+            />
+          </div>
+
+          <button type="button" id="clearBtn" style="padding: .55rem .9rem;">
+            Clear
+          </button>
+        </div>
+
+        <p style="margin-top: .75rem; color: #555;">
+          Formulas:
+          <strong>W = V × A</strong> ·
+          <strong>A = W ÷ V</strong> ·
+          <strong>V = W ÷ A</strong>
+        </p>
+      </section>
+
+      <h2>What Do Volts, Amps, and Watts Mean?</h2>
+      <ul>
+        <li><strong>Volts (V)</strong> = electrical “pressure” pushing electricity through a circuit.</li>
+        <li><strong>Amps (A)</strong> = how much electrical current is flowing.</li>
+        <li><strong>Watts (W)</strong> = power: how fast electrical energy is being used.</li>
+      </ul>
+
+      <h2>Quick Relationship (Most Important)</h2>
+      <p>
+        <strong>Watts = Volts × Amps</strong>
+      </p>
+
+      <h2>Common Examples</h2>
+      <table border="1" cellpadding="8" cellspacing="0">
+        <tr>
+          <th>Device / Scenario</th>
+          <th>Volts (V)</th>
+          <th>Amps (A)</th>
+          <th>Watts (W)</th>
+        </tr>
+        <tr>
+          <td>Phone charger (typical)</td>
+          <td>5</td>
+          <td>2</td>
+          <td>10</td>
+        </tr>
+        <tr>
+          <td>Laptop charger (example)</td>
+          <td>20</td>
+          <td>3.25</td>
+          <td>65</td>
+        </tr>
+        <tr>
+          <td>Home outlet load (US example)</td>
+          <td>120</td>
+          <td>10</td>
+          <td>1200</td>
+        </tr>
+        <tr>
+          <td>Space heater (common)</td>
+          <td>120</td>
+          <td>12.5</td>
+          <td>1500</td>
+        </tr>
+      </table>
+
+      <h2>Real-World Notes</h2>
+      <ul>
+        <li>If voltage stays the same (like a 120V outlet), higher watts means higher amps.</li>
+        <li>Circuit breakers are rated in <strong>amps</strong> (e.g., 15A, 20A).</li>
+        <li>Appliance labels often show <strong>watts</strong> or <strong>amps</strong>.</li>
+      </ul>
+
+      <h2>Common Mistakes</h2>
+      <p>
+        A common mistake is thinking higher voltage automatically means more power.
+        Power depends on both voltage and current:
+        <strong>W = V × A</strong>.
+      </p>
+
+      <h2>FAQ</h2>
+      <p><strong>How do I convert watts to amps?</strong> Use <strong>A = W ÷ V</strong>.</p>
+      <p><strong>How do I convert amps to watts?</strong> Use <strong>W = V × A</strong>.</p>
+      <p><strong>What is more important for a breaker rating?</strong> Breakers are rated by <strong>amps</strong>.</p>
+
+      <p>
+        <a href="/">← Back to Home</a>
+      </p>
+
+    </main>
+
+    <!-- ✅ Plain JS (SEO-safe, no framework) -->
+    <script>
+      const voltsInput = document.getElementById("voltsInput");
+      const ampsInput = document.getElementById("ampsInput");
+      const wattsInput = document.getElementById("wattsInput");
+      const clearBtn = document.getElementById("clearBtn");
+
+      let isUpdating = false;
+
+      function round(value, decimals = 4) {
+        const factor = Math.pow(10, decimals);
+        return Math.round(value * factor) / factor;
+      }
+
+      function parseNum(el) {
+        const n = parseFloat(el.value);
+        return Number.isFinite(n) ? n : null;
+      }
+
+      function compute() {
+        if (isUpdating) return;
+
+        const V = parseNum(voltsInput);
+        const A = parseNum(ampsInput);
+        const W = parseNum(wattsInput);
+
+        // We compute only when exactly two values are present
+        const count = [V, A, W].filter((x) => x !== null).length;
+        if (count !== 2) return;
+
+        isUpdating = true;
+
+        if (V !== null && A !== null && W === null) {
+          wattsInput.value = String(round(V * A, 4));
+        } else if (V !== null && W !== null && A === null) {
+          if (V !== 0) ampsInput.value = String(round(W / V, 4));
+        } else if (A !== null && W !== null && V === null) {
+          if (A !== 0) voltsInput.value = String(round(W / A, 4));
+        }
+
+        isUpdating = false;
+      }
+
+      voltsInput.addEventListener("input", compute);
+      ampsInput.addEventListener("input", compute);
+      wattsInput.addEventListener("input", compute);
+
+      clearBtn.addEventListener("click", () => {
+        voltsInput.value = "";
+        ampsInput.value = "";
+        wattsInput.value = "";
+        voltsInput.focus();
+      });
+    </script>
+  </body>
+</html>

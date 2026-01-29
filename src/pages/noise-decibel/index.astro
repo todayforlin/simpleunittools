@@ -1,0 +1,76 @@
+---
+const title = "What Does dB Mean?";
+const description =
+  "Learn what dB (decibel) means, how it measures sound levels, and what common dB values mean in real life.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+
+  <body>
+    <main style="max-width: 800px; margin: 2rem auto; font-family: system-ui, sans-serif;">
+
+      <h1>What Does dB Mean?</h1>
+
+      <p>
+        <strong>dB</strong> stands for <strong>decibel</strong>.
+        It is a logarithmic unit used to measure sound level or signal strength.
+      </p>
+
+      <h2>Why dB Is Logarithmic</h2>
+      <p>
+        The decibel scale is logarithmic, not linear.
+        This means a small increase in dB represents a large increase in sound energy.
+      </p>
+
+      <h2>Common Sound Levels in dB</h2>
+      <table border="1" cellpadding="8" cellspacing="0">
+        <tr>
+          <th>Sound Source</th>
+          <th>Sound Level (dB)</th>
+        </tr>
+        <tr><td>Whisper</td><td>30 dB</td></tr>
+        <tr><td>Normal conversation</td><td>60 dB</td></tr>
+        <tr><td>Vacuum cleaner</td><td>70 dB</td></tr>
+        <tr><td>Busy traffic</td><td>85 dB</td></tr>
+        <tr><td>Motorcycle</td><td>95 dB</td></tr>
+        <tr><td>Rock concert</td><td>110 dB</td></tr>
+      </table>
+
+      <h2>What a 10 dB Increase Means</h2>
+      <p>
+        Every <strong>10 dB</strong> increase is perceived as roughly
+        <strong>twice as loud</strong> to the human ear.
+      </p>
+
+      <h2>Real-World Examples</h2>
+      <ul>
+        <li>70 dB feels about twice as loud as 60 dB.</li>
+        <li>85 dB is the level where hearing damage can begin.</li>
+        <li>100 dB can cause hearing damage after short exposure.</li>
+      </ul>
+
+      <h2>Common Mistakes</h2>
+      <p>
+        A common mistake is assuming dB increases linearly.
+        Because it is logarithmic, the scale grows very quickly.
+      </p>
+
+      <h2>FAQ</h2>
+      <p><strong>Is 80 dB twice as loud as 40 dB?</strong> No. The increase is much larger due to the logarithmic scale.</p>
+      <p><strong>What dB level is safe?</strong> Long-term exposure above 85 dB can damage hearing.</p>
+      <p><strong>Is dB only for sound?</strong> No. dB is also used for signal strength and power ratios.</p>
+
+      <p>
+        <a href="/">← Back to Home</a>
+      </p>
+
+    </main>
+  </body>
+</html>

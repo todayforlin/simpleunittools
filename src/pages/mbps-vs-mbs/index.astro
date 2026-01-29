@@ -1,0 +1,170 @@
+---
+const title = "Mbps vs MB/s Explained";
+const description =
+  "Understand the difference between Mbps and MB/s. Learn how internet speed relates to real download speeds with examples and a simple calculator.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+
+  <body>
+    <main style="max-width: 800px; margin: 2rem auto; font-family: system-ui, sans-serif;">
+
+      <h1>Mbps vs MB/s Explained</h1>
+
+      <p>
+        <strong>Mbps</strong> and <strong>MB/s</strong> measure data speed, but they are not the same.
+        This difference is why your internet speed often feels slower than advertised.
+      </p>
+
+      <!-- 🔧 Interactive Converter -->
+      <section style="margin: 1.5rem 0; padding: 1rem; border: 1px solid #ddd;">
+        <h2 style="margin-top: 0;">Internet Speed Calculator</h2>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+          <div>
+            <label for="mbpsInput"><strong>Speed (Mbps)</strong></label><br />
+            <input
+              id="mbpsInput"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder="e.g. 100"
+              style="padding: .5rem; width: 220px;"
+            />
+          </div>
+
+          <div>
+            <label for="mbsInput"><strong>Speed (MB/s)</strong></label><br />
+            <input
+              id="mbsInput"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder="e.g. 12.5"
+              style="padding: .5rem; width: 220px;"
+            />
+          </div>
+
+          <button type="button" id="clearBtn" style="padding: .55rem .9rem;">
+            Clear
+          </button>
+        </div>
+
+        <p style="margin-top: .75rem; color: #555;">
+          Formula: <strong>MB/s = Mbps ÷ 8</strong> · <strong>Mbps = MB/s × 8</strong>
+        </p>
+      </section>
+
+      <h2>What Is the Difference Between Mbps and MB/s?</h2>
+      <p>
+        <strong>Mbps</strong> stands for <em>megabits per second</em>, while
+        <strong>MB/s</strong> stands for <em>megabytes per second</em>.
+        Since <strong>1 byte = 8 bits</strong>, 1 MB/s equals 8 Mbps.
+      </p>
+
+      <h2>Quick Conversion Formula</h2>
+      <p>
+        <strong>MB/s = Mbps ÷ 8</strong>
+      </p>
+
+      <h2>Common Internet Speed Examples</h2>
+      <table border="1" cellpadding="8" cellspacing="0">
+        <tr>
+          <th>Advertised Speed (Mbps)</th>
+          <th>Real Download Speed (MB/s)</th>
+        </tr>
+        <tr><td>50</td><td>6.25</td></tr>
+        <tr><td>100</td><td>12.5</td></tr>
+        <tr><td>300</td><td>37.5</td></tr>
+        <tr><td>500</td><td>62.5</td></tr>
+        <tr><td>1000 (1 Gbps)</td><td>125</td></tr>
+      </table>
+
+      <h2>Real-World Examples</h2>
+      <ul>
+        <li>A 100 Mbps internet plan downloads files at about 12.5 MB/s.</li>
+        <li>A 1 GB file takes roughly 80 seconds to download at 100 Mbps.</li>
+        <li>Game launchers and browsers usually show speeds in MB/s, not Mbps.</li>
+      </ul>
+
+      <h2>Why Internet Providers Use Mbps</h2>
+      <p>
+        Internet service providers advertise speeds in <strong>Mbps</strong> because the number looks larger.
+        A plan labeled 100 Mbps sounds faster than 12.5 MB/s, even though they represent the same speed.
+      </p>
+
+      <h2>Common Mistakes</h2>
+      <p>
+        A common mistake is assuming Mbps and MB/s are the same unit.
+        They differ by a factor of <strong>8</strong>, which can cause confusion when testing internet speed.
+      </p>
+
+      <h2>FAQ</h2>
+      <p><strong>Is Mbps the same as MB/s?</strong> No. 1 MB/s equals 8 Mbps.</p>
+      <p><strong>Why does my download speed look slower than my plan?</strong> ISPs use Mbps, but downloads show MB/s.</p>
+      <p><strong>Which unit should I care about?</strong> Use Mbps for internet plans, MB/s for real download speed.</p>
+
+      <p>
+        <a href="/">← Back to Home</a>
+      </p>
+
+    </main>
+
+    <!-- ✅ Plain JS (SEO-safe) -->
+    <script>
+      const BITS_PER_BYTE = 8;
+
+      const mbpsInput = document.getElementById("mbpsInput");
+      const mbsInput = document.getElementById("mbsInput");
+      const clearBtn = document.getElementById("clearBtn");
+
+      let isUpdating = false;
+
+      function round(value, decimals = 3) {
+        const factor = Math.pow(10, decimals);
+        return Math.round(value * factor) / factor;
+      }
+
+      mbpsInput.addEventListener("input", () => {
+        if (isUpdating) return;
+        const mbps = parseFloat(mbpsInput.value);
+        isUpdating = true;
+
+        if (Number.isFinite(mbps)) {
+          mbsInput.value = round(mbps / BITS_PER_BYTE);
+        } else {
+          mbsInput.value = "";
+        }
+
+        isUpdating = false;
+      });
+
+      mbsInput.addEventListener("input", () => {
+        if (isUpdating) return;
+        const mbs = parseFloat(mbsInput.value);
+        isUpdating = true;
+
+        if (Number.isFinite(mbs)) {
+          mbpsInput.value = round(mbs * BITS_PER_BYTE);
+        } else {
+          mbpsInput.value = "";
+        }
+
+        isUpdating = false;
+      });
+
+      clearBtn.addEventListener("click", () => {
+        mbpsInput.value = "";
+        mbsInput.value = "";
+        mbpsInput.focus();
+      });
+    </script>
+  </body>
+</html>

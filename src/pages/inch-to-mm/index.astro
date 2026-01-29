@@ -1,0 +1,160 @@
+---
+const title = "Inch to Mm Converter";
+const description =
+  "Convert inches to millimeters easily. Includes an interactive calculator, simple formula, conversion table, and real-world examples.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+
+  <body>
+    <main style="max-width: 800px; margin: 2rem auto; font-family: system-ui, sans-serif;">
+
+      <h1>Inch to Mm Converter</h1>
+
+      <p>
+        To convert inches to millimeters, multiply the length value by <strong>25.4</strong>.
+      </p>
+
+      <!--  Interactive Converter -->
+      <section style="margin: 1.5rem 0; padding: 1rem; border: 1px solid #ddd;">
+        <h2 style="margin-top: 0;">Interactive inch ↔ mm Converter</h2>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+          <div>
+            <label for="inchInput"><strong>Inches (in)</strong></label><br />
+            <input
+              id="inchInput"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder="e.g. 1"
+              style="padding: .5rem; width: 220px;"
+            />
+          </div>
+
+          <div>
+            <label for="mmInput"><strong>Millimeters (mm)</strong></label><br />
+            <input
+              id="mmInput"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder="e.g. 25.4"
+              style="padding: .5rem; width: 220px;"
+            />
+          </div>
+
+          <button
+            type="button"
+            id="clearBtn"
+            style="padding: .55rem .9rem;"
+          >
+            Clear
+          </button>
+        </div>
+
+        <p style="margin-top: .75rem; color: #555;">
+          Formula: <strong>mm = in × 25.4</strong> · <strong>in = mm ÷ 25.4</strong>
+        </p>
+      </section>
+
+      <h2>Quick Conversion Formula</h2>
+      <p>
+        <strong>millimeters = inches × 25.4</strong>
+      </p>
+
+      <h2>Common Inch to Mm Conversions</h2>
+      <table border="1" cellpadding="8" cellspacing="0">
+        <tr>
+          <th>Inches (in)</th>
+          <th>Millimeters (mm)</th>
+        </tr>
+        <tr><td>1/16</td><td>1.5875</td></tr>
+        <tr><td>1/8</td><td>3.175</td></tr>
+        <tr><td>1/4</td><td>6.35</td></tr>
+        <tr><td>1/2</td><td>12.7</td></tr>
+        <tr><td>1</td><td>25.4</td></tr>
+        <tr><td>2</td><td>50.8</td></tr>
+      </table>
+
+      <h2>Real-World Examples</h2>
+      <ul>
+        <li>1/2 inch is 12.7 mm (common for bolts and tools).</li>
+        <li>1 inch equals 25.4 mm (standard conversion reference).</li>
+        <li>3 mm is about 0.118 inches (common material thickness).</li>
+      </ul>
+
+      <h2>Common Mistakes</h2>
+      <p>
+        A common mistake is confusing <strong>cm</strong> with <strong>mm</strong>. Remember: 1 inch = 2.54 cm = 25.4 mm.
+      </p>
+
+      <h2>FAQ</h2>
+      <p><strong>Why is 25.4 used?</strong> 25.4 mm per inch is the internationally agreed conversion factor.</p>
+      <p><strong>Is 1 mm equal to 1 inch?</strong> No. 1 inch equals 25.4 mm.</p>
+      <p><strong>How many mm are in 1/8 inch?</strong> 1/8 inch is 3.175 mm.</p>
+
+      <p>
+        <a href="/">← Back to Home</a>
+      </p>
+
+    </main>
+
+    <!--  Plain JS (SEO-safe, no framework) -->
+    <script>
+      const MM_PER_INCH = 25.4;
+
+      const inchInput = document.getElementById("inchInput");
+      const mmInput = document.getElementById("mmInput");
+      const clearBtn = document.getElementById("clearBtn");
+
+      let isUpdating = false;
+
+      function round(value, decimals = 4) {
+        const factor = Math.pow(10, decimals);
+        return Math.round(value * factor) / factor;
+      }
+
+      inchInput.addEventListener("input", () => {
+        if (isUpdating) return;
+        const inch = parseFloat(inchInput.value);
+        isUpdating = true;
+
+        if (Number.isFinite(inch)) {
+          mmInput.value = round(inch * MM_PER_INCH);
+        } else {
+          mmInput.value = "";
+        }
+
+        isUpdating = false;
+      });
+
+      mmInput.addEventListener("input", () => {
+        if (isUpdating) return;
+        const mm = parseFloat(mmInput.value);
+        isUpdating = true;
+
+        if (Number.isFinite(mm)) {
+          inchInput.value = round(mm / MM_PER_INCH);
+        } else {
+          inchInput.value = "";
+        }
+
+        isUpdating = false;
+      });
+
+      clearBtn.addEventListener("click", () => {
+        inchInput.value = "";
+        mmInput.value = "";
+        inchInput.focus();
+      });
+    </script>
+  </body>
+</html>
