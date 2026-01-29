@@ -1,7 +1,7 @@
 ---
-const title = "kg to lb Converter";
+const title = "Kg to Lb Converter";
 const description =
-  "Convert kilograms to pounds easily with a simple formula and examples.";
+  "Convert kilograms (kg) to pounds (lb) instantly using the calculator below.";
 ---
 
 <!doctype html>
@@ -15,29 +15,71 @@ const description =
 
   <body>
     <main style="max-width:800px;margin:2rem auto;font-family:system-ui,sans-serif;">
-      <h1>kg to lb Converter</h1>
+      <h1>Kg to Lb Converter</h1>
 
-      <p>
-        To convert <strong>kilograms (kg)</strong> to <strong>pounds (lb)</strong>,
-        multiply by <strong>2.20462</strong>.
+      <p>Convert kilograms (kg) to pounds (lb) instantly using the calculator below.</p>
+
+      <h2>Weight Converter</h2>
+
+      <label for="kgInput" style="display:block;font-weight:600;margin-bottom:0.5rem;">
+        Kilograms (kg)
+      </label>
+
+      <input
+        id="kgInput"
+        type="number"
+        inputmode="decimal"
+        step="any"
+        placeholder="e.g. 10"
+        style="padding:0.5rem;font-size:1rem;width:260px;"
+      />
+
+      <p style="margin-top:1rem;font-size:1.1rem;">
+        <strong>Pounds:</strong> <span id="lbOutput">—</span>
       </p>
 
       <h2>Formula</h2>
-      <p><code>lb = kg × 2.20462</code></p>
+      <p><strong>lb = kg × 2.20462</strong></p>
 
-      <h2>Examples</h2>
+      <h2>Common Conversions</h2>
       <ul>
-        <li>1 kg = 2.2046 lb</li>
-        <li>5 kg = 11.023 lb</li>
-        <li>10 kg = 22.046 lb</li>
+        <li>1 kg = 2.20 lb</li>
+        <li>5 kg = 11.02 lb</li>
+        <li>10 kg = 22.05 lb</li>
+        <li>50 kg = 110.23 lb</li>
       </ul>
-
-      <h2>Why kg and lb are different</h2>
-      <p>
-        Kilograms are part of the metric system, while pounds are commonly used in the US.
-      </p>
 
       <p><a href="/">← Back to Home</a></p>
     </main>
+
+    <script>
+      const kgInput = document.getElementById("kgInput");
+      const lbOutput = document.getElementById("lbOutput");
+
+      function formatNumber(n) {
+        // Up to 4 decimals, remove trailing zeros
+        return n.toFixed(4).replace(/\.?0+$/, "");
+      }
+
+      function update() {
+        const raw = kgInput.value;
+        if (raw === "" || raw === null) {
+          lbOutput.textContent = "—";
+          return;
+        }
+
+        const kg = Number(raw);
+        if (!Number.isFinite(kg)) {
+          lbOutput.textContent = "—";
+          return;
+        }
+
+        const lb = kg * 2.20462;
+        lbOutput.textContent = formatNumber(lb);
+      }
+
+      kgInput.addEventListener("input", update);
+      update();
+    </script>
   </body>
 </html>
