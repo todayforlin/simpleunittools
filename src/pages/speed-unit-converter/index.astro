@@ -1,0 +1,780 @@
+---
+const title = "Speed Unit Converter";
+const description =
+  "Convert speed units instantly (mph, km/h, m/s, ft/s, knots). Two-way converter, live updates, quick examples, and a small FAQ — SEO-safe, no framework.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <style>
+      :root{
+        --bg:#f5f7fb;
+        --card:#ffffff;
+        --text:#0f172a;
+        --muted:#64748b;
+        --line:#e5e7eb;
+        --primary:#2563eb;
+        --primary-2:#1e40af;
+        --soft:#eef2ff;
+        --shadow:0 10px 26px rgba(15,23,42,.10);
+        --radius:14px;
+        --radius-sm:12px;
+        --ok:#16a34a;
+        --wait:#f59e0b;
+        --bad:#ef4444;
+      }
+
+      *{ box-sizing:border-box; }
+      body{
+        margin:0;
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+        background:var(--bg);
+        color:var(--text);
+      }
+      .wrap{ max-width:1100px; margin:22px auto; padding:0 16px 32px; }
+      .page-title{
+        display:flex; align-items:center; gap:10px;
+        font-size:20px; font-weight:900;
+        margin:6px 0 10px; color:#111827;
+      }
+      .page-title .icon{
+        width:32px;height:32px;border-radius:10px;
+        background:linear-gradient(135deg,var(--primary),#60a5fa);
+        box-shadow:0 10px 18px rgba(37,99,235,.25);
+        display:flex;align-items:center;justify-content:center;
+        color:#fff;font-weight:950;
+      }
+      .subtitle{ margin:0 0 14px; color:var(--muted); font-size:14px; }
+
+      .card{
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:var(--radius);
+        box-shadow:var(--shadow);
+        overflow:hidden;
+      }
+      .tabs{
+        display:flex; gap:0; border-bottom:1px solid var(--line);
+        background:#fff; padding:10px 10px 0; overflow-x:auto;
+      }
+      .tab{
+        appearance:none;
+        border:1px solid var(--line);
+        border-bottom:none;
+        background:#f8fafc;
+        color:#334155;
+        padding:10px 14px;
+        border-top-left-radius:12px;
+        border-top-right-radius:12px;
+        font-weight:900;
+        cursor:pointer;
+        white-space:nowrap;
+        margin-right:8px;
+      }
+      .tab[aria-selected="true"]{
+        background:#fff;
+        color:var(--primary-2);
+        box-shadow:0 -1px 0 #fff inset;
+      }
+
+      .panel{ padding:16px; }
+      [data-panel]{ display:none; }
+      [data-panel].active{ display:block; }
+
+      .grid{
+        display:grid;
+        grid-template-columns:1fr;
+        gap:14px;
+      }
+      @media (min-width: 980px){
+        .grid{ grid-template-columns:1.2fr .8fr; align-items:start; }
+      }
+
+      .box{
+        border:1px solid var(--line);
+        border-radius:var(--radius-sm);
+        background:#fff;
+        padding:14px;
+      }
+      .box-title{
+        display:flex; align-items:flex-end; justify-content:space-between;
+        gap:10px; margin-bottom:10px;
+      }
+      .box-title h2{ margin:0; font-size:14px; font-weight:950; color:#111827; }
+      .hint{ font-size:12px; color:var(--muted); }
+
+      .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
+      .field{
+        display:flex; flex-direction:column; gap:6px;
+        min-width:210px; flex:1 1 210px;
+      }
+      .field label{ font-size:12px; font-weight:950; color:#111827; }
+      .inline{ display:flex; gap:10px; align-items:center; }
+      .input{
+        border:1px solid var(--line);
+        border-radius:12px;
+        padding:10px 12px;
+        font-size:14px;
+        outline:none;
+        width:100%;
+        background:#fff;
+      }
+      .input:focus{ border-color:#93c5fd; box-shadow:0 0 0 3px rgba(147,197,253,.35); }
+      .mini-sm{ width:170px; flex:0 0 170px; }
+
+      .btn{
+        border:1px solid var(--line);
+        background:#fff;
+        padding:10px 14px;
+        border-radius:12px;
+        cursor:pointer;
+        font-weight:900;
+      }
+      .btn:hover{ border-color:#cbd5e1; background:#f8fafc; }
+      .btn.primary{ border-color:#93c5fd; background:var(--soft); color:#0b3b76; }
+
+      .note{
+        margin-top:10px;
+        padding:10px 12px;
+        border:1px solid var(--line);
+        border-radius:12px;
+        background:#fbfdff;
+        color:#0f172a;
+        font-size:13px;
+      }
+      .note.warn{ border-color:#fde68a; background:#fffbeb; }
+      .note.bad{ border-color:rgba(239,68,68,.35); background:rgba(239,68,68,.06); color:#7f1d1d; }
+
+      .big{
+        border-radius:var(--radius-sm);
+        border:1px solid #c7d2fe;
+        background:linear-gradient(180deg,#eef2ff,#ffffff);
+        padding:14px;
+        position:sticky;
+        top:14px;
+      }
+      .big-head{
+        display:flex; align-items:center; justify-content:space-between;
+        gap:10px; margin-bottom:10px;
+      }
+      .status{
+        font-size:12px; font-weight:950;
+        padding:6px 10px;
+        border-radius:999px;
+        border:1px solid var(--line);
+        background:#fff;
+        color:#0f172a;
+      }
+      .status.ok{ border-color:rgba(22,163,74,.35); background:rgba(22,163,74,.08); color:#14532d; }
+      .status.wait{ border-color:rgba(245,158,11,.35); background:rgba(245,158,11,.10); color:#7c2d12; }
+
+      .big-title{ margin:0; font-size:14px; font-weight:950; color:#111827; }
+      .big-sub{ margin:0 0 12px; color:var(--muted); font-size:12px; }
+
+      .kv{
+        border:1px solid var(--line);
+        border-radius:14px;
+        background:#fff;
+        padding:12px;
+      }
+      .kv + .kv{ margin-top:10px; }
+      .kv-k{
+        font-size:12px; color:var(--muted);
+        font-weight:950;
+        display:flex; align-items:center; justify-content:space-between;
+        gap:10px;
+      }
+      .badge{
+        display:inline-flex; align-items:center;
+        padding:5px 8px;
+        border-radius:999px;
+        border:1px solid var(--line);
+        background:#fff;
+        font-size:12px;
+        font-weight:950;
+        color:#0f172a;
+        white-space:nowrap;
+      }
+      .kv-v{
+        margin-top:6px;
+        font-size:34px;
+        font-weight:980;
+        letter-spacing:-0.02em;
+        color:#0f172a;
+        line-height:1.05;
+      }
+      .kv-u{ margin-top:6px; font-size:12px; color:var(--muted); }
+      .divider{ height:1px; background:var(--line); margin:14px 0; }
+
+      .table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:10px;
+        font-size:14px;
+      }
+      .table th, .table td{
+        border:1px solid var(--line);
+        padding:10px;
+        text-align:left;
+        vertical-align:top;
+      }
+      .table th{ background:#f8fafc; font-weight:950; }
+
+      .foot{ margin-top:16px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+      a{ color:var(--primary-2); text-decoration:none; }
+      a:hover{ text-decoration:underline; }
+
+      .recent{
+        margin-top:10px;
+        font-size:13px;
+        color:var(--muted);
+        max-height:140px;
+        overflow:auto;
+        padding-right:6px;
+      }
+      .recent div{ margin:6px 0; }
+
+      .subgrid{
+        display:grid;
+        grid-template-columns:1fr;
+        gap:12px;
+      }
+      @media (min-width: 980px){
+        .subgrid{ grid-template-columns:1fr 1fr; }
+      }
+      .outgrid{
+        display:grid;
+        grid-template-columns:1fr;
+        gap:10px;
+      }
+      @media (min-width: 720px){
+        .outgrid{ grid-template-columns:1fr 1fr; }
+      }
+      .out{
+        border:1px solid var(--line);
+        border-radius:14px;
+        background:#fff;
+        padding:12px;
+      }
+      .out .k{ font-size:12px; color:var(--muted); font-weight:950; display:flex; justify-content:space-between; gap:10px; }
+      .out .v{ margin-top:6px; font-size:22px; font-weight:950; letter-spacing:-0.01em; }
+      .out .u{ margin-top:4px; font-size:12px; color:var(--muted); }
+      .mono{ font-variant-numeric: tabular-nums; }
+    </style>
+  </head>
+
+  <body>
+    <main class="wrap">
+      <div class="page-title">
+        <div class="icon">🚗</div>
+        <div>Speed Unit Converter</div>
+      </div>
+      <p class="subtitle">
+        Convert speed between <strong>mph</strong>, <strong>km/h</strong>, <strong>m/s</strong>, <strong>ft/s</strong>, and <strong>knots</strong>.
+        Updates instantly as you type.
+      </p>
+
+      <section class="card" aria-label="speed-unit-converter">
+        <div class="tabs" role="tablist" aria-label="Sections">
+          <button class="tab" role="tab" aria-selected="true" data-tab="calc">Converter</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="breakdown">Explainer</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="tables">Tables</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="faq">FAQ</button>
+        </div>
+
+        <div class="panel">
+          <!-- Converter -->
+          <div data-panel="calc" class="active">
+            <div class="grid">
+              <!-- Inputs -->
+              <div>
+                <div class="box">
+                  <div class="box-title">
+                    <h2>1) Enter a speed</h2>
+                    <div class="hint">Two-way · updates as you type</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="field">
+                      <label for="valA">Value</label>
+                      <input id="valA" class="input" type="number" step="any" inputmode="decimal" placeholder="e.g. 65" />
+                    </div>
+
+                    <div class="field mini-sm">
+                      <label for="unitA">From</label>
+                      <select id="unitA" class="input">
+                        <option value="mph" selected>mph</option>
+                        <option value="kmh">km/h</option>
+                        <option value="ms">m/s</option>
+                        <option value="fts">ft/s</option>
+                        <option value="kt">knots</option>
+                      </select>
+                    </div>
+
+                    <div class="field">
+                      <label for="valB">Converted value</label>
+                      <input id="valB" class="input" type="number" step="any" inputmode="decimal" placeholder="auto" />
+                    </div>
+
+                    <div class="field mini-sm">
+                      <label for="unitB">To</label>
+                      <select id="unitB" class="input">
+                        <option value="kmh" selected>km/h</option>
+                        <option value="mph">mph</option>
+                        <option value="ms">m/s</option>
+                        <option value="fts">ft/s</option>
+                        <option value="kt">knots</option>
+                      </select>
+                    </div>
+
+                    <button type="button" id="swapBtn" class="btn primary">Swap</button>
+                    <button type="button" id="clearBtn" class="btn">Clear</button>
+                  </div>
+
+                  <div class="note warn">
+                    Tip: You can type into <strong>either</strong> box. Changing units recalculates automatically.
+                  </div>
+                </div>
+
+                <div class="box" style="margin-top:14px;">
+                  <div class="box-title">
+                    <h2>2) Multi-unit outputs</h2>
+                    <div class="hint">Same input, all units</div>
+                  </div>
+
+                  <div class="outgrid" id="allOutputs" aria-label="all outputs">
+                    <!-- filled by JS -->
+                  </div>
+
+                  <div class="note">
+                    Reference: <strong>1 mph = 1.609344 km/h</strong>. Knots are used for marine/aviation (1 kt = 1 nautical mile per hour).
+                  </div>
+                </div>
+              </div>
+
+              <!-- Big Result -->
+              <aside class="big" aria-live="polite">
+                <div class="big-head">
+                  <div>
+                    <p class="big-title">Result</p>
+                    <p class="big-sub" id="summaryLine">Enter a speed to see the conversion.</p>
+                  </div>
+                  <span id="statusPill" class="status wait">Waiting</span>
+                </div>
+
+                <div class="kv">
+                  <div class="kv-k">
+                    <span>Main conversion</span>
+                    <span class="badge" id="badgePair">—</span>
+                  </div>
+                  <div class="kv-v mono" id="outMain">—</div>
+                  <div class="kv-u" id="outSub">—</div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="kv">
+                  <div class="kv-k"><span>Common use</span><span class="badge">context</span></div>
+                  <div class="kv-v" style="font-size:20px;" id="outContext">—</div>
+                  <div class="kv-u">Quick sanity check (not a rule)</div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                  <div class="hint" style="font-weight:900; color:#111827;">Recent</div>
+                  <button type="button" id="copyBtn" class="btn">Copy</button>
+                </div>
+                <div class="recent" id="recentList">No conversions yet.</div>
+
+                <div class="note bad" id="warnBox" style="display:none; margin-top:12px;"></div>
+              </aside>
+            </div>
+          </div>
+
+          <!-- Explainer -->
+          <div data-panel="breakdown">
+            <div class="box">
+              <div class="box-title">
+                <h2>Explainer</h2>
+                <div class="hint">How the conversion works</div>
+              </div>
+
+              <table class="table" aria-label="explainer">
+                <thead>
+                  <tr><th>Unit</th><th>Meaning</th><th>Exact base conversion</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>mph</strong></td><td>Miles per hour</td><td>1 mph = 0.44704 m/s</td></tr>
+                  <tr><td><strong>km/h</strong></td><td>Kilometers per hour</td><td>1 km/h = 0.277777… m/s</td></tr>
+                  <tr><td><strong>m/s</strong></td><td>Meters per second</td><td>Base unit used internally</td></tr>
+                  <tr><td><strong>ft/s</strong></td><td>Feet per second</td><td>1 ft/s = 0.3048 m/s</td></tr>
+                  <tr><td><strong>knots</strong></td><td>Nautical miles per hour</td><td>1 kt = 0.514444… m/s</td></tr>
+                </tbody>
+              </table>
+
+              <div class="note warn">
+                The converter converts <strong>From → m/s → To</strong> using exact factors (where defined).
+              </div>
+            </div>
+
+            <div class="box" style="margin-top:14px;">
+              <div class="box-title">
+                <h2>Examples</h2>
+                <div class="hint">Common conversions</div>
+              </div>
+
+              <table class="table" aria-label="examples">
+                <thead>
+                  <tr><th>Example</th><th>Result</th><th>Where you see it</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>65 mph → km/h</td><td>~104.6 km/h</td><td>US highway speeds</td></tr>
+                  <tr><td>100 km/h → mph</td><td>~62.1 mph</td><td>Many countries’ highways</td></tr>
+                  <tr><td>10 m/s → mph</td><td>~22.4 mph</td><td>Wind / physics</td></tr>
+                  <tr><td>20 knots → mph</td><td>~23.0 mph</td><td>Boats / aviation</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tables -->
+          <div data-panel="tables">
+            <div class="box">
+              <div class="box-title">
+                <h2>Quick reference tables</h2>
+                <div class="hint">Handy checkpoints</div>
+              </div>
+
+              <div class="subgrid">
+                <div>
+                  <div class="hint" style="font-weight:950; color:#111827; margin-bottom:6px;">mph → km/h</div>
+                  <table class="table" aria-label="mph to kmh">
+                    <thead><tr><th>mph</th><th>km/h</th></tr></thead>
+                    <tbody>
+                      <tr><td>10</td><td>16.09</td></tr>
+                      <tr><td>25</td><td>40.23</td></tr>
+                      <tr><td>45</td><td>72.42</td></tr>
+                      <tr><td>65</td><td>104.61</td></tr>
+                      <tr><td>75</td><td>120.70</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div>
+                  <div class="hint" style="font-weight:950; color:#111827; margin-bottom:6px;">km/h → mph</div>
+                  <table class="table" aria-label="kmh to mph">
+                    <thead><tr><th>km/h</th><th>mph</th></tr></thead>
+                    <tbody>
+                      <tr><td>30</td><td>18.64</td></tr>
+                      <tr><td>50</td><td>31.07</td></tr>
+                      <tr><td>80</td><td>49.71</td></tr>
+                      <tr><td>100</td><td>62.14</td></tr>
+                      <tr><td>120</td><td>74.56</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="note">
+                Values are rounded to 2 decimals. Your calculator above gives full precision.
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ -->
+          <div data-panel="faq">
+            <div class="box">
+              <div class="box-title">
+                <h2>FAQ</h2>
+                <div class="hint">Short answers</div>
+              </div>
+
+              <p><strong>Which unit should I use?</strong> Use mph in the US, km/h in most other countries. m/s is common in physics.</p>
+              <p><strong>What is a knot?</strong> One nautical mile per hour (used in marine/aviation).</p>
+              <p><strong>Why do my values differ slightly from road signs?</strong> Rounding and local conventions can differ; this tool uses standard conversion factors.</p>
+              <p><strong>Does this account for wind, slopes, or speedometer error?</strong> No — it’s a pure unit conversion.</p>
+            </div>
+          </div>
+
+          <div class="foot">
+            <a href="/">← Back to Home</a>
+            <span class="subtitle" style="margin:0;">SEO-safe, no framework</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // -----------------------
+      // Tabs (robust)
+      // -----------------------
+      const tabs = Array.from(document.querySelectorAll(".tab"));
+      const panels = Array.from(document.querySelectorAll("[data-panel]"));
+      function setTab(name){
+        tabs.forEach(t => t.setAttribute("aria-selected", t.dataset.tab === name ? "true" : "false"));
+        panels.forEach(p => p.classList.toggle("active", p.dataset.panel === name));
+      }
+      tabs.forEach(t => {
+        t.type = "button";
+        t.addEventListener("click", (e) => { e.preventDefault(); setTab(t.dataset.tab); });
+      });
+      const initialTab =
+        tabs.find(t => t.getAttribute("aria-selected") === "true")?.dataset.tab
+        || tabs[0]?.dataset.tab
+        || "calc";
+      setTab(initialTab);
+
+      // -----------------------
+      // Helpers
+      // -----------------------
+      const $ = (id) => document.getElementById(id);
+
+      function num(v){
+        const x = parseFloat(v);
+        return Number.isFinite(x) ? x : NaN;
+      }
+
+      function fmt(x){
+        if (!Number.isFinite(x)) return "—";
+        const ax = Math.abs(x);
+        const digits = ax >= 1000 ? 2 : ax >= 100 ? 3 : ax >= 10 ? 4 : 6;
+        return x.toLocaleString("en-US", { maximumFractionDigits: digits });
+      }
+
+      // Convert any unit to m/s (base)
+      function toMS(value, unit){
+        if (!Number.isFinite(value)) return NaN;
+        switch(unit){
+          case "mph": return value * 0.44704;          // exact
+          case "kmh": return value * (1000/3600);      // exact
+          case "ms":  return value;
+          case "fts": return value * 0.3048;           // exact
+          case "kt":  return value * (1852/3600);      // exact
+          default: return NaN;
+        }
+      }
+
+      // Convert m/s to unit
+      function fromMS(ms, unit){
+        if (!Number.isFinite(ms)) return NaN;
+        switch(unit){
+          case "mph": return ms / 0.44704;
+          case "kmh": return ms / (1000/3600);
+          case "ms":  return ms;
+          case "fts": return ms / 0.3048;
+          case "kt":  return ms / (1852/3600);
+          default: return NaN;
+        }
+      }
+
+      function unitLabel(u){
+        if (u === "kmh") return "km/h";
+        if (u === "ms") return "m/s";
+        if (u === "fts") return "ft/s";
+        if (u === "kt") return "knots";
+        return "mph";
+      }
+
+      // -----------------------
+      // DOM refs
+      // -----------------------
+      const valA = $("valA");
+      const unitA = $("unitA");
+      const valB = $("valB");
+      const unitB = $("unitB");
+      const swapBtn = $("swapBtn");
+      const clearBtn = $("clearBtn");
+
+      // outputs
+      const statusPill = $("statusPill");
+      const summaryLine = $("summaryLine");
+      const outMain = $("outMain");
+      const outSub = $("outSub");
+      const badgePair = $("badgePair");
+      const outContext = $("outContext");
+      const warnBox = $("warnBox");
+      const allOutputs = $("allOutputs");
+
+      // recent
+      const recentList = $("recentList");
+      const copyBtn = $("copyBtn");
+      const recent = [];
+
+      let activeSide = "A"; // "A" or "B" — which input the user last edited
+
+      function setStatus(ok, text){
+        statusPill.classList.toggle("ok", ok);
+        statusPill.classList.toggle("wait", !ok);
+        statusPill.textContent = text;
+      }
+
+      function pushRecent(text){
+        if (!text) return;
+        recent.unshift(text);
+        if (recent.length > 10) recent.pop();
+        renderRecent();
+      }
+
+      function renderRecent(){
+        if (recent.length === 0){
+          recentList.textContent = "No conversions yet.";
+          return;
+        }
+        recentList.innerHTML = recent.map(s => `<div>• ${s}</div>`).join("");
+      }
+
+      function renderAll(ms){
+        const units = ["mph","kmh","ms","fts","kt"];
+        allOutputs.innerHTML = units.map(u => {
+          const v = fromMS(ms, u);
+          return `
+            <div class="out">
+              <div class="k"><span>${unitLabel(u)}</span><span class="badge">unit</span></div>
+              <div class="v mono">${fmt(v)}</div>
+              <div class="u">Converted from the current input</div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function contextHint(ms){
+        if (!Number.isFinite(ms)) return "—";
+        const mph = fromMS(ms, "mph");
+        if (mph < 1) return "Very slow (walking pace or less)";
+        if (mph < 4) return "Walking / jogging range";
+        if (mph < 20) return "City streets / biking range";
+        if (mph < 60) return "Typical urban driving";
+        if (mph < 90) return "Highway driving";
+        return "Very fast (racing / high-speed travel)";
+      }
+
+      function compute(){
+        warnBox.style.display = "none";
+        warnBox.textContent = "";
+
+        const ua = unitA.value;
+        const ub = unitB.value;
+
+        // read whichever side is active
+        const a = num(valA.value);
+        const b = num(valB.value);
+
+        let ms = NaN;
+        let fromVal = NaN, fromUnit = ua, toUnit = ub;
+
+        if (activeSide === "A"){
+          fromVal = a;
+          ms = toMS(a, ua);
+        } else {
+          fromVal = b;
+          ms = toMS(b, ub);
+          // if editing B, we treat B as "from" and show A as "to" for main conversion
+          fromUnit = ub;
+          toUnit = ua;
+        }
+
+        if (!Number.isFinite(fromVal)){
+          setStatus(false, "Waiting");
+          summaryLine.textContent = "Enter a speed value to convert.";
+          outMain.textContent = "—";
+          outSub.textContent = "—";
+          badgePair.textContent = "—";
+          outContext.textContent = "—";
+          allOutputs.innerHTML = `<div class="out"><div class="k"><span>—</span><span class="badge">unit</span></div><div class="v">—</div><div class="u">Enter a value above</div></div>`;
+          return;
+        }
+
+        if (Math.abs(fromVal) > 1e9){
+          warnBox.style.display = "block";
+          warnBox.textContent = "That number is extremely large. The math still works, but it may not be meaningful.";
+        }
+
+        // update the opposite field
+        if (activeSide === "A"){
+          const out = fromMS(ms, ub);
+          if (Number.isFinite(out)) valB.value = String(out);
+        } else {
+          const out = fromMS(ms, ua);
+          if (Number.isFinite(out)) valA.value = String(out);
+        }
+
+        // main display (always show active input -> other unit)
+        const shownTo = (activeSide === "A") ? ub : ua;
+        const shownToVal = fromMS(ms, shownTo);
+
+        setStatus(true, "Ready");
+        badgePair.textContent = `${unitLabel(fromUnit)} → ${unitLabel(shownTo)}`;
+        summaryLine.textContent = `${fmt(fromVal)} ${unitLabel(fromUnit)} equals…`;
+
+        outMain.textContent = `${fmt(shownToVal)} ${unitLabel(shownTo)}`;
+        outSub.textContent = `Base: ${fmt(ms)} m/s`;
+        outContext.textContent = contextHint(ms);
+
+        renderAll(ms);
+
+        // recent
+        const rec = `${fmt(fromVal)} ${unitLabel(fromUnit)} → ${fmt(shownToVal)} ${unitLabel(shownTo)}`;
+        pushRecent(rec);
+      }
+
+      function bindAll(){
+        valA.addEventListener("input", () => { activeSide = "A"; compute(); });
+        valB.addEventListener("input", () => { activeSide = "B"; compute(); });
+
+        [unitA, unitB].forEach(el => {
+          el.addEventListener("change", () => { compute(); });
+        });
+
+        swapBtn.addEventListener("click", () => {
+          // swap units
+          const tmpU = unitA.value;
+          unitA.value = unitB.value;
+          unitB.value = tmpU;
+
+          // swap values too (keeps UI intuitive)
+          const tmpV = valA.value;
+          valA.value = valB.value;
+          valB.value = tmpV;
+
+          // keep the same active side
+          compute();
+        });
+
+        clearBtn.addEventListener("click", () => {
+          valA.value = "";
+          valB.value = "";
+          unitA.value = "mph";
+          unitB.value = "kmh";
+          activeSide = "A";
+          recent.length = 0;
+          renderRecent();
+          compute();
+        });
+
+        copyBtn.addEventListener("click", async () => {
+          const text = recent.length ? recent[0] : "";
+          if (!text) return;
+          try{
+            await navigator.clipboard.writeText(text);
+            copyBtn.textContent = "Copied";
+            setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+          }catch(e){
+            copyBtn.textContent = "Copy failed";
+            setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+          }
+        });
+      }
+
+      bindAll();
+      renderRecent();
+      compute();
+    </script>
+  </body>
+</html>

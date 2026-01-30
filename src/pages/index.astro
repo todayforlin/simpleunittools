@@ -9,39 +9,225 @@ const description =
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>{title}</title>
     <meta name="description" content={description} />
+
+    <style>
+      :root {
+        --max: 900px;
+        --text: #111;
+        --muted: #333;
+        --border: #d8d8d8;
+        --link: #551a8b;
+        --card-bg: #fff;
+        --shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      }
+
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        line-height: 1.6;
+        color: var(--text);
+        background: #fff;
+      }
+
+      main {
+        max-width: var(--max);
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+
+      h1 {
+        font-size: 3rem;
+        margin: 0 0 0.4rem;
+      }
+
+      header p {
+        font-size: 1.1rem;
+        margin: 0 0 1rem;
+        color: var(--muted);
+      }
+
+      hr {
+        border: 0;
+        border-top: 1px solid var(--border);
+        margin: 1rem 0 1.4rem;
+      }
+
+      /* === Popular Tools (3 columns) === */
+      .popular-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.4rem;
+        margin: 1rem 0 2rem;
+      }
+
+      .card {
+        border: 1px solid #e3e3e3;
+        padding: 1.6rem 1.8rem;
+        background: var(--card-bg);
+        box-shadow: var(--shadow);
+      }
+
+      .card h2 {
+        white-space: nowrap;
+        margin: 0 0 0.8rem;
+        font-size: 1.8rem;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .card ul {
+        font-size: 1.02rem;
+      }
+
+      .card li {
+        margin: 0.72rem 0;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+
+      a {
+        color: var(--link);
+        text-decoration: underline;
+      }
+
+      section h2 {
+        font-size: 2rem;
+        margin: 1.2rem 0 0.6rem;
+      }
+
+      footer {
+        font-size: 0.95rem;
+      }
+
+      /* === Tech & Networking block === */
+      .big-box {
+        border: 1px solid var(--border);
+        background: #fff;
+        padding: 28px;
+        margin: 18px 0 28px;
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: start;
+      }
+
+      /* Slight emphasis for center column */
+      .popular-grid .card:nth-child(2) {
+        border-color: #d0d0d0;
+      }
+
+      /* Responsive */
+      @media (max-width: 780px) {
+        h1 {
+          font-size: 2.2rem;
+        }
+
+        .popular-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+
+        section h2 {
+          font-size: 1.8rem;
+        }
+      }
+    </style>
   </head>
 
   <body>
-    <main style="max-width: 900px; margin: 2rem auto; font-family: system-ui, sans-serif; line-height: 1.6;">
+    <main>
       <header>
-        <h1 style="font-size: 3rem; margin-bottom: 0.5rem;">SimpleUnitTools</h1>
-        <p style="font-size: 1.1rem; margin-top: 0;">
-          Simple unit conversions, calculators, and practical explanations for everyday and technical use.
+        <h1>SimpleUnitTools</h1>
+        <p>
+          Simple unit conversions, calculators, and practical explanations for
+          everyday and technical use.
         </p>
         <hr />
       </header>
 
-      <section>
-        <h2>Popular Tools</h2>
-        <ul>
-          <li><a href="/cm-to-inch/">cm to inch converter</a></li>
-          <li><a href="/inch-to-mm/">inch to mm converter</a></li>
-          <li><a href="/liter-to-gallon/">liter to gallon converter</a></li>
+      <!-- Popular Tools -->
+      <div class="popular-grid">
+        <div class="card">
+          <h2>Basic Converters</h2>
+          <ul>
+            <li><a href="/cm-to-inch/">cm to inch converter</a></li>
+            <li><a href="/inch-to-mm/">inch to mm converter</a></li>
+            <li><a href="/liter-to-gallon/">liter to gallon converter</a></li>
+            <li><a href="/kg-to-lb/">kg to lb converter</a></li>
+            <li><a href="/mph-to-kmh/">mph to km/h converter</a></li>
+            <li><a href="/c-to-f/">°C to °F converter</a></li>
+            <li><a href="/bytes-to-mb/">bytes to MB converter</a></li>
+          </ul>
+        </div>
 
-          <li><a href="/kg-to-lb/">kg to lb converter</a></li>
-          <li><a href="/mph-to-kmh/">mph to km/h converter</a></li>
-          <li><a href="/c-to-f/">°C to °F converter</a></li>
-          <li><a href="/bytes-to-mb/">bytes to MB converter</a></li>
-        </ul>
-      </section>
+        <div class="card">
+          <h2>Advanced Tools</h2>
+          <ul>
+            <li><a href="/fuel-consumption-converter/">Fuel consumption calculator</a></li>
+            <li><a href="/download-time-calculator/">Download time calculator</a></li>
+            <li><a href="/ohms-law-calculator/">Ohm’s Law calculator</a></li>
+            <li><a href="/Mortgage-Calculator/">Mortgage Calculator</a></li>
+            <li><a href="/binary-vs-decimal-storage/">Binary vs Decimal storage</a></li>
+            <li><a href="/speed-unit-converter/">Speed unit converter</a></li>
+            <li><a href="/Investing/">Compound Interest</a></li>
+          </ul>
+        </div>
 
+        <div class="card">
+          <h2>Specialized Tools</h2>
+          <ul>
+            <li><a href="/cooking-measurement/">Cooking measurement</a></li>
+            <li><a href="/inch-fraction-converter/">Inch fraction converter</a></li>
+            <li><a href="/screen-size-calculator/">Screen size calculator</a></li>
+            <li><a href="/pace-calculator/">Pace calculator</a></li>
+            <li><a href="/stone-weight-converter/">Stone weight converter</a></li>
+            <li><a href="/dpi-vs-ppi/">DPI vs PPI explained</a></li>
+            <li><a href="/hz-vs-fps/">Hz vs FPS explained</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Tech & Networking Explained -->
       <section>
-        <h2>Tech & Networking Explained</h2>
-        <ul>
-          <li><a href="/mbps-vs-mbs/">Mbps vs MB/s explained</a></li>
-        </ul>
+        <h2 style="font-size: 3.2rem; margin: 0 0 12px;">
+          Tech & Networking Explained
+        </h2>
+
+        <div class="big-box">
+          <div class="two-col">
+            <div>
+              <h2>Popular Tools</h2>
+              <ul>
+                <li><a href="/mbps-vs-mbs/">Mbps vs MB/s explained</a></li>
+                <li><a href="/download-time-calculator/">Download time calculator</a></li>
+                <li><a href="/file-transfer-time-calculator/">File transfer time calculator</a></li>
+                <li><a href="/bit-vs-byte/">Bit vs Byte explained</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h2>Related Converters</h2>
+              <ul>
+                <li><a href="/bytes-to-mb/">bytes to MB converter</a></li>
+                <li><a href="/speed-unit-converter/">Speed unit converter</a></li>
+                <li><a href="/mph-to-kmh/">mph to km/h converter</a></li>
+                <li><a href="/liter-to-gallon/">liter to gallon converter</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section>
@@ -55,7 +241,7 @@ const description =
 
       <hr />
 
-      <footer style="font-size: 0.95rem;">
+      <footer>
         © 2026 SimpleUnitTools ·
         <a href="/about/">About</a> ·
         <a href="/privacy-policy/">Privacy Policy</a> ·

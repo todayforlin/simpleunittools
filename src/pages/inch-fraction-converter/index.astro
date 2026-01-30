@@ -1,0 +1,844 @@
+---
+const title = "Inch Fraction Converter";
+const description =
+  "Convert inches between decimal and fraction (e.g., 2.375 ↔ 2 3/8). Choose rounding (1/2 to 1/64), reduce fractions, handle mixed numbers, show a quick table, and FAQ — SEO-safe, no framework.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <style>
+      :root{
+        --bg:#f5f7fb;
+        --card:#ffffff;
+        --text:#0f172a;
+        --muted:#64748b;
+        --line:#e5e7eb;
+        --primary:#2563eb;
+        --primary-2:#1e40af;
+        --soft:#eef2ff;
+        --shadow:0 10px 26px rgba(15,23,42,.10);
+        --radius:14px;
+        --radius-sm:12px;
+        --ok:#16a34a;
+        --wait:#f59e0b;
+        --bad:#ef4444;
+      }
+
+      *{ box-sizing:border-box; }
+      body{
+        margin:0;
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+        background:var(--bg);
+        color:var(--text);
+      }
+      .wrap{ max-width:1100px; margin:22px auto; padding:0 16px 32px; }
+      .page-title{
+        display:flex; align-items:center; gap:10px;
+        font-size:20px; font-weight:900;
+        margin:6px 0 10px; color:#111827;
+      }
+      .page-title .icon{
+        width:32px;height:32px;border-radius:10px;
+        background:linear-gradient(135deg,var(--primary),#60a5fa);
+        box-shadow:0 10px 18px rgba(37,99,235,.25);
+        display:flex;align-items:center;justify-content:center;
+        color:#fff;font-weight:950;
+      }
+      .subtitle{ margin:0 0 14px; color:var(--muted); font-size:14px; }
+
+      .card{
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:var(--radius);
+        box-shadow:var(--shadow);
+        overflow:hidden;
+      }
+      .tabs{
+        display:flex; gap:0; border-bottom:1px solid var(--line);
+        background:#fff; padding:10px 10px 0; overflow-x:auto;
+      }
+      .tab{
+        appearance:none;
+        border:1px solid var(--line);
+        border-bottom:none;
+        background:#f8fafc;
+        color:#334155;
+        padding:10px 14px;
+        border-top-left-radius:12px;
+        border-top-right-radius:12px;
+        font-weight:900;
+        cursor:pointer;
+        white-space:nowrap;
+        margin-right:8px;
+      }
+      .tab[aria-selected="true"]{
+        background:#fff;
+        color:var(--primary-2);
+        box-shadow:0 -1px 0 #fff inset;
+      }
+
+      .panel{ padding:16px; }
+      [data-panel]{ display:none; }
+      [data-panel].active{ display:block; }
+
+      .grid{
+        display:grid;
+        grid-template-columns:1fr;
+        gap:14px;
+      }
+      @media (min-width: 980px){
+        .grid{ grid-template-columns:1.2fr .8fr; align-items:start; }
+      }
+
+      .box{
+        border:1px solid var(--line);
+        border-radius:var(--radius-sm);
+        background:#fff;
+        padding:14px;
+      }
+      .box-title{
+        display:flex; align-items:flex-end; justify-content:space-between;
+        gap:10px; margin-bottom:10px;
+      }
+      .box-title h2{ margin:0; font-size:14px; font-weight:950; color:#111827; }
+      .hint{ font-size:12px; color:var(--muted); }
+
+      .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
+      .field{
+        display:flex; flex-direction:column; gap:6px;
+        min-width:210px; flex:1 1 210px;
+      }
+      .field label{ font-size:12px; font-weight:950; color:#111827; }
+      .inline{ display:flex; gap:10px; align-items:center; }
+      .input{
+        border:1px solid var(--line);
+        border-radius:12px;
+        padding:10px 12px;
+        font-size:14px;
+        outline:none;
+        width:100%;
+        background:#fff;
+      }
+      .input:focus{ border-color:#93c5fd; box-shadow:0 0 0 3px rgba(147,197,253,.35); }
+      .mini-sm{ width:210px; flex:0 0 210px; }
+
+      .btn{
+        border:1px solid var(--line);
+        background:#fff;
+        padding:10px 14px;
+        border-radius:12px;
+        cursor:pointer;
+        font-weight:900;
+      }
+      .btn:hover{ border-color:#cbd5e1; background:#f8fafc; }
+      .btn.primary{ border-color:#93c5fd; background:var(--soft); color:#0b3b76; }
+
+      .note{
+        margin-top:10px;
+        padding:10px 12px;
+        border:1px solid var(--line);
+        border-radius:12px;
+        background:#fbfdff;
+        color:#0f172a;
+        font-size:13px;
+      }
+      .note.warn{ border-color:#fde68a; background:#fffbeb; }
+      .note.bad{ border-color:rgba(239,68,68,.35); background:rgba(239,68,68,.06); color:#7f1d1d; }
+
+      .big{
+        border-radius:var(--radius-sm);
+        border:1px solid #c7d2fe;
+        background:linear-gradient(180deg,#eef2ff,#ffffff);
+        padding:14px;
+        position:sticky;
+        top:14px;
+      }
+      .big-head{
+        display:flex; align-items:center; justify-content:space-between;
+        gap:10px; margin-bottom:10px;
+      }
+      .status{
+        font-size:12px; font-weight:950;
+        padding:6px 10px;
+        border-radius:999px;
+        border:1px solid var(--line);
+        background:#fff;
+        color:#0f172a;
+      }
+      .status.ok{ border-color:rgba(22,163,74,.35); background:rgba(22,163,74,.08); color:#14532d; }
+      .status.wait{ border-color:rgba(245,158,11,.35); background:rgba(245,158,11,.10); color:#7c2d12; }
+
+      .big-title{ margin:0; font-size:14px; font-weight:950; color:#111827; }
+      .big-sub{ margin:0 0 12px; color:var(--muted); font-size:12px; }
+
+      .kv{
+        border:1px solid var(--line);
+        border-radius:14px;
+        background:#fff;
+        padding:12px;
+      }
+      .kv + .kv{ margin-top:10px; }
+      .kv-k{
+        font-size:12px; color:var(--muted);
+        font-weight:950;
+        display:flex; align-items:center; justify-content:space-between;
+        gap:10px;
+      }
+      .badge{
+        display:inline-flex; align-items:center;
+        padding:5px 8px;
+        border-radius:999px;
+        border:1px solid var(--line);
+        background:#fff;
+        font-size:12px;
+        font-weight:950;
+        color:#0f172a;
+        white-space:nowrap;
+      }
+      .kv-v{
+        margin-top:6px;
+        font-size:34px;
+        font-weight:980;
+        letter-spacing:-0.02em;
+        color:#0f172a;
+        line-height:1.05;
+      }
+      .kv-u{ margin-top:6px; font-size:12px; color:var(--muted); }
+      .divider{ height:1px; background:var(--line); margin:14px 0; }
+
+      .table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:10px;
+        font-size:14px;
+      }
+      .table th, .table td{
+        border:1px solid var(--line);
+        padding:10px;
+        text-align:left;
+        vertical-align:top;
+      }
+      .table th{ background:#f8fafc; font-weight:950; }
+
+      .foot{ margin-top:16px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+      a{ color:var(--primary-2); text-decoration:none; }
+      a:hover{ text-decoration:underline; }
+
+      .recent{
+        margin-top:10px;
+        font-size:13px;
+        color:var(--muted);
+        max-height:140px;
+        overflow:auto;
+        padding-right:6px;
+      }
+      .recent div{ margin:6px 0; }
+
+      .mono{ font-variant-numeric: tabular-nums; }
+      .chiprow{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+      .chip{
+        border:1px solid var(--line);
+        background:#fff;
+        border-radius:999px;
+        padding:8px 10px;
+        font-weight:900;
+        font-size:12px;
+        cursor:pointer;
+      }
+      .chip:hover{ border-color:#cbd5e1; background:#f8fafc; }
+    </style>
+  </head>
+
+  <body>
+    <main class="wrap">
+      <div class="page-title">
+        <div class="icon">📏</div>
+        <div>Inch Fraction Converter</div>
+      </div>
+      <p class="subtitle">
+        Convert inches between <strong>decimal</strong> and <strong>fraction</strong> forms (example: <strong>2.375</strong> ↔ <strong>2 3/8</strong>).
+        Useful for tape-measure readings, woodworking, hardware sizes, and plans.
+      </p>
+
+      <section class="card" aria-label="inch-fraction-converter">
+        <div class="tabs" role="tablist" aria-label="Sections">
+          <button class="tab" role="tab" aria-selected="true" data-tab="calc">Converter</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="breakdown">Explainer</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="tables">Tables</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="faq">FAQ</button>
+        </div>
+
+        <div class="panel">
+          <!-- Converter -->
+          <div data-panel="calc" class="active">
+            <div class="grid">
+              <!-- Inputs -->
+              <div>
+                <div class="box">
+                  <div class="box-title">
+                    <h2>1) Convert (two-way)</h2>
+                    <div class="hint">Type in either field</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="field">
+                      <label for="decIn">Decimal inches</label>
+                      <input id="decIn" class="input" type="number" step="any" inputmode="decimal" placeholder='e.g. 2.375' />
+                    </div>
+
+                    <div class="field">
+                      <label for="fracIn">Fraction inches</label>
+                      <input id="fracIn" class="input" type="text" inputmode="text" placeholder='e.g. 2 3/8 or 3/8 or -1 1/16' />
+                    </div>
+
+                    <div class="field mini-sm">
+                      <label for="denom">Round to</label>
+                      <select id="denom" class="input">
+                        <option value="2">Nearest 1/2</option>
+                        <option value="4">Nearest 1/4</option>
+                        <option value="8">Nearest 1/8</option>
+                        <option value="16" selected>Nearest 1/16</option>
+                        <option value="32">Nearest 1/32</option>
+                        <option value="64">Nearest 1/64</option>
+                      </select>
+                    </div>
+
+                    <button type="button" id="clearBtn" class="btn">Clear</button>
+                  </div>
+
+                  <div class="note warn">
+                    Tip: Fractions can be <strong>mixed</strong> (2 3/8), <strong>simple</strong> (3/8), or <strong>negative</strong> (-1 1/16).
+                    Spaces are optional.
+                  </div>
+
+                  <div class="chiprow" aria-label="quick examples">
+                    <button class="chip" type="button" data-ex="0.125">0.125</button>
+                    <button class="chip" type="button" data-ex="0.375">0.375</button>
+                    <button class="chip" type="button" data-ex="1.5">1.5</button>
+                    <button class="chip" type="button" data-ex="2.375">2.375</button>
+                    <button class="chip" type="button" data-ex="12.6875">12.6875</button>
+                  </div>
+                </div>
+
+                <div class="box" style="margin-top:14px;">
+                  <div class="box-title">
+                    <h2>2) Output details</h2>
+                    <div class="hint">Reduced fraction + rounding</div>
+                  </div>
+
+                  <table class="table" aria-label="details">
+                    <thead>
+                      <tr><th>Metric</th><th>Value</th><th>Notes</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Rounded fraction</td><td id="dFrac">—</td><td>Uses your selected denominator</td></tr>
+                      <tr><td>Exact decimal</td><td id="dDec">—</td><td>From fraction input (if valid)</td></tr>
+                      <tr><td>Rounding error</td><td id="dErr">—</td><td>Rounded − exact</td></tr>
+                      <tr><td>Denominator used</td><td id="dDen">—</td><td>1/N precision</td></tr>
+                    </tbody>
+                  </table>
+
+                  <div class="note">
+                    Most tape measures are marked in <strong>1/16</strong>. Finer options like <strong>1/32</strong> and <strong>1/64</strong> are useful for machining.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Big Result -->
+              <aside class="big" aria-live="polite">
+                <div class="big-head">
+                  <div>
+                    <p class="big-title">Result</p>
+                    <p class="big-sub" id="summaryLine">Enter a decimal or a fraction.</p>
+                  </div>
+                  <span id="statusPill" class="status wait">Waiting</span>
+                </div>
+
+                <div class="kv">
+                  <div class="kv-k">
+                    <span>Fraction (rounded)</span>
+                    <span class="badge" id="badgeRound">Nearest 1/16</span>
+                  </div>
+                  <div class="kv-v mono" id="outFrac">—</div>
+                  <div class="kv-u" id="outFracSub">—</div>
+                </div>
+
+                <div class="kv">
+                  <div class="kv-k"><span>Decimal</span><span class="badge">inches</span></div>
+                  <div class="kv-v mono" id="outDec">—</div>
+                  <div class="kv-u">Exact decimal derived from the fraction (if valid)</div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                  <div class="hint" style="font-weight:900; color:#111827;">Recent</div>
+                  <button type="button" id="copyBtn" class="btn">Copy</button>
+                </div>
+                <div class="recent" id="recentList">No conversions yet.</div>
+
+                <div class="note bad" id="warnBox" style="display:none; margin-top:12px;"></div>
+              </aside>
+            </div>
+          </div>
+
+          <!-- Explainer -->
+          <div data-panel="breakdown">
+            <div class="box">
+              <div class="box-title">
+                <h2>Explainer</h2>
+                <div class="hint">What it does</div>
+              </div>
+
+              <p>
+                Many US measurements are written as <strong>fractions of an inch</strong> (like <strong>3/8"</strong> or <strong>1 1/16"</strong>)
+                because tape measures and woodworking tools use fractional marks.
+                But calculators, CAD, spreadsheets, and online listings often use <strong>decimal inches</strong> (like <strong>0.375"</strong> or <strong>1.0625"</strong>).
+              </p>
+              <p>
+                This tool converts both ways and can <strong>round</strong> the fraction to a typical tape-measure precision (1/16, 1/32, 1/64).
+              </p>
+
+              <div class="note warn">
+                Example: 2.375 inches → nearest 1/16 is 2 6/16 → reduced to <strong>2 3/8</strong>.
+              </div>
+            </div>
+
+            <div class="box" style="margin-top:14px;">
+              <div class="box-title">
+                <h2>Accepted fraction formats</h2>
+                <div class="hint">Flexible parsing</div>
+              </div>
+
+              <table class="table" aria-label="accepted formats">
+                <thead><tr><th>Input</th><th>Meaning</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>3/8</strong></td><td>Three eighths of an inch</td></tr>
+                  <tr><td><strong>2 3/8</strong></td><td>Two and three eighths</td></tr>
+                  <tr><td><strong>-1 1/16</strong></td><td>Negative mixed number</td></tr>
+                  <tr><td><strong>2-3/8</strong></td><td>Common shorthand for mixed numbers</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tables -->
+          <div data-panel="tables">
+            <div class="box">
+              <div class="box-title">
+                <h2>Quick reference (fractions ↔ decimals)</h2>
+                <div class="hint">Common tape-measure values</div>
+              </div>
+
+              <table class="table" aria-label="fraction decimal table">
+                <thead>
+                  <tr><th>Fraction</th><th>Decimal</th><th>Fraction</th><th>Decimal</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>1/16</td><td>0.0625</td><td>9/16</td><td>0.5625</td></tr>
+                  <tr><td>1/8</td><td>0.125</td><td>5/8</td><td>0.625</td></tr>
+                  <tr><td>3/16</td><td>0.1875</td><td>11/16</td><td>0.6875</td></tr>
+                  <tr><td>1/4</td><td>0.25</td><td>3/4</td><td>0.75</td></tr>
+                  <tr><td>5/16</td><td>0.3125</td><td>13/16</td><td>0.8125</td></tr>
+                  <tr><td>3/8</td><td>0.375</td><td>7/8</td><td>0.875</td></tr>
+                  <tr><td>7/16</td><td>0.4375</td><td>15/16</td><td>0.9375</td></tr>
+                  <tr><td>1/2</td><td>0.5</td><td>1</td><td>1.0</td></tr>
+                </tbody>
+              </table>
+
+              <div class="note">
+                For anything not listed, use the converter tab and choose your rounding precision.
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ -->
+          <div data-panel="faq">
+            <div class="box">
+              <div class="box-title">
+                <h2>FAQ</h2>
+                <div class="hint">Short answers</div>
+              </div>
+
+              <p><strong>What rounding should I choose?</strong> Most tape measures use 1/16. Use 1/32 or 1/64 for finer work.</p>
+              <p><strong>Why does it “reduce” fractions?</strong> 6/16 is the same as 3/8; reduced form is easier to read.</p>
+              <p><strong>Can I paste “2-3/8”?</strong> Yes. It’s treated like “2 3/8”.</p>
+              <p><strong>Is 0.1 inch a nice fraction?</strong> Not really — it becomes 3/32 (0.09375) or 7/64 (0.109375) depending on rounding.</p>
+            </div>
+          </div>
+
+          <div class="foot">
+            <a href="/">← Back to Home</a>
+            <span class="subtitle" style="margin:0;">SEO-safe, no framework</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // -----------------------
+      // Tabs (robust)
+      // -----------------------
+      const tabs = Array.from(document.querySelectorAll(".tab"));
+      const panels = Array.from(document.querySelectorAll("[data-panel]"));
+      function setTab(name){
+        tabs.forEach(t => t.setAttribute("aria-selected", t.dataset.tab === name ? "true" : "false"));
+        panels.forEach(p => p.classList.toggle("active", p.dataset.panel === name));
+      }
+      tabs.forEach(t => {
+        t.type = "button";
+        t.addEventListener("click", (e) => { e.preventDefault(); setTab(t.dataset.tab); });
+      });
+      const initialTab =
+        tabs.find(t => t.getAttribute("aria-selected") === "true")?.dataset.tab
+        || tabs[0]?.dataset.tab
+        || "calc";
+      setTab(initialTab);
+
+      // -----------------------
+      // Helpers
+      // -----------------------
+      const $ = (id) => document.getElementById(id);
+
+      function num(v){
+        const x = parseFloat(v);
+        return Number.isFinite(x) ? x : NaN;
+      }
+
+      function fmtDec(x){
+        if (!Number.isFinite(x)) return "—";
+        const ax = Math.abs(x);
+        const digits = ax >= 100 ? 4 : ax >= 10 ? 5 : 7;
+        return x.toLocaleString("en-US", { maximumFractionDigits: digits });
+      }
+
+      function gcd(a,b){
+        a = Math.abs(a); b = Math.abs(b);
+        while (b){ const t = a % b; a = b; b = t; }
+        return a || 1;
+      }
+
+      function reduceFrac(n, d){
+        if (d === 0) return { n, d };
+        const g = gcd(n, d);
+        return { n: n / g, d: d / g };
+      }
+
+      // Parse fraction strings like:
+      // "3/8", "2 3/8", "2-3/8", "-1 1/16", "-0 3/8"
+      function parseFraction(text){
+        if (!text) return { ok:false, value:NaN, err:"Empty" };
+        let s = String(text).trim();
+
+        // allow inch symbols and whitespace noise
+        s = s.replace(/["″]/g, "").trim();
+
+        // normalize "2-3/8" -> "2 3/8" (but avoid negative sign confusion)
+        s = s.replace(/^(-?\d+)\s*-\s*(\d+)\s*\/\s*(\d+)$/i, "$1 $2/$3");
+
+        // If it's just a number, treat as decimal inches
+        if (/^-?\d+(\.\d+)?$/.test(s)){
+          const v = num(s);
+          return Number.isFinite(v) ? { ok:true, value:v } : { ok:false, value:NaN, err:"Invalid number" };
+        }
+
+        // mixed number: A B/C
+        // simple fraction: B/C
+        const m = s.match(/^(-?\d+)\s+(\d+)\s*\/\s*(\d+)$/);
+        const f = s.match(/^(-?\d+)?\s*(\d+)\s*\/\s*(\d+)$/);
+
+        if (m){
+          const whole = parseInt(m[1], 10);
+          const n = parseInt(m[2], 10);
+          const d = parseInt(m[3], 10);
+          if (!d) return { ok:false, value:NaN, err:"Denominator cannot be 0" };
+          const sign = whole < 0 ? -1 : 1;
+          const v = whole + sign * (n / d);
+          return { ok:true, value:v };
+        }
+
+        if (f){
+          // if optional leading whole is present (rare), still handle
+          const whole = f[1] ? parseInt(f[1], 10) : 0;
+          const n = parseInt(f[2], 10);
+          const d = parseInt(f[3], 10);
+          if (!d) return { ok:false, value:NaN, err:"Denominator cannot be 0" };
+          const sign = whole < 0 ? -1 : 1;
+          const v = whole ? (whole + sign * (n / d)) : (n / d);
+          return { ok:true, value: whole ? v : ( (text.trim().startsWith("-") ? -1 : 1) * (n/d) ) };
+        }
+
+        return { ok:false, value:NaN, err:"Use formats like 3/8, 2 3/8, or 2-3/8" };
+      }
+
+      // Convert decimal inches -> rounded mixed fraction using denominator N
+      function decimalToMixedFraction(x, denom){
+        if (!Number.isFinite(x)) return { ok:false };
+        const sign = x < 0 ? -1 : 1;
+        const ax = Math.abs(x);
+
+        // whole part
+        let whole = Math.floor(ax + 1e-12);
+        let frac = ax - whole;
+
+        // round fractional part to nearest 1/denom
+        let n = Math.round(frac * denom);
+        let d = denom;
+
+        // carry into whole if rounded up
+        if (n >= d){
+          whole += 1;
+          n = 0;
+        }
+
+        // reduce
+        const red = reduceFrac(n, d);
+        n = red.n; d = red.d;
+
+        // format string
+        let s = "";
+        const w = whole;
+
+        if (n === 0){
+          s = String(w);
+        } else if (w === 0){
+          s = `${n}/${d}`;
+        } else {
+          s = `${w} ${n}/${d}`;
+        }
+
+        // apply sign
+        if (sign < 0){
+          if (s === "0") s = "0";
+          else s = "-" + s;
+        }
+
+        return { ok:true, whole: sign<0 ? -w : w, n, d, text:s };
+      }
+
+      // -----------------------
+      // DOM refs
+      // -----------------------
+      const decIn = $("decIn");
+      const fracIn = $("fracIn");
+      const denomSel = $("denom");
+      const clearBtn = $("clearBtn");
+
+      // outputs
+      const statusPill = $("statusPill");
+      const summaryLine = $("summaryLine");
+      const outFrac = $("outFrac");
+      const outFracSub = $("outFracSub");
+      const outDec = $("outDec");
+      const badgeRound = $("badgeRound");
+      const warnBox = $("warnBox");
+
+      // details
+      const dFrac = $("dFrac");
+      const dDec = $("dDec");
+      const dErr = $("dErr");
+      const dDen = $("dDen");
+
+      // recent
+      const recentList = $("recentList");
+      const copyBtn = $("copyBtn");
+      const recent = [];
+
+      const chips = Array.from(document.querySelectorAll("[data-ex]"));
+
+      let activeSide = "dec"; // "dec" or "frac"
+
+      function setStatus(ok, text){
+        statusPill.classList.toggle("ok", ok);
+        statusPill.classList.toggle("wait", !ok);
+        statusPill.textContent = text;
+      }
+
+      function pushRecent(text){
+        if (!text) return;
+        recent.unshift(text);
+        if (recent.length > 10) recent.pop();
+        renderRecent();
+      }
+
+      function renderRecent(){
+        if (recent.length === 0){
+          recentList.textContent = "No conversions yet.";
+          return;
+        }
+        recentList.innerHTML = recent.map(s => `<div>• ${s}</div>`).join("");
+      }
+
+      function resetOutputs(){
+        [outFrac,outFracSub,outDec, dFrac,dDec,dErr,dDen].forEach(el => el.textContent = "—");
+        summaryLine.textContent = "Enter a decimal or a fraction.";
+        setStatus(false, "Waiting");
+        badgeRound.textContent = `Nearest 1/${denomSel.value}`;
+        warnBox.style.display = "none";
+        warnBox.textContent = "";
+      }
+
+      function compute(){
+        warnBox.style.display = "none";
+        warnBox.textContent = "";
+
+        const denom = parseInt(denomSel.value, 10);
+        badgeRound.textContent = `Nearest 1/${denom}`;
+        dDen.textContent = `1/${denom}`;
+
+        if (activeSide === "dec"){
+          const x = num(decIn.value);
+          if (!Number.isFinite(x)){
+            resetOutputs();
+            return;
+          }
+
+          const mf = decimalToMixedFraction(x, denom);
+          if (!mf.ok){
+            resetOutputs();
+            return;
+          }
+
+          // rounded fraction text
+          outFrac.textContent = mf.text;
+          outFracSub.textContent = `Rounded to nearest 1/${denom}`;
+          dFrac.textContent = mf.text;
+
+          // exact decimal shown (what user typed)
+          outDec.textContent = fmtDec(x);
+          dDec.textContent = fmtDec(x);
+
+          // compute exact decimal from rounded fraction for error
+          const roundedDecimal = (function(){
+            const sign = x < 0 ? -1 : 1;
+            const ax = Math.abs(x);
+            const whole = Math.floor(ax + 1e-12);
+            // parse mf.text might be negative; safer compute from mf parts:
+            const w = Math.abs(parseInt(mf.text.replace(/-.*/, "0"),10)) || Math.floor(Math.abs(x));
+            // We'll compute using mf values:
+            const w2 = Math.floor(Math.abs(x) + 1e-12);
+            const v = w2 + (mf.n / mf.d);
+            return sign < 0 ? -v : v;
+          })();
+
+          const err = roundedDecimal - x;
+          dErr.textContent = Number.isFinite(err) ? `${err >= 0 ? "+" : ""}${fmtDec(err)} in` : "—";
+
+          summaryLine.textContent = `${fmtDec(x)} inches equals…`;
+          setStatus(true, "Ready");
+
+          // update fraction input too (without stealing focus)
+          fracIn.value = mf.text;
+
+          if (Math.abs(err) >= (1/denom) * 0.51){
+            warnBox.style.display = "block";
+            warnBox.textContent = "Rounding is significant at this precision. Try a smaller fraction (e.g., 1/32 or 1/64).";
+          }
+
+          pushRecent(`${fmtDec(x)} in → ${mf.text} in (nearest 1/${denom})`);
+          return;
+        }
+
+        // activeSide === "frac"
+        const t = fracIn.value.trim();
+        if (!t){
+          resetOutputs();
+          return;
+        }
+
+        const parsed = parseFraction(t);
+        if (!parsed.ok){
+          resetOutputs();
+          warnBox.style.display = "block";
+          warnBox.textContent = parsed.err || "Invalid fraction format.";
+          summaryLine.textContent = "Enter a valid fraction like 3/8 or 2 3/8.";
+          return;
+        }
+
+        const x = parsed.value;
+
+        // show exact decimal from fraction
+        outDec.textContent = fmtDec(x);
+        dDec.textContent = fmtDec(x);
+
+        // also show rounded fraction at chosen denom (useful if input isn't tape-measure friendly)
+        const mf = decimalToMixedFraction(x, denom);
+        if (mf.ok){
+          outFrac.textContent = mf.text;
+          outFracSub.textContent = `Rounded to nearest 1/${denom}`;
+          dFrac.textContent = mf.text;
+
+          // error: rounded - exact
+          // compute exact from parsed, rounded from mf:
+          const sign = x < 0 ? -1 : 1;
+          const ax = Math.abs(x);
+          const w = Math.floor(ax + 1e-12);
+          const rounded = sign * (w + (mf.n / mf.d));
+          const err = rounded - x;
+          dErr.textContent = `${err >= 0 ? "+" : ""}${fmtDec(err)} in`;
+        } else {
+          outFrac.textContent = "—";
+          outFracSub.textContent = "—";
+          dFrac.textContent = "—";
+          dErr.textContent = "—";
+        }
+
+        summaryLine.textContent = `${t} inches equals…`;
+        setStatus(true, "Ready");
+
+        // update decimal input
+        decIn.value = String(x);
+
+        pushRecent(`${t} in → ${fmtDec(x)} in (decimal)`);
+      }
+
+      function bindAll(){
+        decIn.addEventListener("input", () => { activeSide = "dec"; compute(); });
+        fracIn.addEventListener("input", () => { activeSide = "frac"; compute(); });
+        denomSel.addEventListener("change", () => { compute(); });
+
+        clearBtn.addEventListener("click", () => {
+          decIn.value = "";
+          fracIn.value = "";
+          denomSel.value = "16";
+          activeSide = "dec";
+          recent.length = 0;
+          renderRecent();
+          resetOutputs();
+        });
+
+        chips.forEach(btn => {
+          btn.addEventListener("click", () => {
+            const v = btn.getAttribute("data-ex");
+            decIn.value = v;
+            activeSide = "dec";
+            compute();
+          });
+        });
+
+        copyBtn.addEventListener("click", async () => {
+          const text = recent.length ? recent[0] : "";
+          if (!text) return;
+          try{
+            await navigator.clipboard.writeText(text);
+            copyBtn.textContent = "Copied";
+            setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+          }catch(e){
+            copyBtn.textContent = "Copy failed";
+            setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+          }
+        });
+      }
+
+      bindAll();
+      renderRecent();
+      resetOutputs();
+    </script>
+  </body>
+</html>

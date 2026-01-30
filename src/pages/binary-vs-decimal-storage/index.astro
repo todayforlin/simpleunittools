@@ -1,0 +1,749 @@
+---
+const title = "Binary vs Decimal Storage (GB vs GiB) Explained";
+const description =
+  "Understand why a 1TB drive shows as ~931GiB, the difference between decimal (GB/TB) and binary (GiB/TiB), with a converter, tables, and an FAQ.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <style>
+      :root{
+        --bg:#f5f7fb;
+        --card:#ffffff;
+        --text:#0f172a;
+        --muted:#64748b;
+        --line:#e5e7eb;
+        --primary:#2563eb;
+        --primary-2:#1e40af;
+        --soft:#eef2ff;
+        --soft-2:#dbeafe;
+        --shadow:0 10px 26px rgba(15,23,42,.10);
+        --radius:14px;
+        --radius-sm:12px;
+        --ok:#16a34a;
+        --wait:#f59e0b;
+        --bad:#ef4444;
+      }
+
+      *{ box-sizing:border-box; }
+      body{
+        margin:0;
+        font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+        background:var(--bg);
+        color:var(--text);
+      }
+      .wrap{ max-width:1100px; margin:22px auto; padding:0 16px 32px; }
+      .page-title{
+        display:flex; align-items:center; gap:10px;
+        font-size:20px; font-weight:900;
+        margin:6px 0 10px; color:#111827;
+      }
+      .page-title .icon{
+        width:32px;height:32px;border-radius:10px;
+        background:linear-gradient(135deg,var(--primary),#60a5fa);
+        box-shadow:0 10px 18px rgba(37,99,235,.25);
+        display:flex;align-items:center;justify-content:center;
+        color:#fff;font-weight:950;
+      }
+      .subtitle{ margin:0 0 14px; color:var(--muted); font-size:14px; }
+
+      .card{
+        background:var(--card);
+        border:1px solid var(--line);
+        border-radius:var(--radius);
+        box-shadow:var(--shadow);
+        overflow:hidden;
+      }
+      .tabs{
+        display:flex; gap:0; border-bottom:1px solid var(--line);
+        background:#fff; padding:10px 10px 0; overflow-x:auto;
+      }
+      .tab{
+        appearance:none;
+        border:1px solid var(--line);
+        border-bottom:none;
+        background:#f8fafc;
+        color:#334155;
+        padding:10px 14px;
+        border-top-left-radius:12px;
+        border-top-right-radius:12px;
+        font-weight:900;
+        cursor:pointer;
+        white-space:nowrap;
+        margin-right:8px;
+      }
+      .tab[aria-selected="true"]{
+        background:#fff;
+        color:var(--primary-2);
+        box-shadow:0 -1px 0 #fff inset;
+      }
+
+      .panel{ padding:16px; }
+      [data-panel]{ display:none; }
+      [data-panel].active{ display:block; }
+
+      .grid{
+        display:grid;
+        grid-template-columns:1fr;
+        gap:14px;
+      }
+      @media (min-width: 980px){
+        .grid{ grid-template-columns:1.15fr .85fr; align-items:start; }
+      }
+
+      .box{
+        border:1px solid var(--line);
+        border-radius:var(--radius-sm);
+        background:#fff;
+        padding:14px;
+      }
+      .box-title{
+        display:flex; align-items:flex-end; justify-content:space-between;
+        gap:10px; margin-bottom:10px;
+      }
+      .box-title h2{ margin:0; font-size:14px; font-weight:950; color:#111827; }
+      .hint{ font-size:12px; color:var(--muted); }
+
+      .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
+      .field{
+        display:flex; flex-direction:column; gap:6px;
+        min-width:210px; flex:1 1 210px;
+      }
+      .field label{ font-size:12px; font-weight:950; color:#111827; }
+      .inline{ display:flex; gap:10px; align-items:center; }
+      .input{
+        border:1px solid var(--line);
+        border-radius:12px;
+        padding:10px 12px;
+        font-size:14px;
+        outline:none;
+        width:100%;
+        background:#fff;
+      }
+      .input:focus{ border-color:#93c5fd; box-shadow:0 0 0 3px rgba(147,197,253,.35); }
+      .mini-sm{ width:170px; flex:0 0 170px; }
+
+      .btn{
+        border:1px solid var(--line);
+        background:#fff;
+        padding:10px 14px;
+        border-radius:12px;
+        cursor:pointer;
+        font-weight:900;
+      }
+      .btn:hover{ border-color:#cbd5e1; background:#f8fafc; }
+      .btn.primary{ border-color:#93c5fd; background:var(--soft); color:#0b3b76; }
+
+      .note{
+        margin-top:10px;
+        padding:10px 12px;
+        border:1px solid var(--line);
+        border-radius:12px;
+        background:#fbfdff;
+        color:#0f172a;
+        font-size:13px;
+      }
+      .note.warn{ border-color:#fde68a; background:#fffbeb; }
+
+      .big{
+        border-radius:var(--radius-sm);
+        border:1px solid #c7d2fe;
+        background:linear-gradient(180deg,#eef2ff,#ffffff);
+        padding:14px;
+        position:sticky;
+        top:14px;
+      }
+      .big-head{
+        display:flex; align-items:center; justify-content:space-between;
+        gap:10px; margin-bottom:10px;
+      }
+      .status{
+        font-size:12px; font-weight:950;
+        padding:6px 10px;
+        border-radius:999px;
+        border:1px solid var(--line);
+        background:#fff;
+        color:#0f172a;
+      }
+      .status.ok{ border-color:rgba(22,163,74,.35); background:rgba(22,163,74,.08); color:#14532d; }
+      .status.wait{ border-color:rgba(245,158,11,.35); background:rgba(245,158,11,.10); color:#7c2d12; }
+
+      .big-title{ margin:0; font-size:14px; font-weight:950; color:#111827; }
+      .big-sub{ margin:0 0 12px; color:var(--muted); font-size:12px; }
+
+      .kv{
+        border:1px solid var(--line);
+        border-radius:14px;
+        background:#fff;
+        padding:12px;
+      }
+      .kv + .kv{ margin-top:10px; }
+
+      .kv-k{
+        font-size:12px; color:var(--muted);
+        font-weight:950;
+        display:flex; align-items:center; justify-content:space-between;
+        gap:10px;
+      }
+      .badge{
+        display:inline-flex; align-items:center;
+        padding:5px 8px;
+        border-radius:999px;
+        border:1px solid var(--line);
+        background:#fff;
+        font-size:12px;
+        font-weight:950;
+        color:#0f172a;
+        white-space:nowrap;
+      }
+      .kv-v{
+        margin-top:6px;
+        font-size:34px;
+        font-weight:980;
+        letter-spacing:-0.02em;
+        color:#0f172a;
+        line-height:1.05;
+      }
+      .kv-u{ margin-top:6px; font-size:12px; color:var(--muted); }
+
+      .divider{ height:1px; background:var(--line); margin:14px 0; }
+
+      .table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:10px;
+        font-size:14px;
+      }
+      .table th, .table td{
+        border:1px solid var(--line);
+        padding:10px;
+        text-align:left;
+        vertical-align:top;
+      }
+      .table th{ background:#f8fafc; font-weight:950; }
+
+      .foot{ margin-top:16px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+      a{ color:var(--primary-2); text-decoration:none; }
+      a:hover{ text-decoration:underline; }
+
+      .recent{
+        margin-top:10px;
+        font-size:13px;
+        color:var(--muted);
+        max-height:140px;
+        overflow:auto;
+        padding-right:6px;
+      }
+      .recent div{ margin:6px 0; }
+
+      .pillset{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+      .pill{
+        display:inline-flex; align-items:center; gap:6px;
+        padding:7px 10px;
+        border:1px solid var(--line);
+        border-radius:999px;
+        background:#fff;
+        font-size:12px;
+        font-weight:950;
+        color:#0f172a;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="wrap">
+      <div class="page-title">
+        <div class="icon">💾</div>
+        <div>Binary vs Decimal Storage</div>
+      </div>
+      <p class="subtitle">
+        A “1TB” drive often shows as ~931 in Windows because drive labels use <strong>decimal (TB)</strong>
+        while many OS tools report using <strong>binary (GiB/TiB)</strong>.
+      </p>
+
+      <section class="card" aria-label="binary-vs-decimal-storage">
+        <!-- ✅ Order: Converter first, then Explainer -->
+        <div class="tabs" role="tablist" aria-label="Sections">
+          <button class="tab" role="tab" aria-selected="true" data-tab="converter">Converter</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="explainer">Explainer</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="tables">Tables</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="faq">FAQ</button>
+        </div>
+
+        <div class="panel">
+          <!-- Converter (ACTIVE) -->
+          <div data-panel="converter" class="active">
+            <div class="grid">
+              <div>
+                <div class="box">
+                  <div class="box-title">
+                    <h2>Converter</h2>
+                    <div class="hint">Decimal ↔ Binary</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="field">
+                      <label for="inValue">Amount</label>
+                      <input id="inValue" class="input" type="number" step="any" inputmode="decimal" placeholder="e.g. 1" />
+                    </div>
+
+                    <div class="field">
+                      <label for="inUnit">From unit</label>
+                      <select id="inUnit" class="input">
+                        <option value="B">B (bytes)</option>
+                        <option value="KB">KB (10³)</option>
+                        <option value="MB">MB (10⁶)</option>
+                        <option value="GB" selected>GB (10⁹)</option>
+                        <option value="TB">TB (10¹²)</option>
+                        <option value="PB">PB (10¹⁵)</option>
+
+                        <option value="KiB">KiB (2¹⁰)</option>
+                        <option value="MiB">MiB (2²⁰)</option>
+                        <option value="GiB">GiB (2³⁰)</option>
+                        <option value="TiB">TiB (2⁴⁰)</option>
+                        <option value="PiB">PiB (2⁵⁰)</option>
+                      </select>
+                    </div>
+
+                    <div class="field">
+                      <label for="outSelect">To unit</label>
+                      <select id="outSelect" class="input">
+                        <option value="B">B (bytes)</option>
+                        <option value="KB">KB (10³)</option>
+                        <option value="MB">MB (10⁶)</option>
+                        <option value="GB">GB (10⁹)</option>
+                        <option value="TB">TB (10¹²)</option>
+                        <option value="PB">PB (10¹⁵)</option>
+
+                        <option value="KiB">KiB (2¹⁰)</option>
+                        <option value="MiB">MiB (2²⁰)</option>
+                        <option value="GiB" selected>GiB (2³⁰)</option>
+                        <option value="TiB">TiB (2⁴⁰)</option>
+                        <option value="PiB">PiB (2⁵⁰)</option>
+                      </select>
+                    </div>
+
+                    <button type="button" id="swapBtn" class="btn primary">Swap</button>
+                    <button type="button" id="clearBtn" class="btn">Clear</button>
+                  </div>
+
+                  <div class="note warn">
+                    Tip: Try <strong>1 TB → GiB</strong> to see why a “1TB” drive shows as ~931 in many OS displays.
+                  </div>
+                </div>
+
+                <div class="box" style="margin-top:14px;">
+                  <div class="box-title">
+                    <h2>Formulas</h2>
+                    <div class="hint">Exact</div>
+                  </div>
+
+                  <table class="table" aria-label="formulas">
+                    <thead>
+                      <tr><th>Conversion</th><th>Formula</th><th>Notes</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>GB → GiB</td>
+                        <td>GiB = GB × 10⁹ ÷ 2³⁰</td>
+                        <td>Convert to bytes, then divide by binary unit size</td>
+                      </tr>
+                      <tr>
+                        <td>TB → TiB</td>
+                        <td>TiB = TB × 10¹² ÷ 2⁴⁰</td>
+                        <td>Rule of thumb: TB × 0.909 ≈ TiB</td>
+                      </tr>
+                      <tr>
+                        <td>GiB → GB</td>
+                        <td>GB = GiB × 2³⁰ ÷ 10⁹</td>
+                        <td>Rule of thumb: GiB × 1.074 ≈ GB</td>
+                      </tr>
+                      <tr>
+                        <td>TiB → TB</td>
+                        <td>TB = TiB × 2⁴⁰ ÷ 10¹²</td>
+                        <td>Rule of thumb: TiB × 1.100 ≈ TB</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Big Result -->
+              <aside class="big" aria-live="polite">
+                <div class="big-head">
+                  <div>
+                    <p class="big-title">Result</p>
+                    <p class="big-sub" id="summaryLine">Enter an amount and choose units.</p>
+                  </div>
+                  <span id="statusPill" class="status wait">Waiting</span>
+                </div>
+
+                <div class="kv">
+                  <div class="kv-k">
+                    <span>Converted value</span>
+                    <span class="badge" id="outUnit">—</span>
+                  </div>
+                  <div class="kv-v" id="outValue">—</div>
+                  <div class="kv-u" id="outBytes">Bytes: —</div>
+                </div>
+
+                <div class="kv">
+                  <div class="kv-k">
+                    <span>Rule of thumb</span>
+                    <span class="badge">fast</span>
+                  </div>
+                  <div class="kv-u" id="ruleThumb" style="margin-top:0;">
+                    1 TB (decimal) ≈ 0.909 TiB (binary) · 1 TiB (binary) ≈ 1.100 TB (decimal)
+                  </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                  <div class="hint" style="font-weight:900; color:#111827;">Recent</div>
+                  <button type="button" id="copyBtn" class="btn">Copy</button>
+                </div>
+                <div class="recent" id="recentList">No conversions yet.</div>
+              </aside>
+            </div>
+          </div>
+
+          <!-- Explainer -->
+          <div data-panel="explainer">
+            <div class="grid">
+              <div>
+                <div class="box">
+                  <div class="box-title">
+                    <h2>What’s the difference?</h2>
+                    <div class="hint">Same bytes, different grouping</div>
+                  </div>
+
+                  <p style="margin:0; line-height:1.55;">
+                    Storage is counted in <strong>bytes</strong>. The confusion comes from two systems:
+                  </p>
+
+                  <div class="pillset" aria-label="quick facts">
+                    <span class="pill">Decimal: 1 KB = 1,000 bytes</span>
+                    <span class="pill">Binary: 1 KiB = 1,024 bytes</span>
+                    <span class="pill">Decimal: 1 GB = 10⁹ bytes</span>
+                    <span class="pill">Binary: 1 GiB = 2³⁰ bytes</span>
+                  </div>
+
+                  <div class="note warn">
+                    Most drive labels use <strong>GB/TB (decimal)</strong>. Many OS tools show sizes in <strong>GiB/TiB (binary)</strong>
+                    but still label them as “GB/TB”, which adds confusion.
+                  </div>
+                </div>
+
+                <div class="box" style="margin-top:14px;">
+                  <div class="box-title">
+                    <h2>The classic example: “1TB” → ~931GiB</h2>
+                    <div class="hint">Why it looks smaller</div>
+                  </div>
+
+                  <p style="margin:0; line-height:1.55;">
+                    A <strong>1TB</strong> drive (decimal) contains <strong>1,000,000,000,000 bytes</strong>.
+                    If your OS reports in <strong>GiB</strong> (binary), it divides by <strong>2³⁰ = 1,073,741,824</strong>:
+                  </p>
+
+                  <div class="note">
+                    1,000,000,000,000 ÷ 1,073,741,824 ≈ <strong>931.32 GiB</strong>
+                  </div>
+
+                  <div class="note warn">
+                    Formatting and partitions can reduce usable space slightly, but the big drop is usually unit math.
+                  </div>
+                </div>
+
+                <div class="box" style="margin-top:14px;">
+                  <div class="box-title">
+                    <h2>When should you care?</h2>
+                    <div class="hint">Practical uses</div>
+                  </div>
+
+                  <ul style="margin:0; padding-left:18px; line-height:1.6;">
+                    <li><strong>Buying drives:</strong> labels are usually decimal (GB/TB).</li>
+                    <li><strong>Backup planning:</strong> compare in bytes or convert TB ↔ TiB to avoid surprises.</li>
+                    <li><strong>NAS / RAID:</strong> usable space is further affected by parity/overhead (in addition to unit differences).</li>
+                  </ul>
+                </div>
+              </div>
+
+              <aside class="big" aria-live="polite">
+                <div class="big-head">
+                  <div>
+                    <p class="big-title">Quick takeaway</p>
+                    <p class="big-sub">The “missing space” is usually just units.</p>
+                  </div>
+                  <span class="status ok">OK</span>
+                </div>
+
+                <div class="kv">
+                  <div class="kv-k"><span>1 TB (decimal) in bytes</span><span class="badge">10¹²</span></div>
+                  <div class="kv-v">1,000,000,000,000</div>
+                  <div class="kv-u">That’s the same bytes no matter what label you use.</div>
+                </div>
+
+                <div class="kv">
+                  <div class="kv-k"><span>1 TB shown as GiB</span><span class="badge">÷ 2³⁰</span></div>
+                  <div class="kv-v">~931.32</div>
+                  <div class="kv-u">Because 1 GiB = 1,073,741,824 bytes.</div>
+                </div>
+
+                <div class="divider"></div>
+                <div class="note warn" style="margin-top:0;">
+                  Rule of thumb: <strong>TB × 0.909 ≈ TiB</strong> · <strong>TiB × 1.100 ≈ TB</strong>
+                </div>
+              </aside>
+            </div>
+          </div>
+
+          <!-- Tables -->
+          <div data-panel="tables">
+            <div class="box">
+              <div class="box-title">
+                <h2>Common drive sizes (unit-only)</h2>
+                <div class="hint">What you often see</div>
+              </div>
+
+              <table class="table" aria-label="drive size table">
+                <thead>
+                  <tr><th>Label (decimal)</th><th>Bytes</th><th>Binary shown</th><th>Math</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>256 GB</td><td>256 × 10⁹</td><td>~238.42 GiB</td><td>256e9 ÷ 2³⁰</td></tr>
+                  <tr><td>512 GB</td><td>512 × 10⁹</td><td>~476.84 GiB</td><td>512e9 ÷ 2³⁰</td></tr>
+                  <tr><td>1 TB</td><td>1 × 10¹²</td><td>~931.32 GiB</td><td>1e12 ÷ 2³⁰</td></tr>
+                  <tr><td>2 TB</td><td>2 × 10¹²</td><td>~1.82 TiB</td><td>2e12 ÷ 2⁴⁰</td></tr>
+                  <tr><td>4 TB</td><td>4 × 10¹²</td><td>~3.64 TiB</td><td>4e12 ÷ 2⁴⁰</td></tr>
+                </tbody>
+              </table>
+
+              <div class="note warn">
+                Formatting, reserved blocks, and partitions can reduce usable space further.
+              </div>
+            </div>
+
+            <div class="box" style="margin-top:14px;">
+              <div class="box-title">
+                <h2>Cheat sheet</h2>
+                <div class="hint">Handy ratios</div>
+              </div>
+
+              <table class="table" aria-label="cheat sheet">
+                <thead>
+                  <tr><th>Decimal</th><th>≈ Binary</th><th>Binary</th><th>≈ Decimal</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>1 GB</td><td>0.93 GiB</td><td>1 GiB</td><td>1.07 GB</td></tr>
+                  <tr><td>1 TB</td><td>0.91 TiB</td><td>1 TiB</td><td>1.10 TB</td></tr>
+                  <tr><td>10 TB</td><td>9.09 TiB</td><td>10 TiB</td><td>11.00 TB</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- FAQ -->
+          <div data-panel="faq">
+            <div class="box">
+              <div class="box-title">
+                <h2>FAQ</h2>
+                <div class="hint">Short answers</div>
+              </div>
+
+              <p><strong>Is my drive missing space?</strong> Usually no — it’s the same bytes reported using different units.</p>
+              <p><strong>Why do drive makers use decimal?</strong> Decimal aligns with SI prefixes (kilo = 1000), and it’s standard for marketing and manufacturing.</p>
+              <p><strong>Why does the OS use binary?</strong> Computers naturally work in powers of two, so GiB/TiB align with that math.</p>
+              <p><strong>Does formatting reduce size?</strong> Yes. File system metadata, reserved space, and partitions reduce usable space slightly.</p>
+              <p><strong>What should I use for planning?</strong> Convert everything to bytes, or use TB↔TiB conversions when comparing drive labels to OS displays.</p>
+            </div>
+          </div>
+
+          <div class="foot">
+            <a href="/">← Back to Home</a>
+            <span class="subtitle" style="margin:0;">SEO-safe, no framework</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // -----------------------
+      // Tabs (robust)
+      // -----------------------
+      const tabs = Array.from(document.querySelectorAll(".tab"));
+      const panels = Array.from(document.querySelectorAll("[data-panel]"));
+      function setTab(name){
+        tabs.forEach(t => t.setAttribute("aria-selected", t.dataset.tab === name ? "true" : "false"));
+        panels.forEach(p => p.classList.toggle("active", p.dataset.panel === name));
+      }
+      tabs.forEach(t => {
+        t.type = "button";
+        t.addEventListener("click", (e) => { e.preventDefault(); setTab(t.dataset.tab); });
+      });
+      const initialTab =
+        tabs.find(t => t.getAttribute("aria-selected") === "true")?.dataset.tab
+        || tabs[0]?.dataset.tab
+        || "converter";
+      setTab(initialTab);
+
+      // -----------------------
+      // Helpers
+      // -----------------------
+      const $ = (id) => document.getElementById(id);
+      function num(v){
+        const x = parseFloat(v);
+        return Number.isFinite(x) ? x : NaN;
+      }
+
+      const units = {
+        // decimal
+        B: 1,
+        KB: 1e3,
+        MB: 1e6,
+        GB: 1e9,
+        TB: 1e12,
+        PB: 1e15,
+        // binary
+        KiB: 1024 ** 1,
+        MiB: 1024 ** 2,
+        GiB: 1024 ** 3,
+        TiB: 1024 ** 4,
+        PiB: 1024 ** 5,
+      };
+
+      function fmtSmart(x, unit){
+        if (!Number.isFinite(x)) return "—";
+        const abs = Math.abs(x);
+        const digits = abs >= 100 ? 2 : abs >= 10 ? 3 : 4;
+        return x.toLocaleString("en-US", { maximumFractionDigits: digits }) + " " + unit;
+      }
+
+      function bytesFmt(b){
+        if (!Number.isFinite(b)) return "—";
+        const asInt = Math.round(b);
+        return asInt.toLocaleString("en-US") + " bytes";
+      }
+
+      // -----------------------
+      // DOM
+      // -----------------------
+      const inValue = $("inValue");
+      const inUnit = $("inUnit");
+      const outSelect = $("outSelect");
+      const swapBtn = $("swapBtn");
+      const clearBtn = $("clearBtn");
+
+      const statusPill = $("statusPill");
+      const summaryLine = $("summaryLine");
+      const outValue = $("outValue");
+      const outUnit = $("outUnit");
+      const outBytes = $("outBytes");
+
+      const recentList = $("recentList");
+      const copyBtn = $("copyBtn");
+      const recent = [];
+
+      function setStatus(ok, text){
+        statusPill.classList.toggle("ok", ok);
+        statusPill.classList.toggle("wait", !ok);
+        statusPill.textContent = text;
+      }
+
+      function pushRecent(text){
+        if (!text) return;
+        recent.unshift(text);
+        if (recent.length > 10) recent.pop();
+        renderRecent();
+      }
+
+      function renderRecent(){
+        if (recent.length === 0){
+          recentList.textContent = "No conversions yet.";
+          return;
+        }
+        recentList.innerHTML = recent.map(s => `<div>• ${s}</div>`).join("");
+      }
+
+      function compute(){
+        const v = num(inValue.value);
+        const from = inUnit.value;
+        const to = outSelect.value;
+
+        if (!Number.isFinite(v)){
+          setStatus(false, "Waiting");
+          summaryLine.textContent = "Enter an amount and choose units.";
+          outValue.textContent = "—";
+          outUnit.textContent = "—";
+          outBytes.textContent = "Bytes: —";
+          return;
+        }
+
+        const fromMul = units[from];
+        const toMul = units[to];
+        if (!fromMul || !toMul){
+          setStatus(false, "Invalid");
+          summaryLine.textContent = "Unknown unit selected.";
+          return;
+        }
+
+        const bytes = v * fromMul;
+        const out = bytes / toMul;
+
+        setStatus(true, "Ready");
+        summaryLine.textContent = `${fmtSmart(v, from)} = ${fmtSmart(out, to)}`;
+        outValue.textContent = out.toLocaleString("en-US", { maximumFractionDigits: 6 });
+        outUnit.textContent = to;
+        outBytes.textContent = `Bytes: ${bytesFmt(bytes)}`;
+
+        pushRecent(`${fmtSmart(v, from)} → ${fmtSmart(out, to)}`);
+      }
+
+      function bindAll(){
+        [inValue, inUnit, outSelect].forEach(el => {
+          el.addEventListener("input", compute);
+          el.addEventListener("change", compute);
+        });
+
+        swapBtn.addEventListener("click", () => {
+          const a = inUnit.value;
+          inUnit.value = outSelect.value;
+          outSelect.value = a;
+          compute();
+        });
+
+        clearBtn.addEventListener("click", () => {
+          inValue.value = "";
+          inUnit.value = "GB";
+          outSelect.value = "GiB";
+          recent.length = 0;
+          renderRecent();
+          compute();
+        });
+
+        copyBtn.addEventListener("click", async () => {
+          const text = recent.length ? recent[0] : "";
+          if (!text) return;
+          try{
+            await navigator.clipboard.writeText(text);
+            copyBtn.textContent = "Copied";
+            setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+          }catch(e){
+            copyBtn.textContent = "Copy failed";
+            setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+          }
+        });
+      }
+
+      bindAll();
+      renderRecent();
+      compute();
+    </script>
+  </body>
+</html>

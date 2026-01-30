@@ -1,0 +1,575 @@
+---
+const title = "Download Time Calculator";
+const description =
+  "Estimate how long a download will take from file size and internet speed. Includes an interactive calculator, formula, conversion table, and real-world examples.";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <style>
+      :root{
+        --bg:#f5f7fb;
+        --card:#ffffff;
+        --text:#0f172a;
+        --muted:#64748b;
+        --line:#e5e7eb;
+        --primary:#2563eb;
+        --primary-2:#1e40af;
+        --soft:#eef2ff;
+        --soft-2:#dbeafe;
+        --shadow:0 10px 26px rgba(15,23,42,.10);
+        --radius:14px;
+        --radius-sm:12px;
+      }
+      *{ box-sizing:border-box; }
+      body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); color:var(--text); }
+      .wrap{ max-width:980px; margin:22px auto; padding:0 16px 32px; }
+      .page-title{ display:flex; align-items:center; gap:10px; font-size:20px; font-weight:900; margin:6px 0 10px; color:#111827; }
+      .page-title .icon{ width:32px; height:32px; border-radius:10px; background:linear-gradient(135deg,var(--primary),#60a5fa); box-shadow:0 10px 18px rgba(37,99,235,.25); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:950; }
+      .subtitle{ margin:0 0 14px; color:var(--muted); font-size:14px; }
+
+      .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+      .tabs{ display:flex; gap:0; border-bottom:1px solid var(--line); background:#fff; padding:10px 10px 0; overflow-x:auto; }
+      .tab{
+        appearance:none;
+        border:1px solid var(--line);
+        border-bottom:none;
+        background:#f8fafc;
+        color:#334155;
+        padding:10px 14px;
+        border-top-left-radius:12px;
+        border-top-right-radius:12px;
+        font-weight:800;
+        cursor:pointer;
+        white-space:nowrap;
+        margin-right:8px;
+      }
+      .tab[aria-selected="true"]{ background:#fff; color:var(--primary-2); box-shadow:0 -1px 0 #fff inset; }
+
+      .panel{ padding:16px; }
+
+      /* IMPORTANT: panels show/hide via .active */
+      [data-panel]{ display:none; }
+      [data-panel].active{ display:block; }
+
+      .grid{ display:grid; grid-template-columns:1fr; gap:14px; }
+      @media (min-width: 860px){
+        .grid{ grid-template-columns:1.2fr .8fr; align-items:start; }
+      }
+
+      .box{ border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:14px; }
+      .box-title{ display:flex; align-items:flex-end; justify-content:space-between; gap:10px; margin-bottom:10px; }
+      .box-title h2{ margin:0; font-size:14px; color:#111827; font-weight:900; }
+      .hint{ font-size:12px; color:var(--muted); }
+
+      .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
+      .field{ display:flex; flex-direction:column; gap:6px; min-width:200px; flex:1 1 200px; }
+      .field label{ font-size:12px; font-weight:850; color:#111827; }
+      .input{
+        border:1px solid var(--line);
+        border-radius:12px;
+        padding:10px 12px;
+        font-size:14px;
+        outline:none;
+        width:100%;
+        background:#fff;
+      }
+      .input:focus{ border-color:#93c5fd; box-shadow:0 0 0 3px rgba(147,197,253,.35); }
+
+      .btn{
+        border:1px solid var(--line);
+        background:#fff;
+        padding:10px 14px;
+        border-radius:12px;
+        cursor:pointer;
+        font-weight:850;
+      }
+      .btn:hover{ border-color:#cbd5e1; background:#f8fafc; }
+      .btn.primary{ border-color:#93c5fd; background:var(--soft); color:#0b3b76; }
+
+      .big{
+        border-radius:var(--radius-sm);
+        border:1px solid #c7d2fe;
+        background:linear-gradient(180deg,#eef2ff,#ffffff);
+        padding:14px;
+        position:sticky;
+        top:14px;
+      }
+      .big-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
+      .status{ font-size:12px; font-weight:900; padding:6px 10px; border-radius:999px; border:1px solid var(--line); background:#fff; color:#0f172a; }
+      .status.ok{ border-color:rgba(22,163,74,.35); background:rgba(22,163,74,.08); color:#14532d; }
+      .status.wait{ border-color:rgba(245,158,11,.35); background:rgba(245,158,11,.10); color:#7c2d12; }
+
+      .time-card{ border:1px solid var(--line); border-radius:14px; background:#fff; padding:12px; }
+      .time-k{ font-size:12px; color:var(--muted); font-weight:900; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+      .badge{ display:inline-flex; align-items:center; padding:5px 8px; border-radius:999px; border:1px solid var(--line); background:#fff; font-size:12px; font-weight:900; color:#0f172a; white-space:nowrap; }
+      .time-v{ margin-top:6px; font-size:40px; font-weight:980; letter-spacing:-0.02em; color:#0f172a; line-height:1.05; }
+      .time-u{ margin-top:6px; font-size:12px; color:var(--muted); }
+
+      .note{ margin-top:10px; padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:#fbfdff; color:#0f172a; font-size:13px; }
+      .note.warn{ border-color:#fde68a; background:#fffbeb; }
+
+      .divider{ height:1px; background:var(--line); margin:14px 0; }
+      .recent{ margin-top:10px; font-size:13px; color:var(--muted); max-height:140px; overflow:auto; padding-right:6px; }
+      .recent div{ margin:6px 0; }
+
+      .table{ width:100%; border-collapse:collapse; margin-top:10px; font-size:14px; }
+      .table th, .table td{ border:1px solid var(--line); padding:10px; text-align:left; vertical-align:top; }
+      .table th{ background:#f8fafc; font-weight:950; }
+
+      .foot{ margin-top:16px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+      a{ color:var(--primary-2); text-decoration:none; }
+      a:hover{ text-decoration:underline; }
+
+      .toggle-row{ display:flex; gap:10px; flex-wrap:wrap; margin:8px 0 10px; }
+      .chip{
+        border:1px solid var(--line);
+        background:#fff;
+        border-radius:999px;
+        padding:8px 10px;
+        font-size:13px;
+        color:#0f172a;
+        font-weight:850;
+        cursor:pointer;
+        display:flex;
+        align-items:center;
+        gap:8px;
+        user-select:none;
+      }
+      .chip input{ transform:translateY(1px); }
+      .chip.active{ border-color:#bfdbfe; background:#eff6ff; color:#0b3b76; }
+    </style>
+  </head>
+
+  <body>
+    <main class="wrap">
+      <div class="page-title">
+        <div class="icon">⬇</div>
+        <div>Download Time Calculator</div>
+      </div>
+      <p class="subtitle">
+        Enter <strong>file size</strong> and <strong>download speed</strong>. The estimated time appears <strong>big and instantly</strong>.
+        (Remember: <strong>Mbps</strong> is different from <strong>MB/s</strong>.)
+      </p>
+
+      <section class="card" aria-label="download time calculator">
+        <div class="tabs" role="tablist" aria-label="Sections">
+          <button class="tab" type="button" role="tab" aria-selected="true" data-tab="calc">Calculator</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-tab="formula">Formulas</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-tab="table">Tables</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-tab="examples">Examples</button>
+          <button class="tab" type="button" role="tab" aria-selected="false" data-tab="faq">FAQ</button>
+        </div>
+
+        <div class="panel">
+          <!-- Calculator -->
+          <div data-panel="calc" class="active">
+            <div class="grid">
+              <div>
+                <div class="box">
+                  <div class="box-title">
+                    <h2>1) Choose how to enter speed</h2>
+                    <div class="hint">Most ISP plans are in Mbps</div>
+                  </div>
+
+                  <div class="toggle-row" id="speedChips">
+                    <label class="chip active">
+                      <input type="radio" name="speedMode" value="mbps" checked />
+                      Speed in Mbps
+                    </label>
+                    <label class="chip">
+                      <input type="radio" name="speedMode" value="mbpsReal" />
+                      Real speed (MB/s)
+                    </label>
+                  </div>
+
+                  <div class="divider"></div>
+
+                  <div class="box-title" style="margin-bottom:6px;">
+                    <h2>2) Enter file size + speed</h2>
+                    <div class="hint">Result updates as you type</div>
+                  </div>
+
+                  <div class="row">
+                    <div class="field">
+                      <label for="sizeValue">File size</label>
+                      <input id="sizeValue" class="input" type="number" step="any" inputmode="decimal" placeholder="e.g. 10" />
+                    </div>
+
+                    <div class="field" style="min-width:220px; flex:0 0 220px;">
+                      <label for="sizeUnit">Size unit</label>
+                      <select id="sizeUnit" class="input">
+                        <option value="MB">MB</option>
+                        <option value="GB" selected>GB</option>
+                        <option value="TB">TB</option>
+                      </select>
+                    </div>
+
+                    <div class="field" id="speedField">
+                      <label for="speedValue" id="speedLabel">Speed (Mbps)</label>
+                      <input id="speedValue" class="input" type="number" step="any" inputmode="decimal" placeholder="e.g. 100" />
+                    </div>
+
+                    <div class="field" style="min-width:160px; flex:0 0 160px;">
+                      <label for="overhead">Overhead</label>
+                      <select id="overhead" class="input" title="Protocol overhead and real-world slowdowns">
+                        <option value="1">None (ideal)</option>
+                        <option value="0.9" selected>10% overhead</option>
+                        <option value="0.8">20% overhead</option>
+                        <option value="0.7">30% overhead</option>
+                      </select>
+                    </div>
+
+                    <div class="field" style="min-width:160px; flex:0 0 160px;">
+                      <label for="rounding">Rounding</label>
+                      <select id="rounding" class="input">
+                        <option value="1">1 decimal</option>
+                        <option value="2" selected>2 decimals</option>
+                        <option value="3">3 decimals</option>
+                      </select>
+                    </div>
+
+                    <button type="button" id="clearBtn" class="btn">Clear</button>
+                  </div>
+
+                  <div class="note warn" id="unitHint">
+                    <strong>Heads up:</strong> 100 <strong>Mbps</strong> ≈ 12.5 <strong>MB/s</strong> (divide by 8).
+                  </div>
+                </div>
+
+                <div class="box" style="margin-top:14px;">
+                  <div class="box-title">
+                    <h2>Optional: Upload time</h2>
+                    <div class="hint">Same idea, different speed</div>
+                  </div>
+                  <div class="row">
+                    <div class="field">
+                      <label for="uploadSpeed">Upload speed (Mbps)</label>
+                      <input id="uploadSpeed" class="input" type="number" step="any" inputmode="decimal" placeholder="e.g. 20" />
+                    </div>
+                    <button type="button" id="copyUploadBtn" class="btn primary">Use upload speed</button>
+                  </div>
+                  <p class="subtitle" style="margin:10px 0 0;">
+                    If you click “Use upload speed”, the calculator uses that speed instead of download speed.
+                  </p>
+                </div>
+              </div>
+
+              <!-- BIG Result -->
+              <aside class="big" aria-live="polite">
+                <div class="big-head">
+                  <div>
+                    <p class="big-title" style="margin:0; font-size:14px; font-weight:950; color:#111827;">Estimated time</p>
+                    <p class="big-sub" id="summaryLine" style="margin:0 0 12px; color:var(--muted); font-size:12px;">Enter values to see results.</p>
+                  </div>
+                  <span id="statusPill" class="status wait">Waiting</span>
+                </div>
+
+                <div class="time-card">
+                  <div class="time-k">
+                    <span>Total time</span>
+                    <span class="badge" id="speedBadge">—</span>
+                  </div>
+                  <div class="time-v" id="timeBig">—</div>
+                  <div class="time-u" id="timeSmall">—</div>
+                </div>
+
+                <div class="note" style="border-style:dashed; border-color:#bfdbfe; background:#f0f7ff; color:#0b3b76; font-weight:850;">
+                  Tip: Real-world speed is often 70–90% of the “plan” speed (Wi-Fi, server limits, protocol overhead).
+                </div>
+
+                <div class="divider"></div>
+
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                  <div class="hint" style="font-weight:900; color:#111827;">Recent</div>
+                  <button type="button" id="copyBtn" class="btn">Copy</button>
+                </div>
+                <div class="recent" id="recentList">No calculations yet.</div>
+              </aside>
+            </div>
+          </div>
+
+          <!-- Formulas -->
+          <div data-panel="formula">
+            <div class="box">
+              <div class="box-title">
+                <h2>Quick Formulas</h2>
+                <div class="hint">Simple rules</div>
+              </div>
+              <div class="note"><strong>Time (seconds)</strong> = File size (MB) ÷ Speed (MB/s)</div>
+              <div class="note warn"><strong>MB/s</strong> = <strong>Mbps</strong> ÷ 8</div>
+              <div class="note"><strong>File size (MB)</strong> = GB × 1024 (binary) or GB × 1000 (decimal)</div>
+            </div>
+          </div>
+
+          <!-- Tables -->
+          <div data-panel="table">
+            <div class="box">
+              <div class="box-title">
+                <h2>Reference Tables</h2>
+                <div class="hint">Quick feel for times</div>
+              </div>
+              <table class="table" aria-label="speed conversion">
+                <thead>
+                  <tr><th>Speed (Mbps)</th><th>Approx MB/s</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>25</td><td>3.125</td></tr>
+                  <tr><td>50</td><td>6.25</td></tr>
+                  <tr><td>100</td><td>12.5</td></tr>
+                  <tr><td>200</td><td>25</td></tr>
+                  <tr><td>500</td><td>62.5</td></tr>
+                  <tr><td>1000</td><td>125</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Examples -->
+          <div data-panel="examples">
+            <div class="box">
+              <div class="box-title">
+                <h2>Real-World Examples</h2>
+                <div class="hint">Common situations</div>
+              </div>
+              <ul style="margin:8px 0 0; padding-left:18px;">
+                <li><strong>10 GB</strong> at <strong>100 Mbps</strong> (10% overhead) → about <strong>15 minutes</strong>.</li>
+                <li><strong>2 GB</strong> at <strong>20 MB/s</strong> → about <strong>1 minute 42 seconds</strong>.</li>
+                <li><strong>50 GB</strong> at <strong>500 Mbps</strong> (10% overhead) → about <strong>15 minutes</strong>.</li>
+              </ul>
+              <div class="note warn" style="margin-top:10px;">
+                <strong>Common mistake:</strong> Confusing <strong>Mb</strong> (megabits) with <strong>MB</strong> (megabytes). 1 byte = 8 bits.
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ -->
+          <div data-panel="faq">
+            <div class="box">
+              <div class="box-title">
+                <h2>FAQ</h2>
+                <div class="hint">Short answers</div>
+              </div>
+              <p><strong>Why is real time slower?</strong> Wi-Fi quality, server limits, congestion, protocol overhead, VPNs, and disk speed.</p>
+              <p><strong>Should I use Mbps or MB/s?</strong> ISP plans are usually Mbps; download tools often show MB/s.</p>
+              <p><strong>Is 1 GB 1000 or 1024 MB?</strong> Both exist. This calculator uses 1024 MB/GB.</p>
+            </div>
+          </div>
+
+          <div class="foot">
+            <a href="/">← Back to Home</a>
+            <span class="subtitle" style="margin:0;">SEO-safe, no framework</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // -----------------------
+      // Tabs: MUST toggle .active (matches CSS)
+      // -----------------------
+      const tabs = Array.from(document.querySelectorAll(".tab"));
+      const panels = Array.from(document.querySelectorAll("[data-panel]"));
+
+      function setTab(name){
+        tabs.forEach(t => t.setAttribute("aria-selected", t.dataset.tab === name ? "true" : "false"));
+        panels.forEach(p => p.classList.toggle("active", p.dataset.panel === name));
+      }
+
+      tabs.forEach(t => t.addEventListener("click", () => setTab(t.dataset.tab)));
+      setTab(tabs.find(t => t.getAttribute("aria-selected") === "true")?.dataset.tab || "calc");
+
+      // -----------------------
+      // Calculator
+      // -----------------------
+      const BYTES_MB = 1024 * 1024;
+      const BYTES_GB = 1024 * 1024 * 1024;
+      const BYTES_TB = 1024 * 1024 * 1024 * 1024;
+
+      const sizeValue = document.getElementById("sizeValue");
+      const sizeUnit  = document.getElementById("sizeUnit");
+      const speedValue = document.getElementById("speedValue");
+      const speedLabel = document.getElementById("speedLabel");
+      const overhead = document.getElementById("overhead");
+      const rounding = document.getElementById("rounding");
+      const clearBtn = document.getElementById("clearBtn");
+
+      const uploadSpeed = document.getElementById("uploadSpeed");
+      const copyUploadBtn = document.getElementById("copyUploadBtn");
+
+      const summaryLine = document.getElementById("summaryLine");
+      const statusPill = document.getElementById("statusPill");
+      const timeBig = document.getElementById("timeBig");
+      const timeSmall = document.getElementById("timeSmall");
+      const speedBadge = document.getElementById("speedBadge");
+      const recentList = document.getElementById("recentList");
+      const copyBtn = document.getElementById("copyBtn");
+
+      const speedChips = document.getElementById("speedChips");
+      const speedModeRadios = Array.from(document.querySelectorAll('input[name="speedMode"]'));
+
+      const recent = [];
+
+      function round(n, d){
+        const dd = Number(d);
+        const f = Math.pow(10, dd);
+        return Math.round(n * f) / f;
+      }
+
+      function getSpeedMode(){
+        return speedModeRadios.find(r => r.checked)?.value || "mbps";
+      }
+
+      function bytesFromSize(){
+        const v = parseFloat(sizeValue.value);
+        if (!Number.isFinite(v) || v <= 0) return NaN;
+        const u = sizeUnit.value;
+        if (u === "MB") return v * BYTES_MB;
+        if (u === "GB") return v * BYTES_GB;
+        if (u === "TB") return v * BYTES_TB;
+        return NaN;
+      }
+
+      // returns effective bits/sec AFTER overhead
+      function bpsFromInputSpeed(){
+        const v = parseFloat(speedValue.value);
+        if (!Number.isFinite(v) || v <= 0) return NaN;
+
+        const mode = getSpeedMode();
+        // mbps => v is megabits/sec
+        // mbpsReal => v is MB/s, convert to bits/sec: MB/s * 8 * 1024*1024
+        let bpsRaw;
+        if (mode === "mbps"){
+          bpsRaw = v * 1_000_000;
+        } else {
+          bpsRaw = v * 8 * BYTES_MB;
+        }
+
+        const factor = parseFloat(overhead.value || "1");
+        return bpsRaw * factor;
+      }
+
+      function formatDuration(sec){
+        if (!Number.isFinite(sec) || sec < 0) return "—";
+        const s = Math.round(sec);
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        const r = s % 60;
+        if (h > 0) return `${h}h ${m}m ${r}s`;
+        if (m > 0) return `${m}m ${r}s`;
+        return `${r}s`;
+      }
+
+      function setChipUI(){
+        const mode = getSpeedMode();
+        Array.from(speedChips.querySelectorAll(".chip")).forEach(ch => ch.classList.remove("active"));
+        const activeChip = speedModeRadios.find(r => r.checked)?.closest(".chip");
+        if (activeChip) activeChip.classList.add("active");
+
+        if (mode === "mbps"){
+          speedLabel.textContent = "Speed (Mbps)";
+          speedValue.placeholder = "e.g. 100";
+        } else {
+          speedLabel.textContent = "Speed (MB/s)";
+          speedValue.placeholder = "e.g. 12.5";
+        }
+        compute();
+      }
+
+      function pushRecent(line){
+        if (!line) return;
+        recent.unshift(line);
+        if (recent.length > 10) recent.pop();
+        recentList.innerHTML = recent.map(x => `<div>• ${x}</div>`).join("");
+      }
+
+      function setWaiting(){
+        statusPill.textContent = "Waiting";
+        statusPill.classList.add("wait");
+        statusPill.classList.remove("ok");
+        summaryLine.textContent = "Enter values to see results.";
+        speedBadge.textContent = "—";
+        timeBig.textContent = "—";
+        timeSmall.textContent = "—";
+      }
+
+      function compute(){
+        const bytes = bytesFromSize();
+        const bps = bpsFromInputSpeed();
+        const d = rounding.value;
+
+        if (!Number.isFinite(bytes) || !Number.isFinite(bps)){
+          setWaiting();
+          return;
+        }
+
+        const seconds = (bytes * 8) / bps;
+        const pretty = formatDuration(seconds);
+
+        const mode = getSpeedMode();
+        const speedText = mode === "mbps"
+          ? `${round(parseFloat(speedValue.value), d)} Mbps`
+          : `${round(parseFloat(speedValue.value), d)} MB/s`;
+
+        statusPill.textContent = "Live";
+        statusPill.classList.remove("wait");
+        statusPill.classList.add("ok");
+
+        speedBadge.textContent = speedText;
+        timeBig.textContent = pretty;
+
+        const s = Math.round(seconds);
+        timeSmall.textContent = `${s} seconds total`;
+
+        const sizeText = `${sizeValue.value} ${sizeUnit.value}`;
+        summaryLine.textContent = `${sizeText} at ${speedText} → ${pretty}`;
+        pushRecent(`${sizeText} @ ${speedText} → ${pretty}`);
+      }
+
+      function clearAll(){
+        sizeValue.value = "";
+        speedValue.value = "";
+        recent.length = 0;
+        recentList.textContent = "No calculations yet.";
+        setWaiting();
+      }
+
+      // events
+      [sizeValue, sizeUnit, speedValue, overhead, rounding].forEach(el => el.addEventListener("input", compute));
+      speedModeRadios.forEach(r => r.addEventListener("change", setChipUI));
+      clearBtn.addEventListener("click", clearAll);
+
+      copyUploadBtn.addEventListener("click", () => {
+        const v = parseFloat(uploadSpeed.value);
+        if (!Number.isFinite(v) || v <= 0) return;
+        // upload speed assumed Mbps
+        speedModeRadios.forEach(r => (r.checked = r.value === "mbps"));
+        setChipUI();
+        speedValue.value = String(v);
+        compute();
+      });
+
+      copyBtn.addEventListener("click", async () => {
+        const text = summaryLine.textContent || "";
+        try{
+          await navigator.clipboard.writeText(text);
+          copyBtn.textContent = "Copied";
+          setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+        }catch{
+          copyBtn.textContent = "Copy failed";
+          setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+        }
+      });
+
+      // init
+      setChipUI();
+      setWaiting();
+    </script>
+  </body>
+</html>
