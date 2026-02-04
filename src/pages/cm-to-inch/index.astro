@@ -1,7 +1,7 @@
 ---
-const title = "Download Time Calculator";
+const title = "Cm to Inch Converter";
 const description =
-  "Estimate how long a download will take from file size and internet speed. Includes an interactive calculator, formula, conversion table, and real-world examples.";
+  "Convert centimeters to inches easily. Includes an interactive calculator, simple formula, conversion table, and real-world examples.";
 ---
 
 <!doctype html>
@@ -11,679 +11,148 @@ const description =
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-
-    <style>
-      :root{
-        --bg:#f5f7fb;
-        --card:#ffffff;
-        --text:#0f172a;
-        --muted:#64748b;
-        --line:#e5e7eb;
-        --primary:#2b6cb0;
-        --primary-2:#1e4e8c;
-        --soft:#eef6ff;
-        --soft-2:#d9ecff;
-        --shadow:0 6px 18px rgba(15,23,42,.08);
-        --radius:12px;
-        --radius-sm:10px;
-      }
-      *{ box-sizing:border-box; }
-      body{
-        margin:0;
-        font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-        background:var(--bg);
-        color:var(--text);
-      }
-      .wrap{
-        max-width:980px;
-        margin:22px auto;
-        padding:0 16px 32px;
-      }
-      .page-title{
-        display:flex;
-        align-items:center;
-        gap:10px;
-        font-size:20px;
-        font-weight:800;
-        margin:6px 0 10px;
-        color:#111827;
-      }
-      .page-title .icon{
-        width:28px;height:28px;border-radius:8px;
-        background:linear-gradient(135deg,var(--primary),#4aa3ff);
-        box-shadow:0 6px 14px rgba(43,108,176,.25);
-        display:flex;align-items:center;justify-content:center;
-        color:#fff;font-weight:900;
-      }
-      .subtitle{
-        margin:0 0 14px;
-        color:var(--muted);
-        font-size:14px;
-      }
-      .card{
-        background:var(--card);
-        border:1px solid var(--line);
-        border-radius:var(--radius);
-        box-shadow:var(--shadow);
-        overflow:hidden;
-      }
-      .tabs{
-        display:flex;
-        gap:0;
-        border-bottom:1px solid var(--line);
-        background:#fff;
-        padding:10px 10px 0;
-        overflow-x:auto;
-      }
-      .tab{
-        appearance:none;
-        border:1px solid var(--line);
-        border-bottom:none;
-        background:#f8fafc;
-        color:#334155;
-        padding:10px 14px;
-        border-top-left-radius:10px;
-        border-top-right-radius:10px;
-        font-weight:700;
-        cursor:pointer;
-        white-space:nowrap;
-        margin-right:8px;
-      }
-      .tab[aria-selected="true"]{
-        background:#fff;
-        color:var(--primary-2);
-        border-color:var(--line);
-        box-shadow:0 -1px 0 #fff inset;
-      }
-      .panel{ padding:16px; }
-
-      .option-block{
-        border:1px solid var(--line);
-        border-radius:var(--radius-sm);
-        padding:14px;
-        background:#fff;
-      }
-      .option-title{
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        gap:10px;
-        margin-bottom:10px;
-      }
-      .option-title h2{
-        font-size:14px;
-        margin:0;
-        color:#111827;
-      }
-      .hint{ font-size:12px;color:var(--muted); }
-
-      .row{
-        display:flex;
-        gap:12px;
-        flex-wrap:wrap;
-        align-items:flex-end;
-      }
-      .radio-row{
-        display:flex;
-        align-items:center;
-        gap:10px;
-        padding:10px 10px;
-        border-radius:10px;
-      }
-      .radio-row:hover{ background:#f8fafc; }
-
-      .field{
-        display:flex;
-        flex-direction:column;
-        gap:6px;
-        min-width:220px;
-      }
-      .field label{
-        font-size:12px;
-        color:#111827;
-        font-weight:700;
-      }
-      .input{
-        border:1px solid var(--line);
-        border-radius:10px;
-        padding:10px 12px;
-        font-size:14px;
-        outline:none;
-        width:100%;
-        background:#fff;
-      }
-      .input:focus{
-        border-color:#93c5fd;
-        box-shadow:0 0 0 3px rgba(147,197,253,.35);
-      }
-      .inline{ display:flex;align-items:center;gap:10px;flex-wrap:wrap; }
-      .mini{ width:140px; }
-      .mini-sm{ width:96px; }
-
-      .btn{
-        border:1px solid var(--line);
-        background:#fff;
-        padding:10px 14px;
-        border-radius:10px;
-        cursor:pointer;
-        font-weight:700;
-      }
-      .btn:hover{ border-color:#cbd5e1;background:#f8fafc; }
-      .btn.primary{
-        border-color:#93c5fd;
-        background:var(--soft);
-        color:#0b3b76;
-      }
-
-      .result{
-        margin-top:14px;
-        border:1px solid var(--line);
-        border-radius:var(--radius-sm);
-        overflow:hidden;
-        background:#fff;
-      }
-      .result-head{
-        background:var(--soft-2);
-        padding:10px 12px;
-        font-weight:900;
-        color:#0b3b76;
-      }
-      .result-body{ padding:14px 12px; }
-      .result-grid{
-        display:grid;
-        grid-template-columns:120px 1fr;
-        gap:10px 12px;
-        align-items:center;
-      }
-      .k{ font-size:13px;color:#111827;font-weight:800; }
-      .v{ display:flex;gap:10px;flex-wrap:wrap;align-items:center; }
-
-      .pill{
-        display:inline-flex;
-        align-items:center;
-        gap:8px;
-        padding:8px 10px;
-        border:1px dashed #bfdbfe;
-        background:#f0f7ff;
-        border-radius:10px;
-        font-size:13px;
-        color:#0b3b76;
-        font-weight:750;
-      }
-
-      .table{
-        width:100%;
-        border-collapse:collapse;
-        margin-top:10px;
-        font-size:14px;
-      }
-      .table th,.table td{
-        border:1px solid var(--line);
-        padding:10px 10px;
-        text-align:left;
-      }
-      .table th{ background:#f8fafc;font-weight:900; }
-
-      .muted{ color:var(--muted);font-size:13px; }
-      .note{
-        margin-top:10px;
-        padding:10px 12px;
-        border:1px solid var(--line);
-        border-radius:10px;
-        background:#fbfdff;
-      }
-      .foot{
-        margin-top:16px;
-        display:flex;
-        justify-content:space-between;
-        gap:10px;
-        flex-wrap:wrap;
-      }
-      a{ color:var(--primary-2);text-decoration:none; }
-      a:hover{ text-decoration:underline; }
-
-      /* panels */
-      [data-panel]{ display:none; }
-      [data-panel][data-active="true"]{ display:block; }
-
-      /* tiny debug bar */
-      .debug{
-        margin-top:10px;
-        font-size:12px;
-        color:#0b3b76;
-      }
-    </style>
   </head>
 
   <body>
-    <main class="wrap">
-      <div class="page-title">
-        <div class="icon">≡</div>
-        <div>Download Time Calculator</div>
-      </div>
+    <main style="max-width: 800px; margin: 2rem auto; font-family: system-ui, sans-serif;">
 
-      <p class="subtitle">
-        Estimate download time from <strong>file size</strong> and <strong>internet speed</strong>.
-        Tip: internet speed is usually in <strong>Mbps</strong>, while file sizes are in <strong>MB/GB</strong>.
+      <h1>Cm to Inch Converter</h1>
+
+      <p>
+        To convert centimeters to inches, divide the length value by <strong>2.54</strong>.
       </p>
 
-      <section class="card" aria-label="download-time-calculator">
-        <div class="tabs" role="tablist" aria-label="Sections">
-          <button class="tab" role="tab" type="button" aria-selected="true"  data-tab="calculator">Calculator</button>
-          <button class="tab" role="tab" type="button" aria-selected="false" data-tab="formulas">Formulas</button>
-          <button class="tab" role="tab" type="button" aria-selected="false" data-tab="tables">Tables</button>
-          <button class="tab" role="tab" type="button" aria-selected="false" data-tab="examples">Examples</button>
-          <button class="tab" role="tab" type="button" aria-selected="false" data-tab="faq">FAQ</button>
+      <!-- 🔧 Interactive Converter -->
+      <section style="margin: 1.5rem 0; padding: 1rem; border: 1px solid #ddd;">
+        <h2 style="margin-top: 0;">Interactive cm ↔ inch Converter</h2>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
+          <div>
+            <label for="cmInput"><strong>Centimeters (cm)</strong></label><br />
+            <input
+              id="cmInput"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder="e.g. 10"
+              style="padding: .5rem; width: 220px;"
+            />
+          </div>
+
+          <div>
+            <label for="inchInput"><strong>Inches (in)</strong></label><br />
+            <input
+              id="inchInput"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder="e.g. 3.94"
+              style="padding: .5rem; width: 220px;"
+            />
+          </div>
+
+          <button
+            type="button"
+            id="clearBtn"
+            style="padding: .55rem .9rem;"
+          >
+            Clear
+          </button>
         </div>
 
-        <div class="panel">
-          <div class="debug" id="debugLine">Debug: —</div>
-
-          <!-- Panel: Calculator -->
-          <div data-panel="calculator" data-active="true">
-            <div class="option-block">
-              <div class="option-title">
-                <h2>Interactive Calculator</h2>
-                <div class="hint">Pick a mode, then enter values</div>
-              </div>
-
-              <div>
-                <label class="radio-row">
-                  <input type="radio" name="mode" value="time" checked />
-                  <span><strong>Find time</strong> (size + speed → time)</span>
-                </label>
-
-                <label class="radio-row">
-                  <input type="radio" name="mode" value="speed" />
-                  <span><strong>Find required speed</strong> (size + time → speed)</span>
-                </label>
-              </div>
-
-              <div style="height:10px;"></div>
-
-              <div class="row">
-                <div class="field">
-                  <label for="sizeValue">File size</label>
-                  <div class="inline">
-                    <input id="sizeValue" class="input" type="number" step="any" inputmode="decimal" placeholder="e.g. 5" />
-                    <select id="sizeUnit" class="input mini-sm">
-                      <option value="MB">MB</option>
-                      <option value="GB" selected>GB</option>
-                      <option value="TB">TB</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="field">
-                  <label for="speedValue">Speed</label>
-                  <div class="inline">
-                    <input id="speedValue" class="input" type="number" step="any" inputmode="decimal" placeholder="e.g. 100" />
-                    <select id="speedUnit" class="input mini">
-                      <option value="Mbps" selected>Mbps</option>
-                      <option value="MBps">MB/s</option>
-                      <option value="Gbps">Gbps</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="field">
-                  <label for="timeValue">Time</label>
-                  <div class="inline">
-                    <input id="timeValue" class="input" type="number" step="any" inputmode="decimal" placeholder="e.g. 10" />
-                    <select id="timeUnit" class="input mini">
-                      <option value="sec">seconds</option>
-                      <option value="min" selected>minutes</option>
-                      <option value="hr">hours</option>
-                    </select>
-                  </div>
-                </div>
-
-                <button type="button" id="clearBtn" class="btn">Clear</button>
-
-                <div class="inline">
-                  <span class="muted">Overhead</span>
-                  <select id="overheadSelect" class="input mini-sm">
-                    <option value="0" selected>0%</option>
-                    <option value="5">5%</option>
-                    <option value="10">10%</option>
-                    <option value="15">15%</option>
-                  </select>
-
-                  <span class="muted">Rounding</span>
-                  <select id="roundSelect" class="input mini-sm">
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4" selected>4</option>
-                    <option value="6">6</option>
-                  </select>
-                  <span class="muted">decimals</span>
-                </div>
-              </div>
-
-              <div class="note">
-                <div class="muted">
-                  Note: This is an estimate. Real downloads can be slower due to Wi-Fi quality, server limits,
-                  congestion, VPN, and protocol overhead.
-                </div>
-              </div>
-            </div>
-
-            <div class="result" aria-live="polite">
-              <div class="result-head">Result</div>
-              <div class="result-body">
-                <div class="result-grid">
-                  <div class="k">Mode</div>
-                  <div class="v"><span id="modeLabel" class="pill">Find time</span></div>
-
-                  <div class="k">Expression</div>
-                  <div class="v">
-                    <input id="exprOutput" class="input" readonly value="time = (size × 8) ÷ speed" />
-                    <button type="button" id="copyBtn" class="btn primary">Copy</button>
-                  </div>
-
-                  <div class="k">Output</div>
-                  <div class="v"><span id="mainOutput" class="pill">Enter values to calculate.</span></div>
-
-                  <div class="k">Breakdown</div>
-                  <div class="v"><div class="muted" id="breakdown">—</div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Panel: Formulas -->
-          <div data-panel="formulas">
-            <div class="option-block">
-              <div class="option-title">
-                <h2>Formulas</h2>
-                <div class="hint">Quick rules</div>
-              </div>
-
-              <div class="pill">time (sec) = (size in megabits) ÷ (speed in Mbps)</div>
-              <div style="height:10px"></div>
-              <div class="pill">size (megabits) = size (MB) × 8</div>
-              <div style="height:10px"></div>
-              <div class="pill">speed (Mbps) = (size in megabits) ÷ time (sec)</div>
-
-              <p class="muted" style="margin:10px 0 0;">
-                Reminder: <strong>1 Byte = 8 bits</strong>. ISPs advertise in <strong>Mbps</strong>, files are usually in <strong>MB/GB</strong>.
-              </p>
-            </div>
-          </div>
-
-          <!-- Panel: Tables -->
-          <div data-panel="tables">
-            <div class="option-block">
-              <div class="option-title">
-                <h2>Conversion / Quick Table</h2>
-                <div class="hint">0% overhead</div>
-              </div>
-
-              <table class="table">
-                <thead>
-                  <tr><th>File size</th><th>Speed</th><th>Estimated time</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td>1 GB</td><td>25 Mbps</td><td>~5 min 20 sec</td></tr>
-                  <tr><td>1 GB</td><td>100 Mbps</td><td>~1 min 20 sec</td></tr>
-                  <tr><td>5 GB</td><td>100 Mbps</td><td>~6 min 40 sec</td></tr>
-                  <tr><td>10 GB</td><td>200 Mbps</td><td>~6 min 40 sec</td></tr>
-                  <tr><td>50 GB</td><td>300 Mbps</td><td>~22 min 13 sec</td></tr>
-                  <tr><td>100 GB</td><td>1 Gbps</td><td>~13 min 20 sec</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Panel: Examples -->
-          <div data-panel="examples">
-            <div class="option-block">
-              <div class="option-title">
-                <h2>Examples</h2>
-                <div class="hint">Real-world estimates</div>
-              </div>
-
-              <ul style="margin:8px 0 0; padding-left:18px;">
-                <li><strong>20 GB</strong> at <strong>200 Mbps</strong> → ~13 min 20 sec (0% overhead)</li>
-                <li><strong>15 GB</strong> at <strong>50 Mbps</strong> → ~40 min</li>
-                <li><strong>8 GB</strong> at <strong>20 MB/s</strong> (≈160 Mbps) → ~6–7 min</li>
-              </ul>
-
-              <div style="height:10px;"></div>
-              <p class="muted">
-                Common mistake: treating <strong>Mbps</strong> as <strong>MB/s</strong>.
-                100 Mbps is ~12.5 MB/s (best case).
-              </p>
-            </div>
-          </div>
-
-          <!-- Panel: FAQ -->
-          <div data-panel="faq">
-            <div class="option-block">
-              <div class="option-title">
-                <h2>FAQ</h2>
-                <div class="hint">Quick answers</div>
-              </div>
-
-              <p style="margin:8px 0 0;">
-                <strong>Why is real download slower?</strong>
-                Wi-Fi quality, server limits, congestion, VPN, and protocol overhead.
-              </p>
-
-              <p style="margin:8px 0 0;">
-                <strong>What overhead should I use?</strong>
-                Try 5–15% for a more realistic estimate.
-              </p>
-
-              <p style="margin:8px 0 0;">
-                <strong>Is Mbps the same as MB/s?</strong>
-                No. 1 MB/s = 8 Mbps.
-              </p>
-            </div>
-          </div>
-
-          <div class="foot">
-            <a href="/">← Back to Home</a>
-            <span class="muted">SEO-safe, no framework</span>
-          </div>
-        </div>
+        <p style="margin-top: .75rem; color: #555;">
+          Formula: <strong>in = cm ÷ 2.54</strong> · <strong>cm = in × 2.54</strong>
+        </p>
       </section>
+
+      <h2>Quick Conversion Formula</h2>
+      <p>
+        <strong>inches = centimeters ÷ 2.54</strong>
+      </p>
+
+      <h2>Common Cm to Inch Conversions</h2>
+      <table border="1" cellpadding="8" cellspacing="0">
+        <tr>
+          <th>Centimeters (cm)</th>
+          <th>Inches (in)</th>
+        </tr>
+        <tr><td>1</td><td>0.39</td></tr>
+        <tr><td>5</td><td>1.97</td></tr>
+        <tr><td>10</td><td>3.94</td></tr>
+        <tr><td>30</td><td>11.81</td></tr>
+        <tr><td>100</td><td>39.37</td></tr>
+      </table>
+
+      <h2>Real-World Examples</h2>
+      <ul>
+        <li>A 30 cm ruler is about 11.8 inches long.</li>
+        <li>10 cm equals roughly the width of a smartphone.</li>
+        <li>100 cm equals 1 meter, or about 39 inches.</li>
+      </ul>
+
+      <h2>Common Mistakes</h2>
+      <p>
+        A common mistake is multiplying by 2.54 instead of dividing when converting cm to inches.
+      </p>
+
+      <h2>FAQ</h2>
+      <p><strong>Is 1 cm equal to 1 inch?</strong> No. 1 inch equals 2.54 cm.</p>
+      <p><strong>Why is 2.54 used?</strong> It is the internationally agreed conversion factor.</p>
+
+      <p>
+        <a href="/">← Back to Home</a>
+      </p>
+
     </main>
 
+    <!-- ✅ Plain JS (SEO-safe, no framework) -->
     <script>
-      // ---------- Tabs ----------
-      const tabs = Array.from(document.querySelectorAll(".tab"));
-      const panels = Array.from(document.querySelectorAll("[data-panel]"));
-      const debugLine = document.getElementById("debugLine");
+      const CM_PER_INCH = 2.54;
 
-      function setTab(name){
-        tabs.forEach(t => {
-          const active = t.dataset.tab === name;
-          t.setAttribute("aria-selected", active ? "true" : "false");
-        });
+      const cmInput = document.getElementById("cmInput");
+      const inchInput = document.getElementById("inchInput");
+      const clearBtn = document.getElementById("clearBtn");
 
-        panels.forEach(p => {
-          if (p.dataset.panel === name) p.setAttribute("data-active", "true");
-          else p.removeAttribute("data-active");
-        });
+      let isUpdating = false;
 
-        if (debugLine) debugLine.textContent = `Debug: current tab = ${name}`;
+      function round(value, decimals = 4) {
+        const factor = Math.pow(10, decimals);
+        return Math.round(value * factor) / factor;
       }
 
-      tabs.forEach(t => {
-        t.type = "button";
-        t.addEventListener("click", (e) => {
-          e.preventDefault();
-          setTab(t.dataset.tab);
-        });
+      cmInput.addEventListener("input", () => {
+        if (isUpdating) return;
+        const cm = parseFloat(cmInput.value);
+        isUpdating = true;
+
+        if (Number.isFinite(cm)) {
+          inchInput.value = round(cm / CM_PER_INCH);
+        } else {
+          inchInput.value = "";
+        }
+
+        isUpdating = false;
       });
 
-      const initialTab =
-        tabs.find(t => t.getAttribute("aria-selected") === "true")?.dataset.tab
-        || tabs[0]?.dataset.tab
-        || "calculator";
-      setTab(initialTab);
+      inchInput.addEventListener("input", () => {
+        if (isUpdating) return;
+        const inch = parseFloat(inchInput.value);
+        isUpdating = true;
 
-      // ---------- Calculator ----------
-      const BYTES_PER_MB = 1_000_000;
-      const BYTES_PER_GB = 1_000_000_000;
-      const BYTES_PER_TB = 1_000_000_000_000;
-
-      const sizeValue = document.getElementById("sizeValue");
-      const sizeUnit = document.getElementById("sizeUnit");
-      const speedValue = document.getElementById("speedValue");
-      const speedUnit = document.getElementById("speedUnit");
-      const timeValue = document.getElementById("timeValue");
-      const timeUnit = document.getElementById("timeUnit");
-      const clearBtn = document.getElementById("clearBtn");
-      const roundSelect = document.getElementById("roundSelect");
-      const overheadSelect = document.getElementById("overheadSelect");
-
-      const modeRadios = Array.from(document.querySelectorAll('input[name="mode"]'));
-      const modeLabel = document.getElementById("modeLabel");
-      const exprOutput = document.getElementById("exprOutput");
-      const copyBtn = document.getElementById("copyBtn");
-      const mainOutput = document.getElementById("mainOutput");
-      const breakdown = document.getElementById("breakdown");
-
-      function getMode(){
-        return modeRadios.find(r => r.checked)?.value || "time";
-      }
-
-      function roundTo(val, decimals){
-        const d = Number(decimals);
-        if (!Number.isFinite(d)) return val;
-        const f = Math.pow(10, d);
-        return Math.round(val * f) / f;
-      }
-
-      function bytesFromSize(){
-        const v = parseFloat(sizeValue.value);
-        if (!Number.isFinite(v) || v <= 0) return NaN;
-        if (sizeUnit.value === "MB") return v * BYTES_PER_MB;
-        if (sizeUnit.value === "GB") return v * BYTES_PER_GB;
-        if (sizeUnit.value === "TB") return v * BYTES_PER_TB;
-        return NaN;
-      }
-
-      function bpsFromSpeed(){
-        const v = parseFloat(speedValue.value);
-        if (!Number.isFinite(v) || v <= 0) return NaN;
-        if (speedUnit.value === "Mbps") return v * 1_000_000;
-        if (speedUnit.value === "Gbps") return v * 1_000_000_000;
-        if (speedUnit.value === "MBps") return v * 8 * 1_000_000;
-        return NaN;
-      }
-
-      function secondsFromTime(){
-        const v = parseFloat(timeValue.value);
-        if (!Number.isFinite(v) || v <= 0) return NaN;
-        if (timeUnit.value === "sec") return v;
-        if (timeUnit.value === "min") return v * 60;
-        if (timeUnit.value === "hr") return v * 3600;
-        return NaN;
-      }
-
-      function formatDuration(seconds){
-        const s = Math.max(0, Math.round(seconds));
-        const h = Math.floor(s / 3600);
-        const m = Math.floor((s % 3600) / 60);
-        const sec = s % 60;
-        if (h) return `${h} hr ${m} min ${sec} sec`;
-        if (m) return `${m} min ${sec} sec`;
-        return `${sec} sec`;
-      }
-
-      function setModeUI(){
-        const mode = getMode();
-        if (mode === "time"){
-          modeLabel.textContent = "Find time";
-          exprOutput.value = "time = (size × 8) ÷ speed";
-          speedValue.disabled = false; speedUnit.disabled = false;
-          timeValue.disabled = true;  timeUnit.disabled = true;
-          timeValue.value = "";
+        if (Number.isFinite(inch)) {
+          cmInput.value = round(inch * CM_PER_INCH);
         } else {
-          modeLabel.textContent = "Find required speed";
-          exprOutput.value = "speed = (size × 8) ÷ time";
-          speedValue.disabled = true;  speedUnit.disabled = true;
-          speedValue.value = "";
-          timeValue.disabled = false; timeUnit.disabled = false;
-        }
-        compute();
-      }
-
-      function compute(){
-        const mode = getMode();
-        const decimals = parseInt(roundSelect.value, 10) || 4;
-        const overheadPct = parseFloat(overheadSelect.value || "0");
-        const overheadFactor = 1 - (overheadPct / 100);
-
-        const bytes = bytesFromSize();
-        const bits = Number.isFinite(bytes) ? bytes * 8 : NaN;
-
-        mainOutput.textContent = "Enter values to calculate.";
-        breakdown.textContent = "—";
-
-        if (!Number.isFinite(bits) || bits <= 0) return;
-
-        if (mode === "time"){
-          const speedBpsRaw = bpsFromSpeed();
-          if (!Number.isFinite(speedBpsRaw) || speedBpsRaw <= 0) return;
-          const speedBpsEff = speedBpsRaw * overheadFactor;
-
-          const sec = bits / speedBpsEff;
-          mainOutput.textContent = `Estimated time: ${formatDuration(sec)}`;
-          breakdown.textContent = `bits=${roundTo(bits/1_000_000,decimals)} Mb · speed=${roundTo(speedBpsRaw/1_000_000,decimals)} Mbps · overhead=${overheadPct}%`;
-          return;
+          cmInput.value = "";
         }
 
-        // mode === "speed"
-        const tSec = secondsFromTime();
-        if (!Number.isFinite(tSec) || tSec <= 0) return;
-
-        const requiredEff = bits / tSec;            // effective bps needed
-        const requiredRaw = requiredEff / overheadFactor; // raw bps (before overhead)
-        const requiredMbps = requiredRaw / 1_000_000;
-
-        mainOutput.textContent = `Required speed: ${roundTo(requiredMbps, decimals)} Mbps`;
-        breakdown.textContent = `bits=${roundTo(bits/1_000_000,decimals)} Mb · time=${formatDuration(tSec)} · overhead=${overheadPct}%`;
-      }
-
-      function onAnyInput(){
-        compute();
-      }
-
-      [sizeValue,sizeUnit,speedValue,speedUnit,timeValue,timeUnit,roundSelect,overheadSelect]
-        .forEach(el => el.addEventListener("input", onAnyInput));
-
-      modeRadios.forEach(r => r.addEventListener("change", setModeUI));
+        isUpdating = false;
+      });
 
       clearBtn.addEventListener("click", () => {
-        sizeValue.value = "";
-        speedValue.value = "";
-        timeValue.value = "";
-        mainOutput.textContent = "Enter values to calculate.";
-        breakdown.textContent = "—";
-        setModeUI();
+        cmInput.value = "";
+        inchInput.value = "";
+        cmInput.focus();
       });
-
-      copyBtn.addEventListener("click", async () => {
-        const text = exprOutput.value || "";
-        try{
-          await navigator.clipboard.writeText(text);
-          copyBtn.textContent = "Copied";
-          setTimeout(()=>copyBtn.textContent="Copy", 900);
-        }catch{
-          // fallback
-          exprOutput.select();
-          document.execCommand("copy");
-          copyBtn.textContent = "Copied";
-          setTimeout(()=>copyBtn.textContent="Copy", 900);
-        }
-      });
-
-      // init
-      setModeUI();
     </script>
   </body>
 </html>
