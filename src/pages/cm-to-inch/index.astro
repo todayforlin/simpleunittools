@@ -11,148 +11,569 @@ const description =
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+
+    <style>
+      :root{
+        --bg: #f5f7fb;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --line: #e5e7eb;
+        --primary: #2b6cb0;
+        --primary-2: #1e4e8c;
+        --soft: #eef6ff;
+        --soft-2: #d9ecff;
+        --shadow: 0 6px 18px rgba(15, 23, 42, .08);
+        --radius: 12px;
+        --radius-sm: 10px;
+      }
+
+      *{ box-sizing: border-box; }
+      body{
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .wrap{
+        max-width: 980px;
+        margin: 22px auto;
+        padding: 0 16px 32px;
+      }
+
+      .page-title{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: 700;
+        margin: 6px 0 14px;
+        color: #111827;
+      }
+      .page-title .icon{
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, var(--primary), #4aa3ff);
+        box-shadow: 0 6px 14px rgba(43,108,176,.25);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color: white;
+        font-weight: 800;
+      }
+      .subtitle{
+        margin: 0 0 14px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .card{
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .tabs{
+        display:flex;
+        gap: 0;
+        border-bottom: 1px solid var(--line);
+        background: #fff;
+        padding: 10px 10px 0;
+        overflow-x:auto;
+      }
+      .tab{
+        appearance: none;
+        border: 1px solid var(--line);
+        border-bottom: none;
+        background: #f8fafc;
+        color: #334155;
+        padding: 10px 14px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        font-weight: 650;
+        cursor: pointer;
+        white-space: nowrap;
+        margin-right: 8px;
+      }
+      .tab[aria-selected="true"]{
+        background: #fff;
+        color: var(--primary-2);
+        border-color: var(--line);
+        box-shadow: 0 -1px 0 #fff inset;
+      }
+
+      .panel{ padding: 16px; }
+
+      .option-block{
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        padding: 14px;
+        background: #fff;
+      }
+      .option-title{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .option-title h2{
+        font-size: 14px;
+        margin: 0;
+        color: #111827;
+      }
+      .hint{
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .row{
+        display:flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .radio-row{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        padding: 10px 10px;
+        border-radius: 10px;
+      }
+      .radio-row:hover{ background: #f8fafc; }
+      .radio-row input[type="radio"]{ transform: translateY(1px); }
+
+      .field{
+        display:flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 220px;
+      }
+      .field label{
+        font-size: 12px;
+        color: #111827;
+        font-weight: 650;
+      }
+      .input{
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        outline: none;
+        width: 100%;
+        background: #fff;
+      }
+      .input:focus{
+        border-color: #93c5fd;
+        box-shadow: 0 0 0 3px rgba(147,197,253,.35);
+      }
+
+      .btn{
+        border: 1px solid var(--line);
+        background: #fff;
+        padding: 10px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 650;
+      }
+      .btn:hover{
+        border-color: #cbd5e1;
+        background: #f8fafc;
+      }
+      .btn.primary{
+        border-color: #93c5fd;
+        background: var(--soft);
+        color: #0b3b76;
+      }
+
+      .inline{
+        display:flex;
+        align-items:center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .mini{ width: 96px; }
+
+      .result{
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        background: #fff;
+      }
+      .result-head{
+        background: var(--soft-2);
+        padding: 10px 12px;
+        font-weight: 800;
+        color: #0b3b76;
+      }
+      .result-body{ padding: 14px 12px; }
+
+      .result-grid{
+        display:grid;
+        grid-template-columns: 120px 1fr;
+        gap: 10px 12px;
+        align-items:center;
+      }
+      .result-grid .k{
+        font-size: 13px;
+        color: #111827;
+        font-weight: 700;
+      }
+      .result-grid .v{
+        display:flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items:center;
+      }
+
+      .pill{
+        display:inline-flex;
+        align-items:center;
+        gap: 8px;
+        padding: 8px 10px;
+        border: 1px dashed #bfdbfe;
+        background: #f0f7ff;
+        border-radius: 10px;
+        font-size: 13px;
+        color: #0b3b76;
+        font-weight: 650;
+      }
+
+      .table{
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      .table th, .table td{
+        border: 1px solid var(--line);
+        padding: 10px 10px;
+        text-align: left;
+      }
+      .table th{
+        background: #f8fafc;
+        font-weight: 800;
+      }
+
+      .muted{
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .foot{
+        margin-top: 16px;
+        display:flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      a{ color: var(--primary-2); text-decoration: none; }
+      a:hover{ text-decoration: underline; }
+
+      [data-panel]{ display:none; }
+      [data-panel].active{ display:block; }
+    </style>
   </head>
 
   <body>
-    <main style="max-width: 800px; margin: 2rem auto; font-family: system-ui, sans-serif;">
-
-      <h1>Cm to Inch Converter</h1>
-
-      <p>
-        To convert centimeters to inches, divide the length value by <strong>2.54</strong>.
+    <main class="wrap">
+      <div class="page-title">
+        <div class="icon">≡</div>
+        <div>Cm ↔ Inch Converter</div>
+      </div>
+      <p class="subtitle">
+        To switch between centimeters and inches, multiply/divide by <strong>2.54</strong> accordingly.
       </p>
 
-      <!-- 🔧 Interactive Converter -->
-      <section style="margin: 1.5rem 0; padding: 1rem; border: 1px solid #ddd;">
-        <h2 style="margin-top: 0;">Interactive cm ↔ inch Converter</h2>
-
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
-          <div>
-            <label for="cmInput"><strong>Centimeters (cm)</strong></label><br />
-            <input
-              id="cmInput"
-              type="number"
-              inputmode="decimal"
-              step="any"
-              placeholder="e.g. 10"
-              style="padding: .5rem; width: 220px;"
-            />
-          </div>
-
-          <div>
-            <label for="inchInput"><strong>Inches (in)</strong></label><br />
-            <input
-              id="inchInput"
-              type="number"
-              inputmode="decimal"
-              step="any"
-              placeholder="e.g. 3.94"
-              style="padding: .5rem; width: 220px;"
-            />
-          </div>
-
-          <button
-            type="button"
-            id="clearBtn"
-            style="padding: .55rem .9rem;"
-          >
-            Clear
-          </button>
+      <section class="card" aria-label="converter">
+        <div class="tabs" role="tablist" aria-label="Sections">
+          <button class="tab" role="tab" aria-selected="true" data-tab="converter">Converter</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="formula">Formula</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="table">Table</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="examples">Examples</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="faq">FAQ</button>
         </div>
 
-        <p style="margin-top: .75rem; color: #555;">
-          Formula: <strong>in = cm ÷ 2.54</strong> · <strong>cm = in × 2.54</strong>
-        </p>
+        <div class="panel">
+          <div data-panel="converter" class="active">
+            <div class="option-block">
+              <div class="option-title">
+                <h2>Interactive Converter</h2>
+                <div class="hint">Pick a mode, then enter values</div>
+              </div>
+
+              <div>
+                <label class="radio-row">
+                  <input type="radio" name="mode" value="cm2in" checked />
+                  <span><strong>cm → inch</strong></span>
+                </label>
+                <label class="radio-row">
+                  <input type="radio" name="mode" value="in2cm" />
+                  <span><strong>inch → cm</strong></span>
+                </label>
+                <label class="radio-row">
+                  <input type="radio" name="mode" value="both" />
+                  <span><strong>Two-way</strong></span>
+                </label>
+              </div>
+
+              <div style="height: 10px;"></div>
+
+              <div class="row">
+                <div class="field">
+                  <label for="cmInput">Centimeters (cm)</label>
+                  <input id="cmInput" class="input" type="number" step="any" placeholder="e.g. 10" />
+                </div>
+                <div class="field">
+                  <label for="inchInput">Inches (in)</label>
+                  <input id="inchInput" class="input" type="number" step="any" placeholder="e.g. 3.94" />
+                </div>
+
+                <button type="button" id="clearBtn" class="btn">Clear</button>
+                <div class="inline">
+                  <span class="muted">Dec.</span>
+                  <select id="roundSelect" class="input mini" aria-label="rounding decimals">
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4" selected>4</option>
+                    <option value="6">6</option>
+                  </select>
+                  <span class="muted">places</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="result" aria-live="polite">
+              <div class="result-head">Result</div>
+              <div class="result-body">
+                <div class="result-grid">
+                  <div class="k">Mode</div>
+                  <div class="v"><span id="modeLabel" class="pill">cm → inch</span></div>
+
+                  <div class="k">Expression</div>
+                  <div class="v">
+                    <input id="exprOutput" class="input" readonly value="in = cm ÷ 2.54 · cm = in × 2.54" />
+                    <button id="copyBtn" class="btn primary" type="button">Copy</button>
+                  </div>
+
+                  <div class="k">Recent</div>
+                  <div class="v"><div id="recentList" class="muted">No conversions yet.</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div data-panel="formula">
+            <div class="option-block">
+              <div class="option-title"><h2>Formula</h2><div class="hint">Quick reference</div></div>
+              <div class="pill">inches = centimeters ÷ 2.54</div>
+              <div class="pill">centimeters = inches × 2.54</div>
+              <p class="muted" style="margin-top:10px;">1 inch equals exactly 2.54 cm.</p>
+            </div>
+          </div>
+
+          <div data-panel="table">
+            <div class="option-block">
+              <div class="option-title"><h2>Common Conversions</h2><div class="hint">Helpful table</div></div>
+              <table class="table">
+                <thead>
+                  <tr><th>cm</th><th>in</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>5</td><td>1.97</td></tr>
+                  <tr><td>10</td><td>3.94</td></tr>
+                  <tr><td>15</td><td>5.91</td></tr>
+                  <tr><td>30</td><td>11.81</td></tr>
+                  <tr><td>100</td><td>39.37</td></tr>
+                  <tr><td>250</td><td>98.43</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div data-panel="examples">
+            <div class="option-block">
+              <div class="option-title"><h2>Examples</h2><div class="hint">Practical context</div></div>
+              <ul style="margin:8px 0 0; padding-left:18px;">
+                <li>Phone width ~7 cm, ~2.76 inches.</li>
+                <li>30 cm ruler ~11.81 inches.</li>
+                <li>1 meter = 100 cm = 39.37 inches.</li>
+              </ul>
+              <div style="height:10px;"></div>
+              <div class="option-title"><h2>Common Mistakes</h2><div class="hint">Avoid errors</div></div>
+              <p class="muted">Multiplying by 2.54 when converting cm → inches is wrong; you should divide.</p>
+            </div>
+          </div>
+
+          <div data-panel="faq">
+            <div class="option-block">
+              <div class="option-title"><h2>FAQ</h2><div class="hint">Quick answers</div></div>
+              <p><strong>Is 1 cm equal to 1 inch?</strong> No. 1 inch = 2.54 cm.</p>
+              <p><strong>Why 2.54?</strong> It’s the precisefactor (exact conversion per international standard).</p>
+              <p><strong>What’s 25 cm?</strong> 25 ÷ 2.54 ≈ 9.84 inches.</p>
+            </div>
+          </div>
+
+          <div class="foot">
+            <a href="/">← Back to Home</a>
+            <span class="muted">SEO friendly, zero framework.</span>
+          </div>
+        </div>
       </section>
-
-      <h2>Quick Conversion Formula</h2>
-      <p>
-        <strong>inches = centimeters ÷ 2.54</strong>
-      </p>
-
-      <h2>Common Cm to Inch Conversions</h2>
-      <table border="1" cellpadding="8" cellspacing="0">
-        <tr>
-          <th>Centimeters (cm)</th>
-          <th>Inches (in)</th>
-        </tr>
-        <tr><td>1</td><td>0.39</td></tr>
-        <tr><td>5</td><td>1.97</td></tr>
-        <tr><td>10</td><td>3.94</td></tr>
-        <tr><td>30</td><td>11.81</td></tr>
-        <tr><td>100</td><td>39.37</td></tr>
-      </table>
-
-      <h2>Real-World Examples</h2>
-      <ul>
-        <li>A 30 cm ruler is about 11.8 inches long.</li>
-        <li>10 cm equals roughly the width of a smartphone.</li>
-        <li>100 cm equals 1 meter, or about 39 inches.</li>
-      </ul>
-
-      <h2>Common Mistakes</h2>
-      <p>
-        A common mistake is multiplying by 2.54 instead of dividing when converting cm to inches.
-      </p>
-
-      <h2>FAQ</h2>
-      <p><strong>Is 1 cm equal to 1 inch?</strong> No. 1 inch equals 2.54 cm.</p>
-      <p><strong>Why is 2.54 used?</strong> It is the internationally agreed conversion factor.</p>
-
-      <p>
-        <a href="/">← Back to Home</a>
-      </p>
-
     </main>
 
-    <!-- ✅ Plain JS (SEO-safe, no framework) -->
     <script>
       const CM_PER_INCH = 2.54;
-
-      const cmInput = document.getElementById("cmInput");
+      const tabs = Array.from(document.querySelectorAll(".tab"));
+      const panels = Array.from(document.querySelectorAll("[data-panel]"));
       const inchInput = document.getElementById("inchInput");
+      const cmInput = document.getElementById("cmInput");
       const clearBtn = document.getElementById("clearBtn");
-
+      const roundSelect = document.getElementById("roundSelect");
+      const modeRadios = Array.from(document.querySelectorAll('input[name="mode"]'));
+      const modeLabel = document.getElementById("modeLabel");
+      const exprOutput = document.getElementById("exprOutput");
+      const copyBtn = document.getElementById("copyBtn");
+      const recentList = document.getElementById("recentList");
+      const recent = [];
       let isUpdating = false;
 
-      function round(value, decimals = 4) {
-        const factor = Math.pow(10, decimals);
+      function setTab(name){
+        tabs.forEach(t => t.setAttribute("aria-selected", t.dataset.tab === name ? "true" : "false"));
+        panels.forEach(p => p.classList.toggle("active", p.dataset.panel === name));
+      }
+      tabs.forEach(t => t.addEventListener("click", () => setTab(t.dataset.tab)));
+
+      function round(value, decimals){
+        const d = Number(decimals);
+        if (!Number.isFinite(d)) return value;
+        const factor = Math.pow(10, d);
         return Math.round(value * factor) / factor;
+      }
+
+      function appendRecent(text){
+        if (!text) return;
+        recent.unshift(text);
+        if (recent.length > 10) recent.pop();
+        renderRecent();
+      }
+      function renderRecent(){
+        if (!recent.length){
+          recentList.textContent = "No conversions yet.";
+          return;
+        }
+        recentList.innerHTML = recent.map(s => `<div>• ${s}</div>`).join("");
+      }
+
+      function getMode(){
+        const checked = modeRadios.find(r => r.checked);
+        return checked ? checked.value : "cm2in";
+      }
+
+      function updateMode(){
+        const mode = getMode();
+        if (mode === "cm2in"){
+          modeLabel.textContent = "cm → inch";
+          exprOutput.value = "in = cm ÷ 2.54";
+          cmInput.disabled = false;
+          inchInput.disabled = true;
+          inchInput.value = "";
+          cmInput.focus();
+        } else if (mode === "in2cm"){
+          modeLabel.textContent = "inch → cm";
+          exprOutput.value = "cm = in × 2.54";
+          inchInput.disabled = false;
+          cmInput.disabled = true;
+          cmInput.value = "";
+          inchInput.focus();
+        } else {
+          modeLabel.textContent = "Two-way";
+          exprOutput.value = "in = cm ÷ 2.54 · cm = in × 2.54";
+          cmInput.disabled = false;
+          inchInput.disabled = false;
+        }
+        recent.length = 0;
+        renderRecent();
+      }
+
+      function handleCm(){
+        const cm = parseFloat(cmInput.value);
+        const decimals = roundSelect.value;
+        if (!Number.isFinite(cm)){
+          inchInput.value = "";
+          return;
+        }
+        inchInput.value = round(cm / CM_PER_INCH, decimals);
+        appendRecent(`${cm} cm = ${inchInput.value} in`);
+      }
+
+      function handleIn(){
+        const inch = parseFloat(inchInput.value);
+        const decimals = roundSelect.value;
+        if (!Number.isFinite(inch)){
+          cmInput.value = "";
+          return;
+        }
+        cmInput.value = round(inch * CM_PER_INCH, decimals);
+        appendRecent(`${inch} in = ${cmInput.value} cm`);
       }
 
       cmInput.addEventListener("input", () => {
         if (isUpdating) return;
-        const cm = parseFloat(cmInput.value);
+        if (getMode() === "in2cm") return;
         isUpdating = true;
-
-        if (Number.isFinite(cm)) {
-          inchInput.value = round(cm / CM_PER_INCH);
-        } else {
-          inchInput.value = "";
-        }
-
+        handleCm();
         isUpdating = false;
       });
-
       inchInput.addEventListener("input", () => {
         if (isUpdating) return;
-        const inch = parseFloat(inchInput.value);
+        if (getMode() === "cm2in") return;
         isUpdating = true;
-
-        if (Number.isFinite(inch)) {
-          cmInput.value = round(inch * CM_PER_INCH);
-        } else {
-          cmInput.value = "";
-        }
-
+        handleIn();
         isUpdating = false;
       });
 
+      roundSelect.addEventListener("change", () => {
+        const mode = getMode();
+        isUpdating = true;
+        if (mode === "cm2in") handleCm();
+        else if (mode === "in2cm") handleIn();
+        else {
+          const cm = parseFloat(cmInput.value);
+          const inch = parseFloat(inchInput.value);
+          if (Number.isFinite(cm)) handleCm();
+          else if (Number.isFinite(inch)) handleIn();
+        }
+        isUpdating = false;
+      });
+
+      modeRadios.forEach(r => r.addEventListener("change", updateMode));
       clearBtn.addEventListener("click", () => {
         cmInput.value = "";
         inchInput.value = "";
-        cmInput.focus();
+        recent.length = 0;
+        renderRecent();
+        updateMode();
       });
+
+      copyBtn.addEventListener("click", async () => {
+        const text = exprOutput.value || "";
+        try{
+          await navigator.clipboard.writeText(text);
+        }catch{
+          exprOutput.select();
+          document.execCommand("copy");
+        }
+        copyBtn.textContent = "Copied";
+        setTimeout(() => (copyBtn.textContent = "Copy"), 900);
+      });
+
+      updateMode();
     </script>
   </body>
 </html>
