@@ -22,6 +22,8 @@ const description =
         --link: #551a8b;
         --card-bg: #fff;
         --shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        --accent-bg: #f0f9ff;
+        --accent-border: #c7e5ff;
       }
 
       body {
@@ -41,6 +43,33 @@ const description =
       h1 {
         font-size: 3rem;
         margin: 0 0 0.4rem;
+      }
+      .hero {
+        background: var(--accent-bg);
+        border: 1px solid var(--accent-border);
+        padding: 1.4rem;
+        border-radius: 16px;
+        margin-bottom: 2rem;
+      }
+      .hero h2 {
+        margin: 0 0 0.4rem;
+        font-size: 1.8rem;
+        color: var(--text);
+      }
+      .hero p {
+        margin: 0 0 0.8rem;
+        color: var(--muted);
+      }
+      .updates {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+      .updates strong {
+        color: var(--text);
+        font-weight: 700;
       }
 
       header p {
@@ -156,6 +185,27 @@ const description =
         </p>
         <hr />
       </header>
+
+      <section class="hero">
+        <h2>Tools that answer questions, not just numbers</h2>
+        <p>
+          Each calculator now explains why it exists, how people like you use it,
+          and what real decisions it supports — shipping a new product, planning
+          a launch, fixing a home project, or choosing the right data plan.
+          Scroll down to see the latest updates and which tool suits your next
+          task.
+        </p>
+        <div class="updates">
+          <div>
+            <strong>Latest refresh: </strong>
+            <span>Feb 20 — new fuel consumption page with MPG / L per 100km comparisons, real-world cases, and FAQs.</span>
+          </div>
+          <div>
+            <strong>Why it matters for you:</strong>
+            <span>This site now deliberately pairs calculators with stories, case notes, and checklists that match your Amazon/Walmart workflow.</span>
+          </div>
+        </div>
+      </section>
 
       <!-- Popular Tools -->
       <div class="popular-grid">
