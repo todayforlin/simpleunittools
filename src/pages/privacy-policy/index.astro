@@ -9,6 +9,11 @@ const description = "Privacy Policy for SimpleUnitTools.";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site).toString()} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site).toString()} />
+    <meta property="og:type" content="website" />
   </head>
   <body>
     <main style="max-width: 800px; margin: 2rem auto; font-family: system-ui, sans-serif;">
