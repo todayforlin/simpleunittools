@@ -1,0 +1,42 @@
+---
+const title = "AI赚钱指南与工具库";
+const description =
+  "系统整理AI赚钱方法、工具测评、案例拆解、提示词模板与自动化工作流，帮助你从0到1搭建可持续副业。";
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site).toString()} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site).toString()} />
+    <meta property="og:type" content="website" />
+    <style>
+      body{font-family:system-ui,sans-serif;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.7}
+      h1{margin-bottom:.2rem}
+      .muted{color:#555}
+      .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:1rem}
+      .card{border:1px solid #ddd;padding:14px;border-radius:12px}
+      @media (max-width:700px){.grid{grid-template-columns:1fr}}
+    </style>
+  </head>
+  <body>
+    <h1>AI赚钱指南与工具库</h1>
+    <p class="muted">从“会用AI”到“靠AI稳定赚钱”的实战导航页。</p>
+
+    <div class="grid">
+      <a class="card" href="/ai-money/tools/"><strong>AI工具测评</strong><br/>选工具、比价格、看ROI。</a>
+      <a class="card" href="/ai-money/cases/"><strong>案例拆解</strong><br/>真实路径、成本、周期、结果。</a>
+      <a class="card" href="/ai-money/prompts/"><strong>提示词模板</strong><br/>可复制可落地的高频场景模板。</a>
+      <a class="card" href="/ai-money/workflows/"><strong>自动化工作流</strong><br/>把重复任务变成可复用流程。</a>
+      <a class="card" href="/ai-money/side-hustle/"><strong>副业路线图</strong><br/>按投入时间和预算选路径。</a>
+    </div>
+
+    <p style="margin-top:1.4rem"><a href="/">← 返回首页</a></p>
+  </body>
+</html>
